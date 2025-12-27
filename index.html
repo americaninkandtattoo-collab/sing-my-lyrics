@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SingMyLyrics</title>
+
+<style>
+:root{
+  --bg:#0e0f12;
+  --panel:#15171c;
+  --panel2:#1d2027;
+  --text:#e8e8ea;
+  --muted:#9aa0a6;
+  --accent:#22c55e;
+  --danger:#ef4444;
+  --stroke:#2a2e38;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont;
+  background:var(--bg);
+  color:var(--text);
+}
+
+/* HEADER */
+header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:16px 20px;
+  border-bottom:1px solid var(--stroke);
+}
+.brand{
+  font-size:22px;
+  font-weight:700;
+  letter-spacing:.5px;
+}
+nav button{
+  background:var(--accent);
+  border:none;
+  color:#000;
+  padding:10px 16px;
+  font-weight:600;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+/* HERO */
+.hero{
+  padding:40px 20px 20px;
+  max-width:900px;
+  margin:auto;
+}
+.hero h1{
+  font-size:34px;
+  margin-bottom:10px;
+}
+.hero p{
+  color:var(--muted);
+  font-size:16px;
+  line-height:1.5;
+}
+.hero .cta{
+  margin-top:20px;
+}
+.hero .cta button{
+  font-size:16px;
+  padding:12px 20px;
+}
+
+/* FEED */
+.feed{
+  max-width:900px;
+  margin:30px auto;
+  padding:0 20px 60px;
+}
+.feed-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:14px;
+}
+.feed-header span{
+  color:var(--muted);
+}
+
+.track{
+  background:var(--panel);
+  border:1px solid var(--stroke);
+  border-radius:10px;
+  padding:14px;
+  margin-bottom:14px;
+}
+.track-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.track-title{
+  font-weight:600;
+}
+.track-owner{
+  color:var(--muted);
+  font-size:13px;
+}
+
+.track-controls{
+  display:flex;
+  gap:10px;
+  margin-top:10px;
+  align-items:center;
+}
+.ctrl-btn{
+  background:var(--panel2);
+  border:1px solid var(--stroke);
+  color:var(--text);
+  padding:6px 10px;
+  border-radius:6px;
+  cursor:pointer;
+}
+
+.menu{
+  position:relative;
+}
+.menu-panel{
+  position:absolute;
+  right:0;
+  top:36px;
+  background:var(--panel2);
+  border:1px solid var(--stroke);
+  border-radius:8px;
+  padding:8px;
+  display:none;
+  z-index:10;
+}
+.menu-panel button{
+  display:block;
+  width:100%;
+  background:none;
+  border:none;
+  color:var(--text);
+  text-align:left;
+  padding:8px 10px;
+  cursor:pointer;
+}
+.menu-panel button:hover{
+  background:var(--panel);
+}
+
+/* FOOTER */
+footer{
+  border-top:1px solid var(--stroke);
+  padding:20px;
+  text-align:center;
+  color:var(--muted);
+  font-size:13px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">SingMyLyrics</div>
+  <nav>
+    <button onclick="goCreate()">Create</button>
+  </nav>
+</header>
+
+<section class="hero">
+  <h1>Human words. Finally heard.</h1>
+  <p>
+    SingMyLyrics lets you turn <strong>your lyrics</strong> into music — without giving them away.
+    We never write lyrics for you. You keep 100% ownership. Always.
+  </p>
+  <div class="cta">
+    <button onclick="goCreate()">Start Creating</button>
+  </div>
+</section>
+
+<section class="feed">
+  <div class="feed-header">
+    <strong>Latest Creations</strong>
+    <span>Newest first</span>
+  </div>
+
+  <!-- TRACK -->
+  <div class="track">
+    <div class="track-top">
+      <div>
+        <div class="track-title">Where You Look (Extended)</div>
+        <div class="track-owner">by you · Private</div>
+      </div>
+    </div>
+
+    <div class="track-controls">
+      <button class="ctrl-btn">▶ Play</button>
+      <button class="ctrl-btn">👍</button>
+      <button class="ctrl-btn">👎</button>
+
+      <div class="menu">
+        <button class="ctrl-btn" onclick="toggleMenu(this)">⋯</button>
+        <div class="menu-panel">
+          <button>Lyrics PDF</button>
+          <button>Sheet Music PDF</button>
+          <button onclick="copyTitle('Where You Look (Extended)')">Copy Title</button>
+          <button style="color:var(--danger)">Delete (30 days)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<footer>
+  © SingMyLyrics · You own your lyrics · We don’t train on your words
+</footer>
+
+<script>
+function goCreate(){
+  window.location.href = "create.html";
+}
+
+function toggleMenu(btn){
+  const panel = btn.nextElementSibling;
+  panel.style.display = panel.style.display === "block" ? "none" : "block";
+}
+
+function copyTitle(text){
+  navigator.clipboard.writeText(text);
+  alert("Title copied");
+}
+
+document.addEventListener("click", e=>{
+  document.querySelectorAll(".menu-panel").forEach(p=>{
+    if(!p.contains(e.target) && !p.previousElementSibling.contains(e.target)){
+      p.style.display="none";
+    }
+  });
+});
+</script>
+
+</body>
+</html>
