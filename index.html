@@ -1,1716 +1,1515 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>SingMyLyrics</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>SingMyLyrics</title>
 
-  <!-- Optional PDF export (works if CDN loads). If it doesn’t, app still works. -->
-  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<style>
+:root{
+  --bg:#0f1115;
+  --panel:#151922;
+  --panel2:#1b2030;
+  --panel3:#0d1020;
+  --line:#2a2f45;
+  --text:#e7e9f1;
+  --muted:#9aa1c7;
+  --accent:#5da9ff;
+  --good:#47d18c;
+  --warn:#ffcc66;
+  --danger:#ff5d5d;
+}
 
-  <style>
-    :root{
-      --bg:#0b0f14;
-      --panel:#101824;
-      --panel2:#0f1621;
-      --stroke:#223241;
-      --text:#e9f0ff;
-      --muted:#8aa0b7;
-      --good:#32d583;
-      --warn:#fdb022;
-      --bad:#ff4d4d;
-      --brand:#7c5cff;
-      --brand2:#2dd4bf;
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --radius:14px;
-      --radius2:18px;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      --sans: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family:var(--sans);
-      background: radial-gradient(1200px 600px at 20% -10%, rgba(124,92,255,.25), transparent 60%),
-                  radial-gradient(1000px 500px at 110% 10%, rgba(45,212,191,.18), transparent 55%),
-                  var(--bg);
-      color:var(--text);
-      overflow:hidden;
-    }
-    a{color:inherit;text-decoration:none}
-    button,input,select,textarea{font:inherit}
-    .hidden{display:none !important}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+  height:100vh;
+  overflow:hidden;
+}
 
-    /* Layout */
-    .app{
-      height:100%;
-      display:grid;
-      grid-template-columns: 290px 1fr;
-      grid-template-rows: 64px 1fr;
-      grid-template-areas:
-        "side top"
-        "side main";
-    }
-    .topbar{
-      grid-area:top;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding: 12px 16px;
-      border-bottom:1px solid var(--stroke);
-      background: linear-gradient(180deg, rgba(16,24,36,.92), rgba(16,24,36,.70));
-      backdrop-filter: blur(8px);
-    }
-    .brand{
-      display:flex; align-items:center; gap:10px;
-      min-width: 240px;
-    }
-    .hamburger{
-      width:42px;height:40px;border-radius:12px;
-      border:1px solid var(--stroke);
-      background: rgba(15,22,33,.7);
-      color:var(--text);
-      cursor:pointer;
-      display:inline-flex; align-items:center; justify-content:center;
-    }
-    .logo{
-      width:34px;height:34px;border-radius:10px;
-      background:
-        radial-gradient(12px 12px at 30% 35%, rgba(255,255,255,.35), transparent 60%),
-        linear-gradient(135deg, var(--brand), var(--brand2));
-      box-shadow: 0 10px 20px rgba(124,92,255,.22);
-    }
-    .brand-title{
-      display:flex; flex-direction:column; line-height:1.05;
-    }
-    .brand-title b{font-size:14px; letter-spacing:.2px}
-    .brand-title span{font-size:12px; color:var(--muted)}
-    .top-actions{
-      display:flex; align-items:center; gap:10px;
-    }
-    .pill{
-      border:1px solid var(--stroke);
-      background: rgba(15,22,33,.65);
-      border-radius:999px;
-      padding:8px 12px;
-      color:var(--muted);
-      display:flex; align-items:center; gap:8px;
-    }
-    .pill input{
-      background:transparent;border:0;outline:none;color:var(--text);
-      width:240px;
-    }
-    .btn{
-      border:1px solid var(--stroke);
-      background: rgba(15,22,33,.65);
-      color:var(--text);
-      border-radius:12px;
-      padding:10px 12px;
-      cursor:pointer;
-      box-shadow: none;
-      transition: transform .05s ease, border-color .15s ease, background .15s ease;
-    }
-    .btn:hover{border-color:#2b4258}
-    .btn:active{transform: translateY(1px)}
-    .btn.primary{
-      border-color: rgba(124,92,255,.65);
-      background: linear-gradient(135deg, rgba(124,92,255,.25), rgba(45,212,191,.12));
-    }
-    .btn.danger{
-      border-color: rgba(255,77,77,.55);
-      background: rgba(255,77,77,.09);
-    }
-    .btn.good{
-      border-color: rgba(50,213,131,.55);
-      background: rgba(50,213,131,.10);
-    }
+.app{
+  display:grid;
+  grid-template-columns:72px 1fr;
+  grid-template-rows:1fr 72px;
+  height:100vh;
+}
 
-    /* Sidebar */
-    .sidebar{
-      grid-area:side;
-      border-right:1px solid var(--stroke);
-      background: linear-gradient(180deg, rgba(16,24,36,.92), rgba(16,24,36,.62));
-      backdrop-filter: blur(10px);
-      padding: 12px;
-      overflow:hidden;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-    }
-    .sidebar.collapsed{
-      width: 76px;
-      grid-template-columns: 76px 1fr;
-    }
-    .nav{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
-    .nav a{
-      display:flex; align-items:center; gap:10px;
-      padding:10px 10px;
-      border-radius:12px;
-      border:1px solid transparent;
-      color:var(--muted);
-      user-select:none;
-    }
-    .nav a.active{
-      border-color: rgba(124,92,255,.35);
-      background: rgba(124,92,255,.10);
-      color:var(--text);
-    }
-    .nav a:hover{
-      border-color:#223241;
-      background: rgba(255,255,255,.03);
-      color:var(--text);
-    }
-    .ico{
-      width:22px;height:22px;
-      display:inline-flex; align-items:center; justify-content:center;
-      border-radius:8px;
-      border:1px solid var(--stroke);
-      background: rgba(15,22,33,.55);
-      font-size:12px;
-      color:var(--text);
-      flex: 0 0 auto;
-    }
-    .sidebar-footer{
-      margin-top:auto;
-      border-top:1px solid var(--stroke);
-      padding-top:12px;
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.35;
-    }
-    .tiny{
-      font-size:12px;color:var(--muted)
-    }
-    .safety{
-      margin-top:10px;
-      border:1px dashed rgba(124,92,255,.4);
-      padding:10px;
-      border-radius:12px;
-      background: rgba(124,92,255,.06);
-    }
-    .safety b{color:var(--text)}
-    .safety .tiny{margin-top:6px}
+.sidebar{
+  grid-row:1 / span 2;
+  background:var(--panel);
+  border-right:1px solid var(--line);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:12px 0;
+  gap:14px;
+}
+.sidebar .logo{
+  width:44px;height:44px;border-radius:12px;
+  background:linear-gradient(135deg,var(--accent),#7b5dff);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;color:#0b0d12;
+  margin-bottom:4px;
+}
+.sidebar button{
+  width:44px;height:44px;border-radius:12px;
+  background:transparent;
+  border:1px solid transparent;
+  color:var(--muted);
+  font-size:18px;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.sidebar button:hover{
+  border-color:var(--line);
+  color:var(--text);
+}
+.sidebar button.active{
+  border-color:var(--accent);
+  color:var(--text);
+}
 
-    /* Main */
-    .main{
-      grid-area:main;
-      overflow:auto;
-      padding: 16px;
-    }
-    .grid{
-      display:grid;
-      grid-template-columns: 1.25fr .9fr;
-      gap:16px;
-      align-items:start;
-    }
-    @media (max-width: 1100px){
-      body{overflow:auto}
-      .app{grid-template-columns: 1fr; grid-template-areas:"top" "main"; grid-template-rows:64px 1fr}
-      .sidebar{display:none}
-      .grid{grid-template-columns:1fr}
-    }
+.main{
+  grid-column:2;
+  grid-row:1;
+  padding:18px 18px 0 18px;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
 
-    .card{
-      border:1px solid var(--stroke);
-      background: rgba(16,24,36,.70);
-      border-radius: var(--radius2);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
-    .card-h{
-      padding: 14px 14px 12px;
-      border-bottom:1px solid var(--stroke);
-      display:flex; align-items:center; justify-content:space-between;
-      gap:12px;
-    }
-    .card-h h2{
-      margin:0;
-      font-size:14px;
-      letter-spacing:.2px;
-    }
-    .card-b{padding:14px}
-    .row{display:flex; gap:10px; flex-wrap:wrap}
-    .field{
-      display:flex; flex-direction:column; gap:6px;
-      min-width: 220px;
-      flex: 1 1 220px;
-    }
-    label{font-size:12px;color:var(--muted)}
-    select,input[type="text"]{
-      width:100%;
-      border:1px solid var(--stroke);
-      background: rgba(15,22,33,.55);
-      color:var(--text);
-      border-radius: 12px;
-      padding: 10px 10px;
-      outline:none;
-    }
-    textarea{
-      width:100%;
-      min-height: 220px;
-      resize: vertical;
-      border:1px solid var(--stroke);
-      background: rgba(15,22,33,.55);
-      color:var(--text);
-      border-radius: 12px;
-      padding: 12px;
-      outline:none;
-      line-height:1.35;
-    }
-    .hint{font-size:12px; color:var(--muted)}
-    .split{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-    }
-    @media (max-width: 680px){
-      .split{grid-template-columns:1fr}
-    }
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+.h1{
+  font-size:20px;
+  font-weight:800;
+  letter-spacing:.2px;
+}
+.sub{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:2px;
+}
+.top-actions{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+.pill{
+  background:var(--panel2);
+  border:1px solid var(--line);
+  color:var(--text);
+  padding:8px 10px;
+  border-radius:12px;
+  font-size:13px;
+}
+select.pill, input.pill{
+  outline:none;
+}
+.btn{
+  background:var(--accent);
+  border:none;
+  color:#07101d;
+  padding:10px 12px;
+  border-radius:12px;
+  font-weight:800;
+  cursor:pointer;
+}
+.btn:disabled{opacity:.6; cursor:not-allowed}
+.btn.ghost{
+  background:transparent;
+  border:1px solid var(--line);
+  color:var(--text);
+}
+.btn.danger{
+  background:var(--danger);
+  color:#1b0606;
+}
 
-    /* Player */
-    .player{
-      position: sticky;
-      bottom: 16px;
-      z-index: 50;
-      border:1px solid rgba(124,92,255,.35);
-      background: linear-gradient(135deg, rgba(16,24,36,.90), rgba(15,22,33,.78));
-      border-radius: var(--radius2);
-      box-shadow: 0 18px 40px rgba(0,0,0,.45);
-      overflow:hidden;
-      margin-top: 16px;
-    }
-    .player-top{
-      padding: 12px 12px;
-      display:flex; align-items:center; justify-content:space-between; gap:10px;
-      border-bottom:1px solid var(--stroke);
-    }
-    .player-title{
-      display:flex; flex-direction:column; gap:2px;
-    }
-    .player-title b{font-size:13px}
-    .player-title span{font-size:12px;color:var(--muted)}
-    .player-controls{
-      display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;
-    }
-    .bar{
-      height: 10px;
-      border-radius: 999px;
-      background: rgba(255,255,255,.06);
-      border:1px solid var(--stroke);
-      overflow:hidden;
-      position:relative;
-      margin: 12px;
-    }
-    .bar > i{
-      display:block;
-      height:100%;
-      width:0%;
-      background: linear-gradient(90deg, rgba(124,92,255,.9), rgba(45,212,191,.85));
-      border-radius:999px;
-    }
-    .player-meta{
-      display:flex; justify-content:space-between; padding: 0 12px 12px;
-      color:var(--muted); font-size:12px;
-    }
+.content{
+  flex:1;
+  overflow:auto;
+  padding-bottom:18px;
+}
 
-    /* Feed */
-    .feed-item{
-      border:1px solid var(--stroke);
-      background: rgba(15,22,33,.45);
-      border-radius: 14px;
-      padding: 12px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      margin-bottom: 10px;
-    }
-    .feed-top{
-      display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
-    }
-    .feed-top b{font-size:13px}
-    .badge{
-      font-size:12px;
-      color:var(--muted);
-      border:1px solid var(--stroke);
-      padding:4px 8px;
-      border-radius:999px;
-      background: rgba(255,255,255,.03);
-      white-space:nowrap;
-    }
-    .feed-actions{
-      display:flex; gap:8px; flex-wrap:wrap;
-    }
-    .iconbtn{
-      border:1px solid var(--stroke);
-      background: rgba(15,22,33,.55);
-      color:var(--text);
-      border-radius: 12px;
-      padding: 8px 10px;
-      cursor:pointer;
-      font-size: 12px;
-    }
-    .iconbtn:hover{border-color:#2b4258}
-    .commentbox{
-      display:flex; gap:8px; margin-top:6px;
-    }
-    .commentbox input{
-      flex:1;
-      border:1px solid var(--stroke);
-      background: rgba(15,22,33,.55);
-      border-radius: 12px;
-      padding: 10px 10px;
-      color:var(--text);
-      outline:none;
-    }
+/* views */
+.view{display:none}
+.view.active{display:block}
 
-    /* Toast */
-    .toast{
-      position: fixed;
-      top: 12px;
-      right: 12px;
-      z-index: 999;
-      background: rgba(16,24,36,.92);
-      border:1px solid var(--stroke);
-      border-radius: 14px;
-      box-shadow: var(--shadow);
-      padding: 10px 12px;
-      min-width: 240px;
-      max-width: 360px;
-      display:none;
-    }
-    .toast.show{display:block}
-    .toast b{font-size:13px}
-    .toast p{margin:6px 0 0; font-size:12px; color:var(--muted)}
-    .mono{font-family:var(--mono)}
-  </style>
+/* layout like your sketch */
+.two-col{
+  display:grid;
+  grid-template-columns: 1fr 320px;
+  gap:14px;
+}
+.card{
+  background:var(--panel2);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:14px;
+}
+.card h3{margin:0 0 10px 0; font-size:14px; color:var(--muted); font-weight:700}
+.hr{height:1px;background:var(--line); margin:12px 0}
+
+.song-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:12px;
+  border-radius:14px;
+  border:1px solid var(--line);
+  background:rgba(0,0,0,.12);
+  margin-bottom:10px;
+}
+.song-left{
+  min-width:0;
+}
+.song-title{
+  font-weight:800;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.song-meta{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:4px;
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.badge{
+  font-size:11px;
+  padding:3px 8px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.04);
+  color:var(--muted);
+}
+.badge.public{border-color:rgba(71,209,140,.35); color:var(--good)}
+.badge.private{border-color:rgba(255,204,102,.35); color:var(--warn)}
+.song-actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-shrink:0;
+}
+.iconbtn{
+  width:38px;height:38px;border-radius:12px;
+  border:1px solid var(--line);
+  background:transparent;
+  color:var(--text);
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.iconbtn:hover{border-color:var(--accent)}
+.iconbtn.tiny{width:34px;height:34px;border-radius:10px}
+.iconbtn.like.active{border-color:var(--good); color:var(--good)}
+.iconbtn.dislike.active{border-color:var(--danger); color:var(--danger)}
+
+textarea, input[type="text"]{
+  width:100%;
+  border-radius:14px;
+  border:1px solid var(--line);
+  background:var(--panel3);
+  color:var(--text);
+  padding:12px;
+  outline:none;
+}
+textarea{min-height:180px; resize:vertical}
+
+label{
+  display:block;
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:6px;
+  font-weight:700;
+}
+.range{
+  display:grid;
+  grid-template-columns: 1fr 44px;
+  gap:10px;
+  align-items:center;
+}
+input[type="range"]{width:100%}
+.smallnum{
+  background:var(--panel3);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:8px 8px;
+  text-align:center;
+  font-weight:800;
+  color:var(--text);
+}
+
+.grid2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.note{
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.35;
+}
+
+.kv{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  font-size:12px;
+  color:var(--muted);
+}
+.kv b{color:var(--text)}
+
+.player{
+  grid-column:2;
+  grid-row:2;
+  background:var(--panel);
+  border-top:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  padding:0 12px;
+  gap:12px;
+  overflow:hidden;
+}
+.player .transport{
+  display:flex;gap:8px;align-items:center
+}
+.player .track{
+  min-width:0;
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.player .track .t1{
+  font-weight:800;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.player .track .t2{
+  font-size:12px;color:var(--muted);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.progress{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  width:320px;
+  max-width:34vw;
+}
+.progress input[type="range"]{width:100%}
+.time{
+  font-variant-numeric:tabular-nums;
+  font-size:12px;
+  color:var(--muted);
+  min-width:44px;
+  text-align:right;
+}
+
+/* modal/menu */
+.backdrop{
+  position:fixed; inset:0;
+  background:rgba(0,0,0,.55);
+  display:none;
+  align-items:flex-start;
+  justify-content:flex-end;
+  padding:90px 16px 16px 16px;
+  z-index:1000;
+}
+.backdrop.show{display:flex}
+.menu{
+  width:360px;
+  background:var(--panel2);
+  border:1px solid var(--line);
+  border-radius:16px;
+  overflow:hidden;
+}
+.menu .head{
+  padding:12px 14px;
+  border-bottom:1px solid var(--line);
+}
+.menu .head .title{font-weight:900}
+.menu .head .sub{margin:6px 0 0 0; font-size:12px}
+.menu .body{padding:10px}
+.menu button{
+  width:100%;
+  background:transparent;
+  border:1px solid var(--line);
+  color:var(--text);
+  padding:10px 10px;
+  border-radius:12px;
+  cursor:pointer;
+  text-align:left;
+  margin-bottom:8px;
+}
+.menu button:hover{border-color:var(--accent)}
+.menu button.danger{border-color:rgba(255,93,93,.45); color:var(--danger)}
+.menu .row{
+  display:flex; gap:10px; align-items:center;
+  margin:10px 0;
+}
+.menu .row .pill{flex:1}
+.footer-note{
+  padding:10px 14px;
+  border-top:1px solid var(--line);
+  color:var(--muted);
+  font-size:12px;
+}
+
+/* responsive */
+@media (max-width:980px){
+  .two-col{grid-template-columns:1fr}
+  .progress{display:none}
+}
+</style>
 </head>
 
 <body>
-  <div class="toast" id="toast">
-    <b id="toastTitle">Saved</b>
-    <p id="toastMsg">Done.</p>
+<div class="app">
+
+  <!-- LEFT CONTROL PANEL -->
+  <div class="sidebar">
+    <div class="logo">SML</div>
+    <button id="nav-home" class="active" title="Home / Library" onclick="go('home')">🏠</button>
+    <button id="nav-create" title="Create" onclick="go('create')">✍️</button>
+    <button id="nav-search" title="Search" onclick="go('search')">🔍</button>
+    <button id="nav-trash" title="Trash" onclick="go('trash')">🗑️</button>
   </div>
 
-  <div class="app" id="app">
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-      <div class="row" style="justify-content:space-between;align-items:center">
-        <div style="display:flex;align-items:center;gap:10px">
-          <div class="logo"></div>
-          <div style="display:flex;flex-direction:column;gap:2px">
-            <div style="font-weight:700;font-size:14px">SingMyLyrics</div>
-            <div class="tiny">Human words. Finally heard.</div>
-          </div>
-        </div>
-      </div>
+  <!-- MAIN -->
+  <div class="main">
 
-      <nav class="nav" id="nav">
-        <a href="#/home" data-route="home" class="active"><span class="ico">🏠</span><span class="navtxt">Home</span></a>
-        <a href="#/create" data-route="create"><span class="ico">🎛️</span><span class="navtxt">Create</span></a>
-        <a href="#/library" data-route="library"><span class="ico">🎧</span><span class="navtxt">Library</span></a>
-        <a href="#/feed" data-route="feed"><span class="ico">🌎</span><span class="navtxt">Public Feed</span></a>
-        <a href="#/about" data-route="about"><span class="ico">ℹ️</span><span class="navtxt">About</span></a>
-      </nav>
-
-      <div class="safety">
-        <b>You own your lyrics.</b>
-        <div class="tiny">
-          SingMyLyrics does not write lyrics for you. We format/clean *your* words and generate music from settings.
-          Your text stays yours. Always.
-        </div>
-      </div>
-
-      <div class="sidebar-footer">
-        <div>© <span id="year"></span> SingMyLyrics</div>
-        <div class="tiny">Build: Static demo (GitHub Pages) • Audio: WebAudio synth</div>
-      </div>
-    </aside>
-
-    <!-- Topbar -->
-    <header class="topbar">
-      <div class="brand">
-        <button class="hamburger" id="toggleSide" title="Toggle menu">☰</button>
-        <div class="brand-title">
-          <b id="pageTitle">Home</b>
-          <span id="pageSub">Start creating with your own words.</span>
-        </div>
+    <div class="topbar">
+      <div>
+        <div class="h1" id="pageTitle">Home</div>
+        <div class="sub" id="pageSub">Library · Your creations</div>
       </div>
 
       <div class="top-actions">
-        <div class="pill" title="Search creations">
-          🔎 <input id="search" placeholder="Search your creations..." />
-        </div>
-        <button class="btn" id="btnBackup" title="Export your local data">Export</button>
-        <button class="btn danger" id="btnWipe" title="Erase local demo data">Reset</button>
+        <input id="quickSearch" class="pill" type="text" placeholder="Search…" oninput="refreshAll()" style="min-width:220px">
+        <select id="sortSel" class="pill" onchange="refreshAll()">
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+        </select>
+        <button class="btn" onclick="go('create')">Start Creating</button>
       </div>
-    </header>
+    </div>
 
-    <!-- Main -->
-    <main class="main">
+    <div class="content">
       <!-- HOME -->
-      <section id="view-home" class="view">
-        <div class="grid">
+      <div id="view-home" class="view active">
+        <div class="two-col">
           <div class="card">
-            <div class="card-h">
-              <h2>Human words. Finally heard.</h2>
-              <span class="badge">You own your lyrics • 100% • Always</span>
-            </div>
-            <div class="card-b">
-              <p style="margin:0 0 10px;color:var(--muted);line-height:1.45">
-                This is the **one-file** working demo: it generates a real playable song in your browser, saves it to your Library,
-                and lets you publish to a local Feed. Next step later: connect to a real backend (Suno-style) if/when you want.
-              </p>
-              <div class="row">
-                <button class="btn primary" onclick="go('#/create')">Start Creating</button>
-                <button class="btn" onclick="go('#/library')">Open Library</button>
-                <button class="btn" onclick="go('#/feed')">View Public Feed</button>
-              </div>
-              <div style="margin-top:12px" class="hint">
-                Tip: This demo keeps everything in your browser (localStorage). Export anytime.
-              </div>
+            <h3>Show Library (your sketch: center)</h3>
+            <div id="libraryList"></div>
+            <div class="note" id="libraryEmpty" style="display:none;">
+              No songs yet. Go to <b>Create</b> and generate one.
             </div>
           </div>
 
           <div class="card">
-            <div class="card-h">
-              <h2>Quick status</h2>
-            </div>
-            <div class="card-b">
-              <div class="row">
-                <div class="field">
-                  <label>Mode</label>
-                  <div class="pill" style="padding:10px 12px; width:100%">Static GitHub Pages Demo</div>
-                </div>
-                <div class="field">
-                  <label>Music generation</label>
-                  <div class="pill" style="padding:10px 12px; width:100%">WebAudio Synth (in-browser)</div>
-                </div>
-              </div>
-              <div class="hint" style="margin-top:10px">
-                When you say “make it reality”: this is reality on GitHub Pages (static). True AI song rendering needs a backend.
-                We can add that later without rewriting this UI.
-              </div>
-            </div>
-          </div>
-        </div>
+            <h3>Right Panel (your sketch: song info)</h3>
+            <div class="note" id="rightEmpty">Select a song to view details.</div>
 
-        <div class="card" style="margin-top:16px">
-          <div class="card-h">
-            <h2>Latest creations</h2>
-            <div class="row">
-              <button class="btn" onclick="sortCreations('new')">Newest</button>
-              <button class="btn" onclick="sortCreations('old')">Oldest</button>
+            <div id="rightDetails" style="display:none;">
+              <div class="song-title" id="rdTitle"></div>
+              <div class="song-meta" id="rdMeta"></div>
+
+              <div class="hr"></div>
+
+              <div class="kv"><span>Status</span><b id="rdStatus"></b></div>
+              <div class="kv"><span>Created</span><b id="rdCreated"></b></div>
+              <div class="kv"><span>Length</span><b id="rdLen"></b></div>
+
+              <div class="hr"></div>
+
+              <div class="note"><b>Lyrics (preview)</b></div>
+              <div class="note" id="rdLyrics" style="white-space:pre-wrap;margin-top:6px;"></div>
+
+              <div class="hr"></div>
+
+              <div class="grid2">
+                <button class="btn ghost" onclick="reuseSelected()">Reuse Settings</button>
+                <button class="btn ghost" onclick="openMenuForSelected()">Open ⋯ Menu</button>
+              </div>
+
+              <div class="hr"></div>
+              <div class="note">
+                This is a **fully working** front-end generator (synth track).
+                When you’re ready to plug into a real backend, we replace the generator only.
+              </div>
             </div>
           </div>
-          <div class="card-b" id="homeLatest">
-            <div class="hint">No creations yet. Hit <b>Start Creating</b>.</div>
-          </div>
         </div>
-      </section>
+      </div>
 
       <!-- CREATE -->
-      <section id="view-create" class="view hidden">
-        <div class="grid">
+      <div id="view-create" class="view">
+        <div class="two-col">
           <div class="card">
-            <div class="card-h">
-              <h2>Create</h2>
-              <span class="badge">Your words in • your music out</span>
+            <h3>Create Page (matches your sketch)</h3>
+
+            <div class="grid2">
+              <div>
+                <label>Song Title</label>
+                <input id="cTitle" type="text" placeholder="Untitled" />
+              </div>
+              <div>
+                <label>Visibility</label>
+                <select id="cVis" class="pill" style="width:100%;padding:11px;border-radius:14px">
+                  <option value="private">Private</option>
+                  <option value="public">Public</option>
+                </select>
+              </div>
             </div>
-            <div class="card-b">
-              <div class="row">
-                <div class="field">
-                  <label>Song title</label>
-                  <input id="cTitle" type="text" placeholder="Example: Where You Look (Extended)" />
-                </div>
-                <div class="field">
-                  <label>Style</label>
-                  <select id="cStyle">
-                    <option value="punk">Punk / Hardcore (fast, raw)</option>
-                    <option value="industrial">Industrial (grit, pulse)</option>
-                    <option value="ska">Ska / Two-tone (bounce)</option>
-                    <option value="pop">Pop (clean, catchy)</option>
-                    <option value="hiphop">Hip-Hop (head-nod)</option>
-                    <option value="ambient">Ambient (float, space)</option>
-                  </select>
-                </div>
-              </div>
 
-              <div class="row">
-                <div class="field">
-                  <label>Tempo</label>
-                  <select id="cBpm">
-                    <option value="90">90</option>
-                    <option value="110">110</option>
-                    <option value="130" selected>130</option>
-                    <option value="150">150</option>
-                    <option value="170">170</option>
-                    <option value="190">190</option>
-                  </select>
-                </div>
-                <div class="field">
-                  <label>Length</label>
-                  <select id="cLen">
-                    <option value="25">25s (quick)</option>
-                    <option value="45" selected>45s (demo)</option>
-                    <option value="75">75s (long)</option>
-                  </select>
-                </div>
-                <div class="field">
-                  <label>Visibility</label>
-                  <select id="cVis">
-                    <option value="private" selected>Private</option>
-                    <option value="public">Public (publish to feed)</option>
-                  </select>
+            <div style="margin-top:12px">
+              <label>Lyrics (human words only — we never write lyrics for you)</label>
+              <textarea id="cLyrics" placeholder="Paste your lyrics here…"></textarea>
+            </div>
+
+            <div style="margin-top:12px">
+              <label>Style</label>
+              <input id="cStyle" type="text" placeholder="e.g. gritty punk spoken-word, old voice, minimal drums" />
+            </div>
+
+            <div class="hr"></div>
+
+            <div class="grid2">
+              <div>
+                <label>Tempo</label>
+                <div class="range">
+                  <input id="cTempo" type="range" min="60" max="180" value="110" oninput="$('#cTempoN').textContent=this.value">
+                  <div class="smallnum" id="cTempoN">110</div>
                 </div>
               </div>
-
-              <div class="split">
-                <div class="field">
-                  <label>Lyrics (your words only)</label>
-                  <textarea id="cLyrics" placeholder="Paste your lyrics here..."></textarea>
-                  <div class="row">
-                    <button class="btn" id="btnClean">Clean / Format</button>
-                    <button class="btn" id="btnDraft">Save Draft</button>
-                    <button class="btn danger" id="btnClear">Clear</button>
-                  </div>
-                  <div class="hint">
-                    Clean = spacing/punctuation only. We don’t rewrite your meaning.
-                  </div>
-                </div>
-
-                <div class="field">
-                  <label>Advanced</label>
-                  <div class="card" style="box-shadow:none;background:rgba(15,22,33,.35)">
-                    <div class="card-b">
-                      <div class="row">
-                        <div class="field">
-                          <label>Seed</label>
-                          <input id="cSeed" type="text" placeholder="leave blank for random" />
-                        </div>
-                        <div class="field">
-                          <label>Voice (demo)</label>
-                          <select id="cVoice">
-                            <option value="spoken" selected>Spoken / Shout (demo)</option>
-                            <option value="robot">Robot (demo)</option>
-                            <option value="none">No vocal (instrumental)</option>
-                          </select>
-                        </div>
-                      </div>
-
-                      <div class="row">
-                        <button class="btn primary" id="btnGenerate">Generate Song</button>
-                        <button class="btn" id="btnStop">Stop</button>
-                        <button class="btn good" id="btnSave">Save to Library</button>
-                      </div>
-
-                      <div class="hint" style="margin-top:10px">
-                        This demo generates a synth track + optional “spoken” rhythm voice. Real AI vocals later = backend.
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="card" style="margin-top:10px;box-shadow:none;background:rgba(15,22,33,.35)">
-                    <div class="card-b">
-                      <div class="row">
-                        <button class="btn" id="btnExportLyrics">Export Lyrics PDF</button>
-                        <button class="btn" id="btnExportMeta">Export Song Card PDF</button>
-                      </div>
-                      <div class="hint" style="margin-top:8px">
-                        PDF works if jsPDF CDN loads. If not, we’ll still let you copy text.
-                      </div>
-                      <div class="row" style="margin-top:10px">
-                        <button class="btn" id="btnCopyLyrics">Copy Lyrics</button>
-                        <button class="btn" id="btnCopyPrompt">Copy “Style Prompt”</button>
-                      </div>
-                    </div>
-                  </div>
-
+              <div>
+                <label>Length (seconds)</label>
+                <div class="range">
+                  <input id="cLen" type="range" min="12" max="90" value="32" oninput="$('#cLenN').textContent=this.value">
+                  <div class="smallnum" id="cLenN">32</div>
                 </div>
               </div>
+            </div>
 
-              <div class="player hidden" id="player">
-                <div class="player-top">
-                  <div class="player-title">
-                    <b id="pTitle">Untitled</b>
-                    <span id="pMeta">—</span>
-                  </div>
-                  <div class="player-controls">
-                    <button class="btn primary" id="pPlay">Play</button>
-                    <button class="btn" id="pPause">Pause</button>
-                    <button class="btn" id="pRestart">Restart</button>
-                    <button class="btn" id="pPublish">Publish</button>
-                  </div>
-                </div>
-                <div class="bar"><i id="pBar"></i></div>
-                <div class="player-meta">
-                  <span id="pTime">0:00</span>
-                  <span id="pNote" class="mono">WEBAUDIO</span>
+            <div style="margin-top:12px" class="grid2">
+              <div>
+                <label>Energy</label>
+                <div class="range">
+                  <input id="cEnergy" type="range" min="0" max="100" value="55" oninput="$('#cEnergyN').textContent=this.value">
+                  <div class="smallnum" id="cEnergyN">55</div>
                 </div>
               </div>
+              <div>
+                <label>Emotion</label>
+                <div class="range">
+                  <input id="cEmotion" type="range" min="0" max="100" value="55" oninput="$('#cEmotionN').textContent=this.value">
+                  <div class="smallnum" id="cEmotionN">55</div>
+                </div>
+              </div>
+            </div>
 
+            <div style="margin-top:12px" class="grid2">
+              <div>
+                <label>Texture</label>
+                <div class="range">
+                  <input id="cTexture" type="range" min="0" max="100" value="55" oninput="$('#cTextureN').textContent=this.value">
+                  <div class="smallnum" id="cTextureN">55</div>
+                </div>
+              </div>
+              <div>
+                <label>Voice (synth flavor)</label>
+                <select id="cVoice" class="pill" style="width:100%;padding:11px;border-radius:14px">
+                  <option value="dark">Dark</option>
+                  <option value="bright">Bright</option>
+                  <option value="grit">Grit</option>
+                  <option value="robot">Robot</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="hr"></div>
+
+            <div class="grid2">
+              <button class="btn" id="genBtn" onclick="generateSong()">Generate Song</button>
+              <button class="btn ghost" onclick="resetCreate()">Reset</button>
+            </div>
+
+            <div class="note" style="margin-top:10px">
+              **This generates a real playable synth track.**
+              Later, we can swap the generator to your backend without changing this layout.
             </div>
           </div>
 
           <div class="card">
-            <div class="card-h">
-              <h2>Preview</h2>
-              <span class="badge">What you’ll save</span>
-            </div>
-            <div class="card-b" id="previewBox">
-              <div class="hint">Generate a song to preview.</div>
-            </div>
-          </div>
-        </div>
-      </section>
+            <h3>Preview / Queue (your sketch: right)</h3>
+            <div class="note" id="previewEmpty">Generate a song to preview it here.</div>
 
-      <!-- LIBRARY -->
-      <section id="view-library" class="view hidden">
-        <div class="card">
-          <div class="card-h">
-            <h2>Your library</h2>
-            <span class="badge" id="libCount">0 items</span>
-          </div>
-          <div class="card-b" id="libraryList">
-            <div class="hint">No saved songs yet. Create one.</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- FEED -->
-      <section id="view-feed" class="view hidden">
-        <div class="card">
-          <div class="card-h">
-            <h2>Public feed (demo)</h2>
-            <span class="badge">Local-only for now</span>
-          </div>
-          <div class="card-b" id="feedList">
-            <div class="hint">Nothing published yet.</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ABOUT -->
-      <section id="view-about" class="view hidden">
-        <div class="card">
-          <div class="card-h">
-            <h2>About</h2>
-            <span class="badge">Rights-first</span>
-          </div>
-          <div class="card-b">
-            <p style="margin:0;color:var(--muted);line-height:1.55">
-              SingMyLyrics is built around one rule: <b style="color:var(--text)">your lyrics stay yours</b>.
-              This demo doesn’t generate lyrics. It formats your text and generates a playable music bed.
-            </p>
-            <div class="safety" style="margin-top:12px">
-              <b>Mission</b>
-              <div class="tiny">Making rock stars, one human at a time.</div>
-              <div class="tiny" style="margin-top:6px">Human words. Finally heard.</div>
+            <div id="previewBox" style="display:none;">
+              <div class="song-title" id="pvTitle"></div>
+              <div class="song-meta" id="pvMeta"></div>
+              <div class="hr"></div>
+              <div class="grid2">
+                <button class="btn ghost" onclick="playPreview()">Play</button>
+                <button class="btn ghost" onclick="savePreview()">Save to Library</button>
+              </div>
+              <div class="hr"></div>
+              <div class="note" style="white-space:pre-wrap" id="pvLyrics"></div>
             </div>
           </div>
         </div>
-      </section>
-    </main>
+      </div>
+
+      <!-- SEARCH -->
+      <div id="view-search" class="view">
+        <div class="card">
+          <h3>Search</h3>
+          <div class="note">
+            Use the search box on the top bar. Results will appear here.
+          </div>
+          <div class="hr"></div>
+          <div id="searchResults"></div>
+        </div>
+      </div>
+
+      <!-- TRASH -->
+      <div id="view-trash" class="view">
+        <div class="card">
+          <h3>Trash (auto-delete after 30 days)</h3>
+          <div class="note">
+            Items in Trash show a countdown. You can restore them any time before expiration.
+          </div>
+          <div class="hr"></div>
+          <div id="trashList"></div>
+          <div class="note" id="trashEmpty" style="display:none;">Trash is empty.</div>
+        </div>
+      </div>
+
+    </div>
   </div>
 
+  <!-- NOW PLAYING BAR -->
+  <div class="player">
+    <div class="transport">
+      <button class="iconbtn tiny" title="Previous" onclick="prevTrack()">⏮</button>
+      <button class="iconbtn tiny" id="playBtn" title="Play/Pause" onclick="togglePlay()">▶</button>
+      <button class="iconbtn tiny" title="Next" onclick="nextTrack()">⏭</button>
+    </div>
+
+    <div class="track">
+      <div class="t1" id="npTitle">Nothing playing</div>
+      <div class="t2" id="npSub">Generate or select a song</div>
+    </div>
+
+    <div class="progress">
+      <div class="time" id="tCur">0:00</div>
+      <input id="seek" type="range" min="0" max="1000" value="0" oninput="seekTo(this.value)">
+      <div class="time" id="tDur">0:00</div>
+    </div>
+
+    <button class="iconbtn tiny" title="Like" onclick="toggleLikeSelected()">👍</button>
+    <button class="iconbtn tiny" title="Dislike" onclick="toggleDislikeSelected()">👎</button>
+    <button class="iconbtn tiny" title="Menu" onclick="openMenuForSelected()">⋯</button>
+  </div>
+
+</div>
+
+<!-- ⋯ MENU -->
+<div id="backdrop" class="backdrop" onclick="closeMenu(event)">
+  <div class="menu" onclick="event.stopPropagation()">
+    <div class="head">
+      <div class="title" id="mTitle">Song</div>
+      <div class="sub" id="mSub">Options</div>
+    </div>
+
+    <div class="body">
+      <div class="row">
+        <select id="mVis" class="pill" onchange="setVisibilityFromMenu()">
+          <option value="private">Private</option>
+          <option value="public">Public</option>
+        </select>
+        <button class="btn ghost" style="padding:10px 12px" onclick="publishSelected()">Publish</button>
+      </div>
+
+      <button onclick="reuseSelected()">Reuse settings (Create page)</button>
+      <button onclick="copyShareLink()">Copy share info</button>
+
+      <button onclick="reportSelected()">Report</button>
+      <button onclick="permissionsSelected()">Visibility & Permissions</button>
+
+      <button onclick="moveToTrashSelected()">Move to Trash</button>
+      <button class="danger" onclick="deleteForeverSelected()">Delete forever</button>
+    </div>
+
+    <div class="footer-note">
+      This is a working front-end app. “Publish” is simulated (stored locally) until you connect a backend.
+    </div>
+  </div>
+</div>
+
 <script>
-/* =========================
-   SingMyLyrics — One-file demo
-   Works on GitHub Pages (static).
-   Generates real playable audio using WebAudio (no backend).
-   Saves to localStorage.
-========================= */
+/* ---------- helpers ---------- */
+const $ = (q)=>document.querySelector(q);
+const $$ = (q)=>document.querySelectorAll(q);
+const uid = ()=>Math.random().toString(16).slice(2)+Date.now().toString(16);
 
-/*** Optional future backend hook (not used in this demo)
-const BACKEND_BASE_URL = ""; // later: https://your-railway-app.up.railway.app
-*/
-
-const $ = (id)=>document.getElementById(id);
-const state = {
-  route: 'home',
-  creations: [],
-  feed: [],
-  draft: { title:'', style:'punk', bpm:'130', len:'45', vis:'private', lyrics:'', seed:'', voice:'spoken' },
-  now: null,
-  audio: null,
-  playing: false,
-  startTime: 0,
-  timer: null,
-  duration: 0,
-  lastProgress: 0,
-  sort: 'new'
-};
-
-const STORAGE_KEY = "sml_demo_v1";
-
-/* ---------- Utilities ---------- */
-function toast(title, msg){
-  $("toastTitle").textContent = title;
-  $("toastMsg").textContent = msg;
-  const t = $("toast");
-  t.classList.add("show");
-  setTimeout(()=>t.classList.remove("show"), 2200);
-}
-function go(hash){ location.hash = hash; }
-function clamp(n,a,b){ return Math.max(a, Math.min(b,n)); }
-function pad2(n){ return String(n).padStart(2,'0'); }
 function fmtTime(sec){
-  sec = Math.max(0, sec|0);
-  const m = (sec/60)|0;
-  const s = sec % 60;
-  return `${m}:${pad2(s)}`;
+  sec = Math.max(0, Math.floor(sec||0));
+  const m = Math.floor(sec/60);
+  const s = sec%60;
+  return `${m}:${String(s).padStart(2,'0')}`;
 }
-function uid(){
-  return Math.random().toString(16).slice(2) + "-" + Date.now().toString(16);
-}
-function safeText(s){ return (s||"").toString().replace(/[<>]/g,''); }
 function nowISO(){ return new Date().toISOString(); }
-function year(){ $("year").textContent = new Date().getFullYear(); }
+function daysBetween(aISO, bISO){
+  const a = new Date(aISO).getTime();
+  const b = new Date(bISO).getTime();
+  return Math.floor((b-a)/(1000*60*60*24));
+}
 
-/* ---------- Load/Save ---------- */
-function load(){
+/* ---------- storage ---------- */
+const KEY = "SML_DB_v1";
+function loadDB(){
   try{
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if(!raw) return;
-    const data = JSON.parse(raw);
-    state.creations = Array.isArray(data.creations) ? data.creations : [];
-    state.feed = Array.isArray(data.feed) ? data.feed : [];
-    state.draft = data.draft || state.draft;
-    state.sort = data.sort || 'new';
-  }catch(e){}
-}
-function save(){
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({
-    creations: state.creations,
-    feed: state.feed,
-    draft: state.draft,
-    sort: state.sort
-  }));
-}
-
-/* ---------- Router ---------- */
-function setTitle(t, sub){
-  $("pageTitle").textContent = t;
-  $("pageSub").textContent = sub || "";
-}
-function showView(route){
-  const views = ["home","create","library","feed","about"];
-  for(const v of views){
-    $("view-"+v).classList.toggle("hidden", v!==route);
+    const raw = localStorage.getItem(KEY);
+    if(!raw) return { songs:[], trash:[] };
+    const db = JSON.parse(raw);
+    db.songs ||= [];
+    db.trash ||= [];
+    return db;
+  }catch{
+    return { songs:[], trash:[] };
   }
-  for(const a of document.querySelectorAll("#nav a")){
-    a.classList.toggle("active", a.dataset.route === route);
-  }
-
-  if(route==="home"){ setTitle("Home","Start creating with your own words."); renderHome(); }
-  if(route==="create"){ setTitle("Create","Turn your lyrics into a playable demo track."); renderCreate(); }
-  if(route==="library"){ setTitle("Library","Your saved creations."); renderLibrary(); }
-  if(route==="feed"){ setTitle("Public Feed","What you published (local demo)."); renderFeed(); }
-  if(route==="about"){ setTitle("About","Rights-first, human words."); }
 }
-function onRoute(){
-  const hash = (location.hash||"#/home");
-  const route = hash.replace("#/","").split("?")[0] || "home";
-  state.route = route;
-  showView(route);
-}
-window.addEventListener("hashchange", onRoute);
+function saveDB(db){ localStorage.setItem(KEY, JSON.stringify(db)); }
+let DB = loadDB();
 
-/* ---------- Sidebar toggle ---------- */
-$("toggleSide").addEventListener("click", ()=>{
-  const sb = $("sidebar");
-  sb.classList.toggle("collapsed");
-  const collapsed = sb.classList.contains("collapsed");
-  // hide text labels
-  for(const el of document.querySelectorAll(".navtxt")){
-    el.style.display = collapsed ? "none" : "";
-  }
-});
+/* ---------- app state ---------- */
+let currentView = "home";
+let selectedId = null;
 
-/* ---------- Top search ---------- */
-$("search").addEventListener("input", ()=>{
-  if(state.route==="library") renderLibrary();
-  if(state.route==="home") renderHome();
-  if(state.route==="feed") renderFeed();
-});
+let preview = null; // generated but not saved
 
-/* ---------- Backup/Reset ---------- */
-$("btnBackup").addEventListener("click", ()=>{
-  const blob = new Blob([JSON.stringify({
-    exported_at: nowISO(),
-    data: { creations: state.creations, feed: state.feed, draft: state.draft }
-  }, null, 2)], {type:"application/json"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "SingMyLyrics-demo-export.json";
-  a.click();
-  URL.revokeObjectURL(url);
-  toast("Exported", "Downloaded your local demo data.");
-});
-$("btnWipe").addEventListener("click", ()=>{
-  if(!confirm("Reset demo data? This clears your saved creations + feed (local only).")) return;
-  state.creations = [];
-  state.feed = [];
-  state.draft = { title:'', style:'punk', bpm:'130', len:'45', vis:'private', lyrics:'', seed:'', voice:'spoken' };
-  save();
-  stopAudio();
-  toast("Reset", "Local demo data cleared.");
-  renderAll();
-});
+/* ---------- routing ---------- */
+function go(view){
+  currentView = view;
 
-/* ---------- Create controls ---------- */
-function draftToUI(){
-  $("cTitle").value = state.draft.title || "";
-  $("cStyle").value = state.draft.style || "punk";
-  $("cBpm").value = state.draft.bpm || "130";
-  $("cLen").value = state.draft.len || "45";
-  $("cVis").value = state.draft.vis || "private";
-  $("cLyrics").value = state.draft.lyrics || "";
-  $("cSeed").value = state.draft.seed || "";
-  $("cVoice").value = state.draft.voice || "spoken";
-}
-function uiToDraft(){
-  state.draft.title = $("cTitle").value.trim();
-  state.draft.style = $("cStyle").value;
-  state.draft.bpm = $("cBpm").value;
-  state.draft.len = $("cLen").value;
-  state.draft.vis = $("cVis").value;
-  state.draft.lyrics = $("cLyrics").value;
-  state.draft.seed = $("cSeed").value.trim();
-  state.draft.voice = $("cVoice").value;
-  save();
+  $$(".view").forEach(v=>v.classList.remove("active"));
+  $("#view-"+view).classList.add("active");
+
+  $$(".sidebar button").forEach(b=>b.classList.remove("active"));
+  $("#nav-"+view).classList.add("active");
+
+  const titles = {
+    home:["Home","Library · Your creations"],
+    create:["Create","Make something. Keep ownership."],
+    search:["Search","Find your creations"],
+    trash:["Trash","Restore or delete"]
+  };
+  $("#pageTitle").textContent = titles[view][0];
+  $("#pageSub").textContent = titles[view][1];
+
+  refreshAll();
 }
 
-$("btnDraft").addEventListener("click", ()=>{
-  uiToDraft();
-  toast("Draft saved", "Your inputs are saved locally.");
-});
-$("btnClear").addEventListener("click", ()=>{
-  $("cLyrics").value = "";
-  uiToDraft();
-});
-$("btnClean").addEventListener("click", ()=>{
-  const raw = $("cLyrics").value || "";
-  const cleaned = cleanLyrics(raw);
-  $("cLyrics").value = cleaned;
-  uiToDraft();
-  toast("Cleaned", "Spacing + punctuation cleaned (no rewrites).");
-});
-
-function cleanLyrics(t){
-  let s = (t||"").replace(/\r/g,"");
-  // normalize spaces
-  s = s.replace(/[ \t]+/g," ").replace(/ *\n */g,"\n");
-  // fix punctuation spacing
-  s = s.replace(/ \,/g,",").replace(/ \./g,".").replace(/ \!/g,"!").replace(/ \?/g,"?");
-  // ensure ending punctuation on lines that look like sentences (light touch)
-  const lines = s.split("\n").map(line=>{
-    const L = line.trim();
-    if(!L) return "";
-    if(/[.!?…]$/.test(L)) return L;
-    // don’t force punctuation on section headers like [CHORUS]
-    if(/^\[.*\]$/.test(L)) return L;
-    return L;
+/* ---------- rendering ---------- */
+function getFilteredSongs(list){
+  const q = ($("#quickSearch").value||"").trim().toLowerCase();
+  let out = list.filter(s=>{
+    if(!q) return true;
+    return (s.title||"").toLowerCase().includes(q)
+      || (s.style||"").toLowerCase().includes(q)
+      || (s.lyrics||"").toLowerCase().includes(q);
   });
-  return lines.join("\n").trim();
+
+  const sort = $("#sortSel").value;
+  out.sort((a,b)=>{
+    const aa = new Date(a.createdAt).getTime();
+    const bb = new Date(b.createdAt).getTime();
+    return sort==="newest" ? (bb-aa) : (aa-bb);
+  });
+  return out;
 }
 
-/* ---------- “Make it reality” audio engine ---------- */
-function seededRand(seedStr){
-  // simple deterministic PRNG from string
-  let h = 2166136261 >>> 0;
-  for(let i=0;i<seedStr.length;i++){
-    h ^= seedStr.charCodeAt(i);
+function songBadges(s){
+  const vis = s.visibility || "private";
+  const pub = s.published ? "Published" : "Unpublished";
+  const b1 = `<span class="badge ${vis}">${vis.toUpperCase()}</span>`;
+  const b2 = `<span class="badge">${pub}</span>`;
+  const b3 = s.liked ? `<span class="badge">Liked</span>` : (s.disliked? `<span class="badge">Disliked</span>`:"");
+  return `${b1}${b2}${b3}`;
+}
+
+function renderLibrary(){
+  const list = getFilteredSongs(DB.songs);
+  const box = $("#libraryList");
+  box.innerHTML = "";
+
+  $("#libraryEmpty").style.display = list.length ? "none":"block";
+
+  list.forEach(s=>{
+    const row = document.createElement("div");
+    row.className = "song-row";
+    row.onclick = ()=>selectSong(s.id);
+
+    row.innerHTML = `
+      <div class="song-left">
+        <div class="song-title">${escapeHTML(s.title||"Untitled")}</div>
+        <div class="song-meta">
+          ${songBadges(s)}
+          <span class="badge">${escapeHTML(s.style||"No style")}</span>
+          <span class="badge">${fmtTime(s.lengthSec||0)}</span>
+        </div>
+      </div>
+      <div class="song-actions">
+        <button class="iconbtn tiny" title="Play" onclick="event.stopPropagation(); playSongById('${s.id}')">▶</button>
+        <button class="iconbtn tiny like ${s.liked?'active':''}" title="Like" onclick="event.stopPropagation(); toggleLike('${s.id}')">👍</button>
+        <button class="iconbtn tiny dislike ${s.disliked?'active':''}" title="Dislike" onclick="event.stopPropagation(); toggleDislike('${s.id}')">👎</button>
+        <button class="iconbtn tiny" title="Menu" onclick="event.stopPropagation(); openMenu('${s.id}')">⋯</button>
+      </div>
+    `;
+    box.appendChild(row);
+  });
+
+  // if selectedId disappeared, clear right
+  if(selectedId && !DB.songs.some(x=>x.id===selectedId)){
+    selectedId = null;
+    renderRightPanel();
+  }
+}
+
+function renderRightPanel(){
+  const s = DB.songs.find(x=>x.id===selectedId);
+  if(!s){
+    $("#rightEmpty").style.display = "block";
+    $("#rightDetails").style.display = "none";
+    return;
+  }
+
+  $("#rightEmpty").style.display = "none";
+  $("#rightDetails").style.display = "block";
+
+  $("#rdTitle").textContent = s.title || "Untitled";
+  $("#rdMeta").innerHTML = songBadges(s) + ` <span class="badge">${escapeHTML(s.style||"No style")}</span>`;
+  $("#rdStatus").textContent = `${(s.visibility||"private").toUpperCase()} · ${s.published?"PUBLISHED":"NOT PUBLISHED"}`;
+  $("#rdCreated").textContent = new Date(s.createdAt).toLocaleString();
+  $("#rdLen").textContent = fmtTime(s.lengthSec||0);
+  $("#rdLyrics").textContent = (s.lyrics||"").slice(0,650) + ((s.lyrics||"").length>650?"…":"");
+}
+
+function renderSearch(){
+  const list = getFilteredSongs(DB.songs);
+  const box = $("#searchResults");
+  box.innerHTML = "";
+  if(!($("#quickSearch").value||"").trim()){
+    box.innerHTML = `<div class="note">Type in the search box above.</div>`;
+    return;
+  }
+  if(!list.length){
+    box.innerHTML = `<div class="note">No results.</div>`;
+    return;
+  }
+  list.forEach(s=>{
+    const row = document.createElement("div");
+    row.className = "song-row";
+    row.innerHTML = `
+      <div class="song-left">
+        <div class="song-title">${escapeHTML(s.title||"Untitled")}</div>
+        <div class="song-meta">${songBadges(s)} <span class="badge">${escapeHTML(s.style||"No style")}</span></div>
+      </div>
+      <div class="song-actions">
+        <button class="iconbtn tiny" onclick="selectSong('${s.id}'); go('home')">Open</button>
+      </div>
+    `;
+    box.appendChild(row);
+  });
+}
+
+function renderTrash(){
+  // auto-expire trash > 30 days
+  const now = nowISO();
+  DB.trash = DB.trash.filter(t=>{
+    const days = daysBetween(t.trashedAt, now);
+    return days < 30;
+  });
+  saveDB(DB);
+
+  const list = getFilteredSongs(DB.trash);
+  const box = $("#trashList");
+  box.innerHTML = "";
+  $("#trashEmpty").style.display = list.length ? "none":"block";
+
+  list.forEach(t=>{
+    const days = daysBetween(t.trashedAt, now);
+    const left = Math.max(0, 30 - days);
+
+    const row = document.createElement("div");
+    row.className = "song-row";
+    row.innerHTML = `
+      <div class="song-left">
+        <div class="song-title">${escapeHTML(t.title||"Untitled")}</div>
+        <div class="song-meta">
+          <span class="badge">Trash</span>
+          <span class="badge">${left} day(s) left</span>
+          <span class="badge">${fmtTime(t.lengthSec||0)}</span>
+        </div>
+      </div>
+      <div class="song-actions">
+        <button class="iconbtn tiny" onclick="restoreFromTrash('${t.id}')">↩</button>
+        <button class="iconbtn tiny" onclick="deleteTrashForever('${t.id}')">✖</button>
+      </div>
+    `;
+    box.appendChild(row);
+  });
+}
+
+function refreshAll(){
+  renderLibrary();
+  renderRightPanel();
+  renderSearch();
+  renderTrash();
+}
+
+/* ---------- selection ---------- */
+function selectSong(id){
+  selectedId = id;
+  renderRightPanel();
+}
+
+/* ---------- menu ---------- */
+function openMenu(id){
+  selectedId = id;
+  const s = DB.songs.find(x=>x.id===id);
+  if(!s) return;
+
+  $("#mTitle").textContent = s.title || "Untitled";
+  $("#mSub").textContent = `${(s.visibility||"private").toUpperCase()} · ${s.published?"Published":"Unpublished"}`;
+  $("#mVis").value = s.visibility || "private";
+
+  $("#backdrop").classList.add("show");
+}
+function closeMenu(e){
+  $("#backdrop").classList.remove("show");
+}
+function openMenuForSelected(){
+  if(!selectedId){ toast("Select a song first."); return; }
+  openMenu(selectedId);
+}
+function setVisibilityFromMenu(){
+  if(!selectedId) return;
+  const s = DB.songs.find(x=>x.id===selectedId);
+  if(!s) return;
+  s.visibility = $("#mVis").value;
+  saveDB(DB);
+  refreshAll();
+}
+function publishSelected(){
+  if(!selectedId){ toast("Select a song first."); return; }
+  const s = DB.songs.find(x=>x.id===selectedId);
+  if(!s) return;
+  s.published = true;
+  s.publishedAt = nowISO();
+  saveDB(DB);
+  toast("Published (local).");
+  refreshAll();
+}
+function copyShareLink(){
+  if(!selectedId){ toast("Select a song first."); return; }
+  const s = DB.songs.find(x=>x.id===selectedId);
+  if(!s) return;
+  const txt = `SML Song: ${s.title||"Untitled"} · ${s.visibility||"private"} · ${s.published?"published":"not published"} · id:${s.id}`;
+  navigator.clipboard?.writeText(txt);
+  toast("Copied share info.");
+}
+function reportSelected(){ toast("Report recorded (local stub)."); }
+function permissionsSelected(){ toast("Permissions dialog (stub)."); }
+
+/* ---------- trash actions ---------- */
+function moveToTrashSelected(){
+  if(!selectedId){ toast("Select a song first."); return; }
+  const idx = DB.songs.findIndex(x=>x.id===selectedId);
+  if(idx<0) return;
+  const s = DB.songs[idx];
+  DB.songs.splice(idx,1);
+  s.trashedAt = nowISO();
+  DB.trash.unshift(s);
+  saveDB(DB);
+  selectedId = null;
+  closeMenu();
+  toast("Moved to Trash.");
+  refreshAll();
+}
+function deleteForeverSelected(){
+  if(!selectedId){ toast("Select a song first."); return; }
+  // delete from songs
+  DB.songs = DB.songs.filter(x=>x.id!==selectedId);
+  // delete from trash
+  DB.trash = DB.trash.filter(x=>x.id!==selectedId);
+  saveDB(DB);
+  selectedId = null;
+  closeMenu();
+  toast("Deleted forever.");
+  refreshAll();
+}
+function restoreFromTrash(id){
+  const idx = DB.trash.findIndex(x=>x.id===id);
+  if(idx<0) return;
+  const s = DB.trash[idx];
+  DB.trash.splice(idx,1);
+  delete s.trashedAt;
+  DB.songs.unshift(s);
+  saveDB(DB);
+  toast("Restored.");
+  refreshAll();
+}
+function deleteTrashForever(id){
+  DB.trash = DB.trash.filter(x=>x.id!==id);
+  saveDB(DB);
+  toast("Deleted forever.");
+  refreshAll();
+}
+
+/* ---------- like/dislike ---------- */
+function toggleLike(id){
+  const s = DB.songs.find(x=>x.id===id);
+  if(!s) return;
+  s.liked = !s.liked;
+  if(s.liked) s.disliked = false;
+  saveDB(DB);
+  refreshAll();
+}
+function toggleDislike(id){
+  const s = DB.songs.find(x=>x.id===id);
+  if(!s) return;
+  s.disliked = !s.disliked;
+  if(s.disliked) s.liked = false;
+  saveDB(DB);
+  refreshAll();
+}
+function toggleLikeSelected(){
+  if(!selectedId){ toast("Select a song first."); return; }
+  toggleLike(selectedId);
+}
+function toggleDislikeSelected(){
+  if(!selectedId){ toast("Select a song first."); return; }
+  toggleDislike(selectedId);
+}
+
+/* ---------- reuse settings ---------- */
+function reuseSelected(){
+  if(!selectedId){ toast("Select a song first."); return; }
+  const s = DB.songs.find(x=>x.id===selectedId);
+  if(!s) return;
+  go("create");
+  $("#cTitle").value = s.title || "";
+  $("#cVis").value = s.visibility || "private";
+  $("#cLyrics").value = s.lyrics || "";
+  $("#cStyle").value = s.style || "";
+  $("#cTempo").value = s.settings?.tempo ?? 110; $("#cTempoN").textContent = $("#cTempo").value;
+  $("#cLen").value = s.lengthSec ?? 32; $("#cLenN").textContent = $("#cLen").value;
+  $("#cEnergy").value = s.settings?.energy ?? 55; $("#cEnergyN").textContent = $("#cEnergy").value;
+  $("#cEmotion").value = s.settings?.emotion ?? 55; $("#cEmotionN").textContent = $("#cEmotion").value;
+  $("#cTexture").value = s.settings?.texture ?? 55; $("#cTextureN").textContent = $("#cTexture").value;
+  $("#cVoice").value = s.settings?.voice ?? "dark";
+  closeMenu();
+  toast("Settings loaded into Create.");
+}
+
+/* ---------- create page ---------- */
+function resetCreate(){
+  $("#cTitle").value = "";
+  $("#cVis").value = "private";
+  $("#cLyrics").value = "";
+  $("#cStyle").value = "";
+  $("#cTempo").value = 110; $("#cTempoN").textContent = 110;
+  $("#cLen").value = 32; $("#cLenN").textContent = 32;
+  $("#cEnergy").value = 55; $("#cEnergyN").textContent = 55;
+  $("#cEmotion").value = 55; $("#cEmotionN").textContent = 55;
+  $("#cTexture").value = 55; $("#cTextureN").textContent = 55;
+  $("#cVoice").value = "dark";
+  preview = null;
+  $("#previewEmpty").style.display = "block";
+  $("#previewBox").style.display = "none";
+  stopPlayback();
+}
+
+/* ---------- AUDIO: fully working synth generation ---------- */
+/*
+This generates a real track using WebAudio.
+It’s not “AI singing”, but it IS an actual playable song-like output.
+Later, replace generateBuffer() with backend audio fetch without changing UI.
+*/
+let AC = null;
+let sourceNode = null;
+let startAt = 0;
+let pausedAt = 0;
+let playing = false;
+let activeSong = null; // {id, title, ...} or preview
+
+function ensureAudio(){
+  if(!AC) AC = new (window.AudioContext || window.webkitAudioContext)();
+}
+function stopPlayback(){
+  if(sourceNode){
+    try{ sourceNode.stop(); }catch{}
+    sourceNode.disconnect();
+    sourceNode = null;
+  }
+  playing = false;
+  pausedAt = 0;
+  startAt = 0;
+  $("#playBtn").textContent = "▶";
+  $("#seek").value = 0;
+  $("#tCur").textContent = "0:00";
+}
+function togglePlay(){
+  if(!activeSong){ toast("Select or generate a song first."); return; }
+  if(!activeSong.buffer){ toast("This song has no audio buffer (generate again)."); return; }
+
+  ensureAudio();
+
+  if(!playing){
+    // resume
+    playBuffer(activeSong.buffer, pausedAt);
+  }else{
+    // pause
+    pausedAt = AC.currentTime - startAt;
+    if(sourceNode){
+      try{ sourceNode.stop(); }catch{}
+      sourceNode = null;
+    }
+    playing = false;
+    $("#playBtn").textContent = "▶";
+  }
+}
+function playBuffer(buffer, offsetSec){
+  ensureAudio();
+  if(sourceNode){
+    try{ sourceNode.stop(); }catch{}
+    sourceNode = null;
+  }
+
+  const src = AC.createBufferSource();
+  src.buffer = buffer;
+
+  // mild master chain
+  const gain = AC.createGain();
+  gain.gain.value = 0.85;
+
+  const filter = AC.createBiquadFilter();
+  filter.type = "lowpass";
+  filter.frequency.value = 11000;
+
+  src.connect(filter);
+  filter.connect(gain);
+  gain.connect(AC.destination);
+
+  src.onended = ()=>{
+    if(playing){
+      playing = false;
+      pausedAt = 0;
+      $("#playBtn").textContent = "▶";
+      $("#seek").value = 0;
+      $("#tCur").textContent = "0:00";
+    }
+  };
+
+  startAt = AC.currentTime - (offsetSec||0);
+  playing = true;
+  $("#playBtn").textContent = "⏸";
+  src.start(0, offsetSec||0);
+  sourceNode = src;
+}
+
+function seekTo(v){
+  if(!activeSong?.buffer) return;
+  const dur = activeSong.buffer.duration;
+  const pct = Number(v)/1000;
+  const t = dur*pct;
+  $("#tCur").textContent = fmtTime(t);
+  if(playing){
+    pausedAt = t;
+    playBuffer(activeSong.buffer, pausedAt);
+  }else{
+    pausedAt = t;
+  }
+}
+
+function updatePlayerUI(){
+  if(!activeSong){
+    $("#npTitle").textContent = "Nothing playing";
+    $("#npSub").textContent = "Generate or select a song";
+    $("#tDur").textContent = "0:00";
+    return;
+  }
+  $("#npTitle").textContent = activeSong.title || "Untitled";
+  $("#npSub").textContent = (activeSong.visibility||"private").toUpperCase() + " · " + (activeSong.style||"No style");
+  const dur = activeSong.buffer ? activeSong.buffer.duration : (activeSong.lengthSec||0);
+  $("#tDur").textContent = fmtTime(dur);
+}
+
+setInterval(()=>{
+  if(!activeSong?.buffer) return;
+  const dur = activeSong.buffer.duration || 0;
+  let t = playing ? (AC.currentTime - startAt) : pausedAt;
+  t = Math.min(Math.max(t,0), dur);
+  $("#tCur").textContent = fmtTime(t);
+  $("#seek").value = dur ? Math.floor((t/dur)*1000) : 0;
+}, 120);
+
+/* ---------- generation algorithm ---------- */
+function hashToFloat(str){
+  let h=2166136261;
+  for(let i=0;i<str.length;i++){
+    h ^= str.charCodeAt(i);
     h = Math.imul(h, 16777619);
   }
-  return function(){
-    h += 0x6D2B79F5;
-    let t = Math.imul(h ^ (h >>> 15), 1 | h);
-    t ^= t + Math.imul(t ^ (t >>> 7), 61 | t);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
+  return (h>>>0)/4294967295;
 }
 
-function styleProfile(style){
-  // returns synth/mix choices
-  const base = {
-    swing: 0.0,
-    drive: 0.6,
-    kick: 70,
-    snare: 180,
-    hat: 9000,
-    bass: 55,
-    lead: 220,
-    reverb: 0.15
-  };
-  if(style==="punk") return {...base, drive:0.95, kick:85, snare:210, hat:10500, bass:65, lead:330, reverb:0.08};
-  if(style==="industrial") return {...base, drive:0.85, kick:60, snare:170, hat:7000, bass:45, lead:160, reverb:0.10};
-  if(style==="ska") return {...base, swing:0.12, drive:0.55, kick:75, snare:190, hat:9000, bass:75, lead:440, reverb:0.12};
-  if(style==="pop") return {...base, swing:0.02, drive:0.45, kick:80, snare:200, hat:11000, bass:65, lead:330, reverb:0.20};
-  if(style==="hiphop") return {...base, swing:0.08, drive:0.50, kick:55, snare:160, hat:8000, bass:40, lead:220, reverb:0.10};
-  if(style==="ambient") return {...base, swing:0.00, drive:0.22, kick:0, snare:0, hat:0, bass:55, lead:120, reverb:0.45};
-  return base;
-}
+function generateBuffer(opts){
+  ensureAudio();
+  const sr = AC.sampleRate;
+  const lenSec = opts.lengthSec;
+  const frames = Math.floor(sr*lenSec);
+  const buf = AC.createBuffer(1, frames, sr);
+  const ch = buf.getChannelData(0);
 
-function makeAudioSong({title, style, bpm, seconds, seed, voice, lyrics}){
-  const ctx = new (window.AudioContext || window.webkitAudioContext)();
-  const profile = styleProfile(style);
-  const rand = seededRand(seed || (title+style+bpm+seconds+lyrics).slice(0,120));
+  // derive deterministic seed from lyrics + style
+  const seed = hashToFloat((opts.lyrics||"") + "||" + (opts.style||"") + "||" + (opts.title||""));
+  const rnd = (n)=> (Math.sin((n+1)*9999.123*(seed+0.1))*0.5+0.5); // deterministic pseudo-random
 
-  const master = ctx.createGain();
-  master.gain.value = 0.85;
-  master.connect(ctx.destination);
+  // mapping sliders
+  const tempo = opts.tempo;              // 60..180
+  const energy = opts.energy/100;        // 0..1
+  const emotion = opts.emotion/100;      // 0..1
+  const texture = opts.texture/100;      // 0..1
+  const voice = opts.voice;
 
-  // Soft limiter-ish
-  const comp = ctx.createDynamicsCompressor();
-  comp.threshold.value = -16;
-  comp.knee.value = 18;
-  comp.ratio.value = 4;
-  comp.attack.value = 0.005;
-  comp.release.value = 0.12;
-  comp.connect(master);
+  // beat grid
+  const bps = tempo/60;
+  const step = 1/4; // 16th notes
+  const stepSec = (1/bps)*step;
 
-  const musicBus = ctx.createGain();
-  musicBus.gain.value = 0.9;
-  musicBus.connect(comp);
+  // scale + base freq
+  const base = 110 + Math.floor(seed*90); // 110..200
+  const scale = [0,3,5,7,10,12]; // minor-ish
+  const note = (k)=> base * Math.pow(2, (scale[k%scale.length])/12);
 
-  // Simple reverb via delay feedback (cheap)
-  const delay = ctx.createDelay(1.0);
-  delay.delayTime.value = 0.16;
-  const fb = ctx.createGain();
-  fb.gain.value = profile.reverb;
-  delay.connect(fb);
-  fb.connect(delay);
-  const wet = ctx.createGain();
-  wet.gain.value = profile.reverb;
-  delay.connect(wet);
-  wet.connect(comp);
-
-  // Helper to schedule envelopes
-  function env(g, t0, a, d){
-    g.gain.setValueAtTime(0.0001, t0);
-    g.gain.exponentialRampToValueAtTime(a, t0+0.005);
-    g.gain.exponentialRampToValueAtTime(0.0001, t0+d);
+  // envelope helper
+  function env(t, a, d){
+    if(t<0) return 0;
+    if(t<a) return t/a;
+    const tt = t-a;
+    return Math.max(0, 1 - (tt/d));
   }
 
-  const tempo = parseInt(bpm,10) || 130;
-  const beat = 60/tempo;
-  const stepsPerBar = 16;
-  const step = (beat*4)/stepsPerBar;
+  // voice flavor
+  const voiceTilt = (voice==="bright") ? 0.65 : (voice==="grit") ? 0.38 : (voice==="robot") ? 0.52 : 0.45;
 
-  const startAt = ctx.currentTime + 0.08;
-  const endAt = startAt + seconds;
+  // build
+  for(let i=0;i<frames;i++){
+    const t = i/sr;
 
-  // Drum synth
-  function kick(t){
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    o.type = "sine";
-    o.frequency.setValueAtTime(profile.kick, t);
-    o.frequency.exponentialRampToValueAtTime(30, t+0.10);
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(0.9, t+0.005);
-    g.gain.exponentialRampToValueAtTime(0.0001, t+0.16);
-    o.connect(g); g.connect(musicBus);
-    o.start(t); o.stop(t+0.18);
-  }
-  function snare(t){
-    const noise = ctx.createBufferSource();
-    const buffer = ctx.createBuffer(1, ctx.sampleRate*0.2, ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for(let i=0;i<data.length;i++){ data[i] = (rand()*2-1) * (1 - i/data.length); }
-    noise.buffer = buffer;
+    // where we are in step grid
+    const st = Math.floor(t/stepSec);
+    const within = t - st*stepSec;
 
-    const hp = ctx.createBiquadFilter();
-    hp.type="highpass"; hp.frequency.value = 1200;
+    // kick/snare/hat
+    const kickOn = (st%16===0) || (energy>0.55 && st%16===8);
+    const snareOn = (st%16===4) || (st%16===12);
+    const hatOn = (st%2===0);
 
-    const g = ctx.createGain();
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(0.45, t+0.005);
-    g.gain.exponentialRampToValueAtTime(0.0001, t+0.12);
+    let kick=0, snare=0, hat=0;
 
-    noise.connect(hp); hp.connect(g); g.connect(musicBus);
-    noise.start(t); noise.stop(t+0.14);
-
-    const o = ctx.createOscillator();
-    const og = ctx.createGain();
-    o.type="triangle";
-    o.frequency.setValueAtTime(profile.snare, t);
-    og.gain.setValueAtTime(0.0001, t);
-    og.gain.exponentialRampToValueAtTime(0.18, t+0.004);
-    og.gain.exponentialRampToValueAtTime(0.0001, t+0.09);
-    o.connect(og); og.connect(musicBus);
-    o.start(t); o.stop(t+0.10);
-  }
-  function hat(t){
-    const noise = ctx.createBufferSource();
-    const buffer = ctx.createBuffer(1, ctx.sampleRate*0.06, ctx.sampleRate);
-    const data = buffer.getChannelData(0);
-    for(let i=0;i<data.length;i++){ data[i] = (rand()*2-1); }
-    noise.buffer = buffer;
-
-    const bp = ctx.createBiquadFilter();
-    bp.type="bandpass"; bp.frequency.value = profile.hat; bp.Q.value = 8;
-
-    const g = ctx.createGain();
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(0.12, t+0.002);
-    g.gain.exponentialRampToValueAtTime(0.0001, t+0.03);
-
-    noise.connect(bp); bp.connect(g); g.connect(musicBus);
-    noise.start(t); noise.stop(t+0.04);
-  }
-
-  // Bass synth
-  function bassNote(t, freq, dur){
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    o.type="square";
-    o.frequency.setValueAtTime(freq, t);
-    env(g, t, 0.18 + profile.drive*0.08, dur);
-    o.connect(g); g.connect(musicBus);
-    o.start(t); o.stop(t+dur+0.02);
-  }
-
-  // Lead pad
-  function leadNote(t, freq, dur){
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    o.type = (style==="ambient") ? "sine" : "sawtooth";
-    o.frequency.setValueAtTime(freq, t);
-    env(g, t, 0.06 + profile.drive*0.05, dur);
-    o.connect(g);
-    g.connect(delay); // send to reverb-ish
-    g.connect(musicBus);
-    o.start(t); o.stop(t+dur+0.02);
-  }
-
-  // “Voice” demo: rhythmic formant-ish beep that follows syllable density
-  function voiceTick(t, freq, dur, amp){
-    const o = ctx.createOscillator();
-    const f = ctx.createBiquadFilter();
-    const g = ctx.createGain();
-    o.type = (voice==="robot") ? "sawtooth" : "square";
-    f.type = "bandpass";
-    f.frequency.value = freq * (voice==="robot" ? 2.2 : 1.6);
-    f.Q.value = voice==="robot" ? 10 : 6;
-
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(amp, t+0.004);
-    g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
-
-    o.frequency.setValueAtTime(freq, t);
-    o.connect(f); f.connect(g); g.connect(musicBus);
-    o.start(t); o.stop(t+dur+0.02);
-  }
-
-  // Scale and progression
-  const scale = [0,2,3,5,7,10]; // minor-ish
-  const root = (style==="ska") ? 55 : (style==="ambient" ? 48 : 50); // MIDI-ish base
-  const prog = [0,5,3,4].map(x=>x%6);
-
-  function midiToHz(m){ return 440 * Math.pow(2, (m-69)/12); }
-
-  // Pattern density based on lyric length (your words drive it)
-  const lyricLen = (lyrics||"").replace(/\s/g,"").length;
-  const density = clamp(lyricLen/500, 0.25, 1.0);
-
-  // Schedule
-  let t = startAt;
-  let bar = 0;
-  const barsTotal = Math.max(2, Math.floor(seconds / (beat*4)));
-  while(t < endAt - 0.01){
-    const barStart = t;
-    const chord = prog[bar % prog.length];
-    const chordRoot = root + scale[chord];
-    const bassHz = midiToHz(chordRoot - 12);
-
-    // drums
-    if(style!=="ambient"){
-      for(let i=0;i<stepsPerBar;i++){
-        const st = barStart + i*step + ((i%2===1)? profile.swing*step : 0);
-        // hats: more dense with density
-        if(rand() < (0.55 + density*0.35)) hat(st);
-
-        // kick patterns
-        if(i===0 || i===8 || (style==="hiphop" && (i===3||i===11)) || (style==="punk" && (i===4||i===12))){
-          if(rand() < 0.92) kick(st);
-        }
-        // snare on 2/4
-        if(i===4 || i===12){
-          if(rand() < 0.95) snare(st);
-        }
-      }
+    if(kickOn){
+      const f = 60 + 50*energy;
+      kick = Math.sin(2*Math.PI*(f*(within+0.001))* (1-(within*2))) * env(within, 0.01, 0.12);
+      kick *= (0.9+0.5*energy);
     }
 
-    // bass: 4 notes per bar
-    for(let k=0;k<4;k++){
-      const bt = barStart + k*beat;
-      const n = bassHz * (rand()<0.18 ? 2 : 1); // occasional octave
-      bassNote(bt, n, beat*0.6);
+    if(snareOn){
+      const n = (rnd(i)-0.5)*2;
+      snare = n * env(within, 0.002, 0.08);
+      snare *= (0.55+0.5*energy);
     }
 
-    // lead: 2–4 notes
-    const leadCount = (style==="ambient") ? 2 : (rand()<0.55 ? 3 : 2);
-    for(let j=0;j<leadCount;j++){
-      const lt = barStart + (j*(beat*4/leadCount));
-      const deg = scale[(chord + (rand()<0.35 ? 2 : 0) + (rand()<0.25 ? 4 : 0)) % scale.length];
-      const hz = midiToHz(root + deg + (rand()<0.35 ? 12 : 0));
-      leadNote(lt, hz, beat*(style==="ambient" ? 2.2 : 0.85));
+    if(hatOn){
+      const n = (rnd(i*3.1)-0.5)*2;
+      hat = n * env(within, 0.001, 0.03);
+      hat *= (0.15 + 0.25*texture);
     }
 
-    // “voice” ticks (demo)
-    if(voice !== "none" && style!=="ambient"){
-      const words = (lyrics||"").split(/\s+/).filter(Boolean);
-      const pulse = clamp(words.length/120, 0.25, 1.0);
-      const ticks = Math.floor(4 + pulse*8);
-      for(let v=0; v<ticks; v++){
-        if(rand() < (0.35 + density*0.35)){
-          const vt = barStart + (v*(beat*4/ticks));
-          const freq = (voice==="robot") ? (120 + rand()*140) : (90 + rand()*110);
-          voiceTick(vt, freq, 0.06 + rand()*0.04, 0.05 + profile.drive*0.03);
-        }
-      }
+    // melody: changes every 2 steps
+    const melStep = Math.floor(st/2);
+    const melWithin = t - melStep*(2*stepSec);
+    const pick = Math.floor(rnd(melStep)*6);
+    const f0 = note(pick) * (0.8 + 0.4*emotion);
+    const vibr = Math.sin(2*Math.PI*(4+6*emotion)*t) * (0.002 + 0.01*emotion);
+    const f = f0*(1+vibr);
+
+    // tone: mix of sine + mild FM
+    const fm = Math.sin(2*Math.PI*(f*2.01)*t) * (0.5*texture);
+    let tone = Math.sin(2*Math.PI*(f + fm*f*0.3)*t);
+
+    // pulse “robot”
+    if(voice==="robot"){
+      const gate = (Math.sin(2*Math.PI*(bps*2)*t) > 0) ? 1 : 0.35;
+      tone *= gate;
     }
 
-    // end-of-bar marker
-    bar++;
-    t += beat*4;
+    // grit: saturation + noise
+    if(voice==="grit"){
+      tone = Math.tanh(tone*(1.2+2.2*texture));
+      tone += (rnd(i*7.7)-0.5) * 0.06 * texture;
+    }
+
+    // envelope for melody
+    const melEnv = env(melWithin, 0.01, 0.18 + 0.22*(1-energy));
+    tone *= melEnv;
+
+    // soft pad under it
+    const padF = base/2 * (1 + 0.04*Math.sin(2*Math.PI*0.13*t));
+    let pad = Math.sin(2*Math.PI*padF*t);
+    pad *= 0.10 + 0.12*(1-energy);
+    pad = (pad*(1-voiceTilt) + Math.tanh(pad*2.2)*voiceTilt);
+
+    // mix
+    let x =
+      (0.55* tone*(0.35+0.55*energy)) +
+      (0.25* pad) +
+      (0.40* kick) +
+      (0.28* snare) +
+      (0.18* hat);
+
+    // master color
+    x = Math.tanh(x*(1.1 + 1.4*texture));
+
+    // fade in/out
+    const fade = 0.35;
+    const fin = Math.min(1, t/fade);
+    const fout = Math.min(1, (lenSec - t)/fade);
+    x *= fin*fout;
+
+    ch[i] = x;
   }
 
-  return { ctx, startAt, endAt };
+  return buf;
 }
 
-/* ---------- Player controls ---------- */
-function showPlayer(meta){
-  $("player").classList.remove("hidden");
-  $("pTitle").textContent = meta.title || "Untitled";
-  $("pMeta").textContent = `${meta.style.toUpperCase()} • ${meta.bpm} BPM • ${meta.seconds}s • ${meta.vis.toUpperCase()}`;
-  $("pNote").textContent = "WEBAUDIO • DEMO";
-  $("pBar").style.width = "0%";
-  $("pTime").textContent = "0:00";
-}
-function startProgress(){
-  stopProgress();
-  state.timer = setInterval(()=>{
-    if(!state.audio || !state.playing) return;
-    const t = state.audio.ctx.currentTime - state.startTime;
-    const pct = clamp(t / state.duration, 0, 1) * 100;
-    $("pBar").style.width = pct.toFixed(1)+"%";
-    $("pTime").textContent = fmtTime(t);
-    if(t >= state.duration - 0.02){
-      stopAudio(true);
-    }
-  }, 90);
-}
-function stopProgress(){
-  if(state.timer){ clearInterval(state.timer); state.timer = null; }
-}
-function stopAudio(ended=false){
-  try{
-    if(state.audio && state.audio.ctx && state.audio.ctx.state!=="closed"){
-      state.audio.ctx.close();
-    }
-  }catch(e){}
-  state.audio = null;
-  state.playing = false;
-  stopProgress();
-  if(ended){
-    $("pBar").style.width = "100%";
-  }
-}
-function playAudio(){
-  if(!state.audio) return;
-  state.playing = true;
-  state.startTime = state.audio.ctx.currentTime;
-  startProgress();
-}
-function pauseAudio(){
-  // WebAudio doesn’t pause well without a full engine;
-  // For the demo: stop and allow restart.
-  stopAudio(false);
-  toast("Paused", "Demo pause = stop. Hit Restart to replay.");
-}
-function restartAudio(){
-  if(!state.now) return;
-  generateFromCurrent(true);
-}
+async function generateSong(){
+  const title = ($("#cTitle").value||"").trim() || "Untitled";
+  const lyrics = ($("#cLyrics").value||"").trim();
+  const style = ($("#cStyle").value||"").trim();
+  const visibility = $("#cVis").value;
 
-/* ---------- Generate / Save / Publish ---------- */
-$("btnGenerate").addEventListener("click", ()=> generateFromCurrent(false));
-$("btnStop").addEventListener("click", ()=>{ stopAudio(false); toast("Stopped","Audio stopped."); });
-$("btnSave").addEventListener("click", saveCurrentToLibrary);
-
-$("pPlay").addEventListener("click", ()=> playAudio());
-$("pPause").addEventListener("click", ()=> pauseAudio());
-$("pRestart").addEventListener("click", ()=> restartAudio());
-$("pPublish").addEventListener("click", ()=> publishCurrent());
-
-function currentMeta(){
-  uiToDraft();
-  const title = state.draft.title || "Untitled";
-  const style = state.draft.style;
-  const bpm = parseInt(state.draft.bpm,10) || 130;
-  const seconds = parseInt(state.draft.len,10) || 45;
-  const vis = state.draft.vis;
-  const seed = state.draft.seed || "";
-  const voice = state.draft.voice || "spoken";
-  const lyrics = state.draft.lyrics || "";
-  return { title, style, bpm, seconds, vis, seed, voice, lyrics };
-}
-
-function generateFromCurrent(isRestart){
-  const meta = currentMeta();
-  if(!meta.lyrics.trim()){
-    toast("Need lyrics", "Paste lyrics first. (Your words only.)");
+  if(!lyrics){
+    toast("Paste lyrics first.");
     return;
   }
-  // Stop any previous audio
-  stopAudio(false);
 
-  // Build a seed if none
-  const seed = meta.seed || (meta.title + "|" + meta.style + "|" + meta.bpm);
-  const built = makeAudioSong({
-    title: meta.title,
-    style: meta.style,
-    bpm: meta.bpm,
-    seconds: meta.seconds,
-    seed,
-    voice: meta.voice,
-    lyrics: meta.lyrics
-  });
+  const opts = {
+    title, lyrics, style, visibility,
+    tempo: Number($("#cTempo").value),
+    lengthSec: Number($("#cLen").value),
+    energy: Number($("#cEnergy").value),
+    emotion: Number($("#cEmotion").value),
+    texture: Number($("#cTexture").value),
+    voice: $("#cVoice").value
+  };
 
-  state.audio = built;
-  state.duration = meta.seconds;
-  state.now = {
+  $("#genBtn").disabled = true;
+  $("#genBtn").textContent = "Generating…";
+  try{
+    // ensure audio context unlocked
+    ensureAudio();
+    if(AC.state==="suspended") await AC.resume();
+
+    const buffer = generateBuffer(opts);
+
+    preview = {
+      id: "preview-"+uid(),
+      title: opts.title,
+      lyrics: opts.lyrics,
+      style: opts.style,
+      visibility: opts.visibility,
+      createdAt: nowISO(),
+      lengthSec: opts.lengthSec,
+      settings: {
+        tempo: opts.tempo,
+        energy: opts.energy,
+        emotion: opts.emotion,
+        texture: opts.texture,
+        voice: opts.voice
+      },
+      liked:false,
+      disliked:false,
+      published:false,
+      buffer
+    };
+
+    $("#previewEmpty").style.display = "none";
+    $("#previewBox").style.display = "block";
+    $("#pvTitle").textContent = preview.title;
+    $("#pvMeta").innerHTML = `<span class="badge ${preview.visibility}">${preview.visibility.toUpperCase()}</span>
+                              <span class="badge">Unpublished</span>
+                              <span class="badge">${escapeHTML(preview.style||"No style")}</span>
+                              <span class="badge">${fmtTime(preview.lengthSec)}</span>`;
+    $("#pvLyrics").textContent = preview.lyrics.slice(0,900) + (preview.lyrics.length>900?"…":"");
+
+    // set as active now playing
+    activeSong = preview;
+    pausedAt = 0;
+    updatePlayerUI();
+    playBuffer(preview.buffer, 0);
+    toast("Generated + playing.");
+  }finally{
+    $("#genBtn").disabled = false;
+    $("#genBtn").textContent = "Generate Song";
+  }
+}
+
+function playPreview(){
+  if(!preview?.buffer){ toast("Generate first."); return; }
+  activeSong = preview;
+  pausedAt = 0;
+  updatePlayerUI();
+  playBuffer(preview.buffer, 0);
+}
+
+function savePreview(){
+  if(!preview){ toast("Generate first."); return; }
+  // convert preview to saved song
+  const s = {
     id: uid(),
-    created_at: nowISO(),
-    title: meta.title,
-    style: meta.style,
-    bpm: meta.bpm,
-    seconds: meta.seconds,
-    vis: meta.vis,
-    seed,
-    voice: meta.voice,
-    lyrics: meta.lyrics,
-    likes: 0,
-    comments: []
+    title: preview.title,
+    lyrics: preview.lyrics,
+    style: preview.style,
+    visibility: preview.visibility,
+    createdAt: nowISO(),
+    lengthSec: preview.lengthSec,
+    settings: preview.settings,
+    liked:false,
+    disliked:false,
+    published:false
+  };
+  // NOTE: audio buffer is not persisted; it regenerates deterministically from lyrics+style+settings
+  DB.songs.unshift(s);
+  saveDB(DB);
+
+  // select and go home
+  selectedId = s.id;
+  preview = null;
+  $("#previewEmpty").style.display = "block";
+  $("#previewBox").style.display = "none";
+  toast("Saved to Library.");
+  go("home");
+}
+
+/* ---------- play from library (regenerate deterministically) ---------- */
+async function playSongById(id){
+  const s = DB.songs.find(x=>x.id===id);
+  if(!s){ toast("Song not found."); return; }
+  selectedId = id;
+  renderRightPanel();
+
+  ensureAudio();
+  if(AC.state==="suspended") await AC.resume();
+
+  // rebuild opts
+  const opts = {
+    title: s.title||"Untitled",
+    lyrics: s.lyrics||"",
+    style: s.style||"",
+    visibility: s.visibility||"private",
+    tempo: s.settings?.tempo ?? 110,
+    lengthSec: s.lengthSec ?? 32,
+    energy: s.settings?.energy ?? 55,
+    emotion: s.settings?.emotion ?? 55,
+    texture: s.settings?.texture ?? 55,
+    voice: s.settings?.voice ?? "dark"
   };
 
-  showPlayer(state.now);
-  renderPreview(state.now);
+  const buffer = generateBuffer(opts);
 
-  // Auto-play
-  playAudio();
-  toast(isRestart ? "Restarted" : "Generated", "Playing your demo track now.");
-}
-
-function saveCurrentToLibrary(){
-  if(!state.now){
-    toast("Nothing to save", "Generate a song first.");
-    return;
-  }
-  // If same title+seed exists, keep newest by id
-  state.creations.unshift(state.now);
-  save();
-  toast("Saved", "Added to your Library.");
-  renderAll();
+  activeSong = {...s, buffer};
+  pausedAt = 0;
+  updatePlayerUI();
+  playBuffer(buffer, 0);
 }
 
-function publishCurrent(){
-  if(!state.now){
-    toast("Nothing to publish", "Generate a song first.");
-    return;
-  }
-  state.now.vis = "public";
-  // Save in feed
-  state.feed.unshift({
-    ...state.now,
-    published_at: nowISO()
-  });
-  save();
-  toast("Published", "Added to Public Feed (local demo).");
-  renderAll();
+/* ---------- player next/prev ---------- */
+function playIndex(idx){
+  const list = getFilteredSongs(DB.songs);
+  if(!list.length){ toast("No songs."); return; }
+  idx = (idx + list.length) % list.length;
+  playSongById(list[idx].id);
+}
+function currentIndex(){
+  const list = getFilteredSongs(DB.songs);
+  const id = selectedId || activeSong?.id;
+  return Math.max(0, list.findIndex(x=>x.id===id));
+}
+function nextTrack(){
+  const list = getFilteredSongs(DB.songs);
+  if(!list.length){ toast("No songs."); return; }
+  playIndex(currentIndex()+1);
+}
+function prevTrack(){
+  const list = getFilteredSongs(DB.songs);
+  if(!list.length){ toast("No songs."); return; }
+  playIndex(currentIndex()-1);
 }
 
-/* ---------- PDF Export / Copy ---------- */
-$("btnExportLyrics").addEventListener("click", ()=>{
-  const meta = currentMeta();
-  if(!meta.lyrics.trim()) return toast("No lyrics","Paste lyrics first.");
-  try{
-    const { jsPDF } = window.jspdf || {};
-    if(!jsPDF) throw new Error("jsPDF not loaded");
-    const doc = new jsPDF({unit:"pt", format:"letter"});
-    doc.setFont("courier","normal");
-    doc.setFontSize(12);
-    doc.text(`SingMyLyrics — Lyrics Export`, 40, 40);
-    doc.setFontSize(10);
-    doc.text(`Title: ${meta.title}`, 40, 58);
-    doc.text(`Style: ${meta.style} • ${meta.bpm} BPM • ${meta.seconds}s`, 40, 72);
-    const lines = doc.splitTextToSize(meta.lyrics, 540);
-    doc.text(lines, 40, 100);
-    doc.save(`SML_Lyrics_${(meta.title||"Untitled").replace(/[^\w\-]+/g,"_")}.pdf`);
-    toast("PDF Exported","Lyrics PDF downloaded.");
-  }catch(e){
-    toast("PDF failed","jsPDF didn’t load. Use Copy Lyrics.");
-  }
-});
-$("btnExportMeta").addEventListener("click", ()=>{
-  const meta = state.now || currentMeta();
-  try{
-    const { jsPDF } = window.jspdf || {};
-    if(!jsPDF) throw new Error("jsPDF not loaded");
-    const doc = new jsPDF({unit:"pt", format:"letter"});
-    doc.setFont("helvetica","bold");
-    doc.setFontSize(16);
-    doc.text("SingMyLyrics — Song Card", 40, 50);
-    doc.setFont("helvetica","normal");
-    doc.setFontSize(11);
-    doc.text(`Title: ${meta.title}`, 40, 80);
-    doc.text(`Style: ${meta.style}`, 40, 100);
-    doc.text(`Tempo: ${meta.bpm} BPM`, 40, 120);
-    doc.text(`Length: ${meta.seconds || meta.len}s`, 40, 140);
-    doc.text(`Visibility: ${meta.vis || "private"}`, 40, 160);
-    doc.text(`Seed: ${(meta.seed||"").slice(0,80)}`, 40, 180);
-    doc.setFontSize(10);
-    doc.text("Rights-first: You own your lyrics. We do not write lyrics for you.", 40, 210);
-    doc.save(`SML_SongCard_${(meta.title||"Untitled").replace(/[^\w\-]+/g,"_")}.pdf`);
-    toast("PDF Exported","Song card PDF downloaded.");
-  }catch(e){
-    toast("PDF failed","jsPDF didn’t load. Use Export (JSON) instead.");
-  }
-});
-$("btnCopyLyrics").addEventListener("click", async ()=>{
-  const meta = currentMeta();
-  if(!meta.lyrics.trim()) return toast("No lyrics","Paste lyrics first.");
-  try{
-    await navigator.clipboard.writeText(meta.lyrics);
-    toast("Copied","Lyrics copied to clipboard.");
-  }catch(e){
-    toast("Copy failed","Clipboard blocked. Select text and copy manually.");
-  }
-});
-$("btnCopyPrompt").addEventListener("click", async ()=>{
-  const meta = currentMeta();
-  const prompt = stylePrompt(meta);
-  try{
-    await navigator.clipboard.writeText(prompt);
-    toast("Copied","Style prompt copied.");
-  }catch(e){
-    toast("Copy failed","Clipboard blocked.");
-  }
-});
-function stylePrompt(meta){
-  const map = {
-    punk: "fast hardcore punk energy, raw drums, distorted bass, shouted/spoken cadence, urgent aggressive feel",
-    industrial: "industrial pulse, gritty textures, mechanical rhythm, dark low-end, harsh edge",
-    ska: "two-tone ska bounce, upbeat offbeat guitar feel, punchy bass, bright horns vibe (instrumental feel)",
-    pop: "clean modern pop groove, catchy rhythm, bright chord movement, polished",
-    hiphop: "hip-hop head nod beat, deep kick, snappy snare, hats with swing, moody bass",
-    ambient: "ambient space, airy pad, slow evolving textures, minimal percussion, floating atmosphere"
-  };
-  return [
-    "SINGMYLYRICS STYLE PROMPT (demo)",
-    `Title: ${meta.title}`,
-    `Style: ${meta.style} • ${meta.bpm} BPM • ${meta.seconds}s`,
-    `Voice: ${meta.voice}`,
-    `Vibe: ${map[meta.style] || meta.style}`,
-    "",
-    "NOTE: Lyrics are user-provided only. Do not generate new lyrics."
-  ].join("\n");
+/* ---------- misc ---------- */
+function escapeHTML(s){
+  return (s||"").replace(/[&<>"']/g, c=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
 }
 
-/* ---------- Renderers ---------- */
-function renderAll(){
-  if(state.route==="home") renderHome();
-  if(state.route==="create") renderCreate();
-  if(state.route==="library") renderLibrary();
-  if(state.route==="feed") renderFeed();
-}
-function renderHome(){
-  const q = ($("search").value||"").toLowerCase().trim();
-  const box = $("homeLatest");
-  const items = filterCreations(state.creations, q).slice(0,4);
-  if(items.length===0){
-    box.innerHTML = `<div class="hint">No creations yet. Hit <b>Start Creating</b>.</div>`;
-    return;
-  }
-  box.innerHTML = items.map(renderItemCard).join("");
-}
-function renderCreate(){
-  draftToUI();
-  // keep preview if exists
-  if(state.now) renderPreview(state.now);
-  else $("previewBox").innerHTML = `<div class="hint">Generate a song to preview.</div>`;
-}
-function renderPreview(item){
-  const snippet = (item.lyrics||"").trim().split("\n").slice(0,6).join("\n");
-  $("previewBox").innerHTML = `
-    <div class="feed-item">
-      <div class="feed-top">
-        <div>
-          <b>${safeText(item.title)}</b>
-          <div class="tiny">${safeText(item.style).toUpperCase()} • ${item.bpm} BPM • ${item.seconds}s • <span class="mono">${safeText(item.seed).slice(0,28)}</span></div>
-        </div>
-        <span class="badge">${(item.vis||"private").toUpperCase()}</span>
-      </div>
-      <div class="tiny" style="white-space:pre-wrap">${safeText(snippet)}${(item.lyrics||"").split("\n").length>6 ? "\n…" : ""}</div>
-      <div class="feed-actions">
-        <button class="iconbtn" onclick="saveCurrentToLibrary()">💾 Save</button>
-        <button class="iconbtn" onclick="publishCurrent()">🌎 Publish</button>
-        <button class="iconbtn" onclick="go('#/library')">🎧 Library</button>
-      </div>
-    </div>
-  `;
-}
-function renderLibrary(){
-  const q = ($("search").value||"").toLowerCase().trim();
-  const list = $("libraryList");
-  const items = filterCreations(state.creations, q);
-
-  $("libCount").textContent = `${items.length} item${items.length===1?"":"s"}`;
-
-  if(items.length===0){
-    list.innerHTML = `<div class="hint">No saved songs yet. Create one.</div>`;
-    return;
-  }
-  list.innerHTML = items.map(i=>renderLibraryRow(i)).join("");
-}
-function renderFeed(){
-  const q = ($("search").value||"").toLowerCase().trim();
-  const list = $("feedList");
-  const items = filterCreations(state.feed, q);
-  if(items.length===0){
-    list.innerHTML = `<div class="hint">Nothing published yet.</div>`;
-    return;
-  }
-  list.innerHTML = items.map(i=>renderFeedRow(i)).join("");
+let toastTimer=null;
+function toast(msg){
+  // minimal toast using title area
+  const sub = $("#pageSub");
+  const old = sub.textContent;
+  sub.textContent = msg;
+  sub.style.color = "var(--accent)";
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{
+    sub.textContent = ({
+      home:"Library · Your creations",
+      create:"Make something. Keep ownership.",
+      search:"Find your creations",
+      trash:"Restore or delete"
+    })[currentView] || old;
+    sub.style.color = "";
+  }, 1400);
 }
 
-function filterCreations(arr, q){
-  let items = [...arr];
-  items.sort((a,b)=>{
-    const ta = +new Date(a.created_at || a.published_at || 0);
-    const tb = +new Date(b.created_at || b.published_at || 0);
-    return (state.sort==='old') ? ta - tb : tb - ta;
-  });
-  if(!q) return items;
-  return items.filter(i=>{
-    const t = (i.title||"").toLowerCase();
-    const s = (i.style||"").toLowerCase();
-    const l = (i.lyrics||"").toLowerCase();
-    return t.includes(q) || s.includes(q) || l.includes(q);
-  });
+/* ---------- init ---------- */
+function init(){
+  // Seed example? (keep empty — user drives content)
+  refreshAll();
+  updatePlayerUI();
+  // Set default numbers
+  $("#cTempoN").textContent = $("#cTempo").value;
+  $("#cLenN").textContent = $("#cLen").value;
+  $("#cEnergyN").textContent = $("#cEnergy").value;
+  $("#cEmotionN").textContent = $("#cEmotion").value;
+  $("#cTextureN").textContent = $("#cTexture").value;
 }
-function sortCreations(mode){
-  state.sort = (mode==='old') ? 'old' : 'new';
-  save();
-  renderAll();
-}
-
-function renderItemCard(i){
-  return `
-    <div class="feed-item">
-      <div class="feed-top">
-        <div>
-          <b>${safeText(i.title)}</b>
-          <div class="tiny">${safeText(i.style).toUpperCase()} • ${i.bpm} BPM • ${i.seconds}s • ${(i.vis||"private").toUpperCase()}</div>
-        </div>
-        <span class="badge">${new Date(i.created_at).toLocaleString()}</span>
-      </div>
-      <div class="feed-actions">
-        <button class="iconbtn" onclick="loadIntoCreate('${i.id}')">🎛️ Open</button>
-        <button class="iconbtn" onclick="likeItem('${i.id}', 'creations')">👍 ${i.likes||0}</button>
-        <button class="iconbtn" onclick="deleteItem('${i.id}', 'creations')">🗑️ Delete</button>
-      </div>
-    </div>
-  `;
-}
-function renderLibraryRow(i){
-  const snippet = (i.lyrics||"").trim().split("\n").slice(0,4).join("\n");
-  return `
-    <div class="feed-item">
-      <div class="feed-top">
-        <div>
-          <b>${safeText(i.title)}</b>
-          <div class="tiny">${safeText(i.style).toUpperCase()} • ${i.bpm} BPM • ${i.seconds}s • ${(i.vis||"private").toUpperCase()}</div>
-        </div>
-        <span class="badge">${new Date(i.created_at).toLocaleString()}</span>
-      </div>
-      <div class="tiny" style="white-space:pre-wrap">${safeText(snippet)}${(i.lyrics||"").split("\n").length>4 ? "\n…" : ""}</div>
-      <div class="feed-actions">
-        <button class="iconbtn" onclick="loadIntoCreate('${i.id}')">🎛️ Edit / Regenerate</button>
-        <button class="iconbtn" onclick="playFromSaved('${i.id}')">▶️ Play</button>
-        <button class="iconbtn" onclick="likeItem('${i.id}', 'creations')">👍 ${i.likes||0}</button>
-        <button class="iconbtn" onclick="togglePublish('${i.id}')">🌎 Publish</button>
-        <button class="iconbtn" onclick="deleteItem('${i.id}', 'creations')">🗑️ Delete</button>
-      </div>
-    </div>
-  `;
-}
-function renderFeedRow(i){
-  const snippet = (i.lyrics||"").trim().split("\n").slice(0,4).join("\n");
-  const comments = (i.comments||[]).slice(0,3).map(c=>`<div class="tiny">• ${safeText(c)}</div>`).join("");
-  return `
-    <div class="feed-item">
-      <div class="feed-top">
-        <div>
-          <b>${safeText(i.title)}</b>
-          <div class="tiny">${safeText(i.style).toUpperCase()} • ${i.bpm} BPM • ${i.seconds}s • PUBLIC</div>
-        </div>
-        <span class="badge">${new Date(i.published_at||i.created_at).toLocaleString()}</span>
-      </div>
-      <div class="tiny" style="white-space:pre-wrap">${safeText(snippet)}${(i.lyrics||"").split("\n").length>4 ? "\n…" : ""}</div>
-      <div class="feed-actions">
-        <button class="iconbtn" onclick="likeItem('${i.id}', 'feed')">👍 ${i.likes||0}</button>
-        <button class="iconbtn" onclick="openFromFeed('${i.id}')">🎛️ Remix</button>
-      </div>
-      <div>
-        ${comments || `<div class="tiny" style="color:var(--muted)">No comments yet.</div>`}
-        <div class="commentbox">
-          <input id="cmt-${i.id}" placeholder="Write a comment..." />
-          <button class="iconbtn" onclick="commentItem('${i.id}')">Post</button>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-/* ---------- Actions ---------- */
-function findById(arr, id){ return arr.find(x=>x.id===id); }
-
-function loadIntoCreate(id){
-  const item = findById(state.creations, id);
-  if(!item) return;
-  state.draft = {
-    title: item.title,
-    style: item.style,
-    bpm: String(item.bpm),
-    len: String(item.seconds),
-    vis: item.vis || "private",
-    lyrics: item.lyrics,
-    seed: item.seed,
-    voice: item.voice || "spoken"
-  };
-  save();
-  go("#/create");
-  toast("Loaded","Opened in Create.");
-}
-
-function playFromSaved(id){
-  const item = findById(state.creations, id);
-  if(!item) return;
-  // Put into draft and generate
-  state.draft = {
-    title: item.title,
-    style: item.style,
-    bpm: String(item.bpm),
-    len: String(item.seconds),
-    vis: item.vis || "private",
-    lyrics: item.lyrics,
-    seed: item.seed,
-    voice: item.voice || "spoken"
-  };
-  save();
-  go("#/create");
-  setTimeout(()=> generateFromCurrent(false), 60);
-}
-
-function openFromFeed(id){
-  const item = findById(state.feed, id);
-  if(!item) return;
-  state.draft = {
-    title: item.title + " (Remix)",
-    style: item.style,
-    bpm: String(item.bpm),
-    len: String(item.seconds),
-    vis: "private",
-    lyrics: item.lyrics,
-    seed: "",
-    voice: item.voice || "spoken"
-  };
-  save();
-  go("#/create");
-  toast("Remix ready","Generate a private remix.");
-}
-
-function togglePublish(id){
-  const item = findById(state.creations, id);
-  if(!item) return;
-  // publish it
-  state.now = {...item};
-  publishCurrent();
-}
-
-function deleteItem(id, which){
-  const label = (which==="feed") ? "feed post" : "creation";
-  if(!confirm(`Delete this ${label}?`)) return;
-  if(which==="feed"){
-    state.feed = state.feed.filter(x=>x.id!==id);
-  }else{
-    state.creations = state.creations.filter(x=>x.id!==id);
-  }
-  save();
-  toast("Deleted","Removed.");
-  renderAll();
-}
-
-function likeItem(id, which){
-  const arr = (which==="feed") ? state.feed : state.creations;
-  const item = findById(arr, id);
-  if(!item) return;
-  item.likes = (item.likes||0) + 1;
-  save();
-  renderAll();
-}
-
-function commentItem(id){
-  const input = $("cmt-"+id);
-  if(!input) return;
-  const text = (input.value||"").trim();
-  if(!text) return;
-  const item = findById(state.feed, id);
-  if(!item) return;
-  item.comments = item.comments || [];
-  item.comments.unshift(text);
-  input.value = "";
-  save();
-  toast("Comment posted","Added to demo feed.");
-  renderFeed();
-}
-
-/* ---------- Init ---------- */
-function renderAllHard(){
-  renderHome();
-  renderCreate();
-  renderLibrary();
-  renderFeed();
-}
-function renderAllSoft(){
-  if(state.route==="home") renderHome();
-  if(state.route==="create") renderCreate();
-  if(state.route==="library") renderLibrary();
-  if(state.route==="feed") renderFeed();
-}
-function renderAll(){ renderAllSoft(); }
-
-year();
-load();
-onRoute();
-renderAllHard();
-
-// If user returns to create, keep inputs saved
-["cTitle","cStyle","cBpm","cLen","cVis","cLyrics","cSeed","cVoice"].forEach(id=>{
-  const el = $(id);
-  if(!el) return;
-  el.addEventListener("input", ()=> uiToDraft());
-  el.addEventListener("change", ()=> uiToDraft());
-});
+init();
 </script>
 </body>
 </html>
