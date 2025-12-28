@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>SingMyLyrics — Create</title>
-
   <!-- jsPDF (REAL downloads) -->
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
@@ -25,6 +24,9 @@
       --shadow: 0 12px 40px rgba(0,0,0,.45);
       --r:16px;
       --r2:12px;
+
+      /* Right panel */
+      --npw: 360px;
     }
     *{box-sizing:border-box}
     html,body{height:100%}
@@ -52,8 +54,8 @@
         "sidebar player";
     }
     .sidebar{grid-area:sidebar; background:linear-gradient(180deg,#0f1620,#0b0f14); border-right:1px solid var(--stroke); overflow:auto}
-    .topbar{grid-area:top; background:#0e1520; border-bottom:1px solid var(--stroke); display:flex; align-items:center; gap:10px; padding:0 12px;}
-    .main{grid-area:main; overflow:hidden;}
+    .topbar{grid-area:top; background:#0e1520; border-bottom:1px solid var(--stroke); display:flex; align-items:center; gap:10px; padding:0 12px; position:relative; z-index:20;}
+    .main{grid-area:main; overflow:hidden; position:relative;}
     .player{grid-area:player; background:#0e1520; border-top:1px solid var(--stroke); display:flex; align-items:center; padding:10px 12px; gap:10px}
 
     /* Collapsed sidebar */
@@ -62,68 +64,48 @@
     body.collapsed .brand-text{display:none}
     body.collapsed .account-pill{display:none}
     body.collapsed .credits-big{display:none}
-    body.collapsed .logo{display:none}
-    body.collapsed .brand{
-      justify-content:center;
-      padding:10px 8px;
-    }
-    body.collapsed .brand-toggle{
-      width:52px;
-      height:40px;
-      border-radius:14px;
-    }
 
-    /* Now Playing collapse */
-    body.np-collapsed .main-wrap{grid-template-columns: 460px 1fr 70px;}
-    body.np-collapsed #nowPlayingPanel .panel-body{display:none}
-    body.np-collapsed #nowPlayingPanel .panel-header h3{display:none}
-    body.np-collapsed #nowPlayingPanel{min-width:0}
-    body.np-collapsed #nowPlayingPanel .pill{display:none}
+    /* When collapsed: show ONLY the collapse arrow + icons in nav (labels hidden already) */
+    body.collapsed .brand{
+      padding:10px 10px;
+      gap:0;
+      justify-content:center;
+    }
+    body.collapsed .brand .logo{display:none}
+    body.collapsed .brand .collapseBtn{margin:0}
+    body.collapsed .brand .brand-text{display:none}
 
     /* ===== SIDEBAR ===== */
     .brand{
       display:flex; align-items:center; gap:10px;
-      padding:14px 12px 10px;
+      padding:12px 12px 10px;
       position:sticky; top:0; background:linear-gradient(180deg,#0f1620,#0f1620cc); backdrop-filter: blur(8px);
       border-bottom:1px solid var(--stroke);
       z-index:5;
     }
-    .brand-left{
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      flex:1;
-      min-width:0;
-    }
-    .brand-toggle{
-      background:#ffffff10;
+    .collapseBtn{
+      width:40px; height:40px;
+      border-radius:14px;
       border:1px solid #ffffff14;
+      background:#ffffff10;
       color:var(--text);
-      width:44px;
-      height:34px;
-      border-radius:12px;
       cursor:pointer;
-      font-weight:1000;
       display:grid;
       place-items:center;
+      font-weight:1000;
       user-select:none;
+      flex:0 0 auto;
     }
-    .brand-toggle:hover{background:#ffffff14}
-    .brand-row{
-      display:flex; align-items:center; gap:10px;
-      min-width:0;
-    }
+    .collapseBtn:hover{background:#ffffff14}
     .logo{
       width:42px; height:42px; border-radius:14px;
       background:linear-gradient(135deg,#2bd576,#5fd3ff);
       box-shadow: var(--shadow);
       display:grid; place-items:center; font-weight:1000; color:#00150a;
-      flex:0 0 auto;
     }
-    .brand-text{line-height:1.1; min-width:0}
-    .brand-text .t1{font-weight:1000; letter-spacing:.8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-    .brand-text .t2{font-size:12px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-
+    .brand-text{line-height:1.1}
+    .brand-text .t1{font-weight:1000; letter-spacing:.8px}
+    .brand-text .t2{font-size:12px; color:var(--muted)}
     .user{display:flex; align-items:center; gap:10px; padding:10px 12px}
     .avatar{
       width:34px; height:34px; border-radius:50%;
@@ -214,15 +196,37 @@
     .btn-green:hover{filter:brightness(1.05)}
     .kbd{opacity:.7; font-size:11px; padding:1px 6px; border:1px solid #ffffff22; border-radius:8px; margin-left:6px}
 
-    /* ===== MAIN GRID (Composer + Feed + Now Playing) ===== */
+    /* Right panel toggle button (top-right) */
+    .npToggle{
+      position:absolute;
+      right:12px;
+      top:50%;
+      transform:translateY(-50%);
+      width:38px; height:38px;
+      border-radius:12px;
+      border:1px solid #ffffff14;
+      background:#ffffff10;
+      color:var(--text);
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      font-weight:1000;
+      z-index:25;
+    }
+    .npToggle:hover{background:#ffffff14}
+
+    /* ===== MAIN GRID (Composer + Feed) ===== */
     .main-wrap{
       height:100%;
       display:grid;
-      grid-template-columns: 460px 1fr 360px;
+      grid-template-columns: 460px 1fr;
       gap:12px;
       padding:12px;
       overflow:hidden;
+      transition:padding-right .18s ease;
     }
+
+    /* Panels */
     .panel{
       background:var(--panel2);
       border:1px solid var(--stroke);
@@ -231,20 +235,19 @@
       display:flex;
       flex-direction:column;
       min-width:0;
+      position:relative;
+      z-index:1;
     }
     .panel-header{
       padding:12px 12px 10px;
       border-bottom:1px solid var(--stroke);
       display:flex; align-items:center; gap:10px;
       background:linear-gradient(180deg,#101827,#0f1620);
+      position:relative;
+      z-index:2;
     }
     .panel-header h3{margin:0; font-size:14px; letter-spacing:.2px}
-    .panel-body{padding:12px; overflow:auto; min-height:0}
-
-    /* Feed panel: prevent 3-dot menu from going behind/clipping */
-    #feedPanel .panel-body{overflow:visible}
-    #feedPanel .tracks{max-height:calc(100vh - 56px - 72px - 24px - 56px - 24px); overflow:auto; padding-right:6px}
-
+    .panel-body{padding:12px; overflow:auto; min-height:0; position:relative; z-index:1;}
     .field-label{font-size:12px; color:var(--muted); margin:10px 0 6px}
     textarea, input, select{
       width:100%;
@@ -256,7 +259,6 @@
       outline:none;
     }
     textarea{min-height:160px; resize:vertical}
-
     .row{display:flex; align-items:center; gap:10px}
     .toggle{
       display:inline-flex; align-items:center; gap:8px;
@@ -270,7 +272,6 @@
       font-weight:900;
     }
     .toggle.on{background:#2bd57622; border-color:#2bd57655}
-
     .chips{display:flex; gap:8px; flex-wrap:wrap; margin-top:8px}
     .chip{
       background:var(--pill2);
@@ -285,7 +286,6 @@
     .chip:hover{background:#ffffff10}
     .chip.on{border-color:#2bd57666; background:#2bd57618}
     .chipbar{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
-
     .adv{
       margin-top:10px;
       background:#ffffff08;
@@ -305,7 +305,6 @@
     .adv .adv-body{padding:10px 12px; border-top:1px solid #ffffff10; color:var(--muted); font-size:12px}
     .grid2{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
     .grid3{display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px}
-
     .stack{display:flex; flex-direction:column; gap:10px; margin-top:12px}
     .btn-wide{
       width:100%;
@@ -353,7 +352,7 @@
       box-shadow: var(--shadow);
       padding:10px;
       display:none;
-      z-index:50;
+      z-index:9999;
     }
     .menu.open{display:block}
     .menu .mrow{
@@ -367,7 +366,13 @@
     .menu hr{border:none; border-top:1px solid #ffffff10; margin:8px 0}
 
     /* ===== TRACK CARDS ===== */
-    .tracks{margin-top:12px; display:flex; flex-direction:column; gap:10px}
+    .tracks{
+      margin-top:12px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      padding-bottom:140px; /* prevents dropdown getting clipped near bottom */
+    }
     .track{
       background:var(--panel);
       border:1px solid var(--stroke);
@@ -379,6 +384,9 @@
       align-items:center;
       min-width:0;
       cursor:pointer;
+      position:relative;
+      z-index:1;
+      overflow:visible;
     }
     .track.active{outline:2px solid #2bd57655; border-color:#2bd57666}
     .cover{
@@ -435,7 +443,7 @@
       text-overflow:ellipsis;
       margin-top:2px;
     }
-    .actions{display:flex; align-items:center; gap:8px}
+    .actions{display:flex; align-items:center; gap:8px; position:relative; z-index:2;}
     .iconbtn{
       width:36px; height:36px;
       border-radius:12px;
@@ -448,16 +456,18 @@
     }
     .iconbtn:hover{background:#ffffff14}
     .more-wrap{position:relative}
+
+    /* Fixed-position menu so it never clips behind black areas */
     .more-menu{
-      position:fixed; /* portal-like positioning (set via JS) */
+      position:fixed;
       background:#0e1520;
       border:1px solid #ffffff14;
       border-radius:14px;
-      min-width:210px;
+      min-width:220px;
       padding:8px;
       box-shadow: var(--shadow);
       display:none;
-      z-index:9999; /* always above */
+      z-index:2147483647;
     }
     .more-menu.open{display:block}
     .more-menu button{
@@ -475,7 +485,47 @@
     .more-menu button.danger{color:#ffd1d7}
     .more-menu button.danger:hover{background:#ff5b6e22}
 
-    /* ===== NOW PLAYING (RIGHT PANEL) ===== */
+    /* ===== RIGHT SLIDE PANEL (Now Playing / Song Details) ===== */
+    .rightDock{
+      position:absolute;
+      top:0; right:0;
+      height:100%;
+      width:var(--npw);
+      transform:translateX(100%);
+      transition:transform .18s ease;
+      z-index:30;
+      pointer-events:none;
+    }
+    body.npOpen .rightDock{
+      transform:translateX(0%);
+      pointer-events:auto;
+    }
+    body.npOpen .main-wrap{
+      padding-right: calc(12px + var(--npw));
+    }
+    .rightPanel{
+      height:100%;
+      background:linear-gradient(180deg,#0f1620,#0b0f14);
+      border-left:1px solid var(--stroke);
+      box-shadow: -18px 0 50px rgba(0,0,0,.35);
+      display:flex;
+      flex-direction:column;
+    }
+    .rpHeader{
+      height:56px;
+      display:flex; align-items:center; gap:10px;
+      padding:0 12px;
+      border-bottom:1px solid var(--stroke);
+      background:#0e1520;
+      flex:0 0 auto;
+    }
+    .rpTitle{font-weight:1000}
+    .rpBody{
+      padding:12px;
+      overflow:auto;
+      min-height:0;
+      flex:1;
+    }
     .npCard{
       background:linear-gradient(180deg,#101827,#0e1520);
       border:1px solid #ffffff14;
@@ -506,7 +556,6 @@
       background:var(--green);
       box-shadow:0 0 0 3px #2bd57622;
     }
-
     .npControls{display:flex; gap:8px; margin-top:10px}
     .npControls .btn{
       flex:1;
@@ -526,7 +575,6 @@
       border:none;
     }
     .npControls .btn.primary:hover{filter:brightness(1.05)}
-
     .progressWrap{margin-top:12px}
     .progress{
       height:10px;
@@ -592,6 +640,83 @@
     }
     .copyRow button:hover{background:#ffffff14}
     .copyRow button[disabled]{opacity:.45; cursor:not-allowed}
+
+    /* Song detail actions row like Suno (play count / likes / comments / copy) */
+    .statRow{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:10px;
+    }
+    .stat{
+      background:#ffffff10;
+      border:1px solid #ffffff14;
+      color:var(--text);
+      padding:6px 8px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:1000;
+      display:flex; align-items:center; gap:6px;
+      user-select:none;
+      cursor:pointer;
+    }
+    .stat:hover{background:#ffffff14}
+
+    .bigActionRow{
+      display:flex;
+      gap:8px;
+      margin-top:10px;
+    }
+    .bigActionRow button{
+      flex:1;
+      background:#ffffff10;
+      border:1px solid #ffffff14;
+      color:var(--text);
+      padding:10px;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:1000;
+    }
+    .bigActionRow button:hover{background:#ffffff14}
+
+    .rpMoreWrap{position:relative; margin-top:10px}
+    .rpMoreBtn{
+      width:100%;
+      background:#ffffff10;
+      border:1px solid #ffffff14;
+      color:var(--text);
+      padding:10px;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:1000;
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    .rpMoreBtn:hover{background:#ffffff14}
+    .rpMoreMenu{
+      position:absolute;
+      top:46px; right:0;
+      left:0;
+      background:#0e1520;
+      border:1px solid #ffffff14;
+      border-radius:14px;
+      padding:8px;
+      box-shadow: var(--shadow);
+      display:none;
+      z-index:9999;
+    }
+    .rpMoreMenu.open{display:block}
+    .rpMoreMenu .line{
+      padding:10px 10px;
+      border-radius:12px;
+      background:#ffffff08;
+      border:1px solid #ffffff10;
+      margin-bottom:8px;
+      color:#cfe1ff;
+      font-size:12px;
+    }
+    .rpMoreMenu .line:last-child{margin-bottom:0}
+
+    /* ===== TOAST ===== */
     .toast{
       position:fixed;
       bottom:90px;
@@ -606,7 +731,7 @@
       display:none;
       align-items:center;
       gap:10px;
-      z-index:999;
+      z-index:99999;
     }
     .toast.show{display:flex}
     .toast .dot{width:10px;height:10px;border-radius:50%;background:var(--green); box-shadow:0 0 0 3px #2bd57622}
@@ -642,13 +767,12 @@
 
     /* Responsive */
     @media (max-width: 1200px){
-      .main-wrap{grid-template-columns: 460px 1fr}
-      #nowPlayingPanel{display:none}
+      :root{ --npw: 340px; }
     }
-    @media (max-width: 920px){
+    @media (max-width: 980px){
       .main-wrap{grid-template-columns: 1fr}
       #feedPanel{display:none}
-      #nowPlayingPanel{display:none}
+      :root{ --npw: 340px; }
     }
   </style>
 </head>
@@ -659,17 +783,16 @@
   <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="brand">
-      <div class="brand-left">
-        <!-- Collapse arrow INSIDE brand box, ABOVE the title -->
-        <button class="brand-toggle" id="toggleSidebar" title="Collapse sidebar">◀</button>
+      <!-- COLLAPSE ARROW (INSIDE brand, above the title area conceptually) -->
+      <button class="collapseBtn" id="toggleSidebar" title="Collapse / Expand">
+        <span id="collapseArrow">◀</span>
+      </button>
 
-        <div class="brand-row">
-          <div class="logo">S</div>
-          <div class="brand-text">
-            <div class="t1">SING MY LYRICS</div>
-            <div class="t2">Create (Full Standard)</div>
-          </div>
-        </div>
+      <div class="logo">S</div>
+
+      <div class="brand-text">
+        <div class="t1">SING MY LYRICS</div>
+        <div class="t2">Create (All Standard)</div>
       </div>
     </div>
 
@@ -689,37 +812,45 @@
       <a href="create.html" class="active">
         <div class="icon">♪</div><div class="nav-label">Create</div>
       </a>
-      <a href="#" id="navTrash">
+      <a href="#" id="trashLinkNav">
         <div class="icon">🗑</div><div class="nav-label">Trash</div>
+        <span class="badge" style="background:#ffffff18;color:#cfe1ff;border:1px solid #ffffff22" id="trashCountNav">0</span>
       </a>
     </div>
 
     <div class="credits-big"><span id="credits">7,537</span> Credits</div>
+    <div class="account-pill">Account</div>
 
     <div class="side-footer">
-      <div class="row">🗑 <span id="trashLink">Trash (30 days)</span> <span class="badge" style="background:#ffffff18;color:#cfe1ff;border:1px solid #ffffff22" id="trashCount">0</span></div>
+      <div class="row">🗑 <span>Trash (30 days)</span> <span class="badge" style="background:#ffffff18;color:#cfe1ff;border:1px solid #ffffff22" id="trashCount">0</span></div>
       <div class="row">🧾 <span>Ownership: 100% You</span></div>
     </div>
   </aside>
 
   <!-- TOPBAR -->
   <header class="topbar">
-    <div class="pill"><span class="dot"></span><span><b id="creditsPill">7.8k</b> Credits</span></div>
-    <div class="pill">Create</div>
-
-    <div class="spacer"></div>
+    <div class="pill">
+      <span class="dot"></span>
+      <span><b id="creditsPill">7.8k</b> Credits</span>
+    </div>
 
     <div class="pill">Workspace ▸ <b>My Workspace</b></div>
 
+    <div class="spacer"></div>
+
     <div class="top-actions">
       <a class="btn-ghost" href="index.html" id="btnBackHome" title="Back to Home">Home</a>
-      <button class="btn-ghost" id="btnOpenQueue" title="Jump to Now Playing">Now Playing</button>
+      <button class="btn-ghost" id="btnOpenQueue" title="Toggle Right Panel">Now Playing</button>
       <button class="btn-green" id="btnQuickTest">Quick Test</button>
     </div>
+
+    <!-- RIGHT PANEL TOGGLE (TOP RIGHT CORNER SYMBOL) -->
+    <button class="npToggle" id="btnToggleRight" title="Open / Close Song Panel">›</button>
   </header>
 
   <!-- MAIN -->
   <main class="main">
+
     <div class="main-wrap">
 
       <!-- CREATE PANEL -->
@@ -727,10 +858,14 @@
         <div class="panel-header">
           <h3>Create</h3>
           <div class="spacer"></div>
-          <div class="pill" style="padding:6px 10px" id="draftPill">Draft: Saved</div>
+
+          <!-- Cadence + Spell/Punct buttons (replaces Draft pill) -->
+          <button class="btn-ghost" id="btnCadence" type="button" title="Cadence (changes every click)">Cadence 🎲</button>
+          <button class="btn-ghost" id="btnSpellPunct" type="button" title="Spell + Punctuation">Spell + Punct</button>
         </div>
 
         <div class="panel-body">
+
           <div class="field-label">Lyrics (User-only)</div>
           <textarea id="lyrics" placeholder="Write lyrics here..."></textarea>
 
@@ -740,21 +875,31 @@
             <div class="toggle" id="togInst">Instrumental</div>
           </div>
 
-          <div class="field-label">Style</div>
+          <div class="field-label">Style (type your own)</div>
           <input id="style" placeholder="e.g. industrial rock, cinematic, punchy drums" />
 
+          <!-- Dice for STYLE: picks ONE item only -->
           <div class="row" style="margin-top:10px">
-            <button class="btn-wide dice" id="btnDice" type="button">🎲 Random Dice (Style)</button>
+            <button class="btn-wide dice" id="btnDiceStyle" type="button">🎲 Dice (Style — 1 pick)</button>
           </div>
 
-          <div class="field-label">Style Presets</div>
+          <!-- STYLE SEARCH -->
+          <div class="field-label">Style Presets (search + pick 1)</div>
+          <div class="search" style="margin-top:6px">
+            <span class="muted">⌕</span>
+            <input id="presetSearch" placeholder="Search styles…" />
+          </div>
           <div class="chips" id="presetChips"></div>
 
-          <div class="field-label">Inspiration (chips)</div>
-          <div class="row" style="gap:8px; margin-top:4px; flex-wrap:wrap">
+          <!-- INSPIRATION SEARCH + DICE -->
+          <div class="field-label">Inspiration (search + pick 1)</div>
+          <div class="row" style="gap:8px; margin-top:6px; flex-wrap:wrap">
+            <div class="search" style="flex:1; min-width:220px">
+              <span class="muted">⌕</span>
+              <input id="inspoSearch" placeholder="Search inspiration…" />
+            </div>
+            <button class="btn-ghost" id="btnDiceInspo" type="button" title="Dice (Inspiration — 1 pick)">🎲</button>
             <button class="btn-ghost" id="btnClearChips" type="button">Clear</button>
-            <button class="btn-ghost" id="btnDiceInspo" type="button">🎲 Random Dice (Inspiration)</button>
-            <span class="muted" style="font-size:12px">Tap chips to add/remove</span>
           </div>
           <div class="chips" id="inspoChips"></div>
 
@@ -778,7 +923,6 @@
                   <input id="optIntensity" placeholder="e.g. low / medium / high" />
                 </div>
               </div>
-
               <div class="grid2" style="margin-top:10px">
                 <div>
                   <div class="field-label">Vocal Type</div>
@@ -800,7 +944,6 @@
                   </select>
                 </div>
               </div>
-
               <div class="row" style="margin-top:10px; flex-wrap:wrap">
                 <div class="toggle" id="optAllowCopy">Allow Copy</div>
                 <div class="toggle" id="optAllowDownload">Allow Download</div>
@@ -816,9 +959,8 @@
                 <div class="chip" data-tool="publish">Publish</div>
                 <div class="chip" data-tool="report">Report</div>
               </div>
-
               <div class="muted" style="margin-top:10px">
-                These tools are present (no missing buttons). They show “Soon” notices until backend exists.
+                These tools are present. They show “Soon” notices until backend exists.
               </div>
             </div>
           </details>
@@ -830,7 +972,7 @@
           </div>
 
           <div style="margin-top:10px; font-size:12px; color:var(--muted)">
-            PDFs must download directly. This build uses <b>jsPDF</b> and saves a real file.
+            PDFs download directly (jsPDF).
           </div>
         </div>
       </section>
@@ -855,7 +997,6 @@
               <div class="menu" id="filtersMenu">
                 <div class="mrow" data-filter="liked"><div class="left">👍 <b>Liked</b></div><input type="checkbox" /></div>
                 <div class="mrow" data-filter="public"><div class="left">🌐 <b>Public</b></div><input type="checkbox" /></div>
-                <div class="mrow" data-filter="draft"><div class="left">📝 <b>Drafts</b></div><input type="checkbox" checked/></div>
                 <hr />
                 <div class="mrow"><div class="left">🙈 <b>Hide Disliked</b></div><input type="checkbox" checked/></div>
               </div>
@@ -874,15 +1015,18 @@
         </div>
       </section>
 
-      <!-- NOW PLAYING (RIGHT PANEL) -->
-      <section class="panel" id="nowPlayingPanel">
-        <div class="panel-header">
-          <h3>Now Playing</h3>
+    </div>
+
+    <!-- RIGHT SLIDE PANEL -->
+    <div class="rightDock" id="rightDock">
+      <div class="rightPanel">
+        <div class="rpHeader">
+          <div class="rpTitle">Song Panel</div>
           <div class="spacer"></div>
           <div class="pill" id="npStatusPill">Ready</div>
-          <button class="btn-ghost" id="toggleNowPlaying" title="Collapse Now Playing">▶</button>
         </div>
-        <div class="panel-body">
+
+        <div class="rpBody">
           <div class="npCard">
             <div class="npTop">
               <div style="min-width:0">
@@ -893,6 +1037,14 @@
                 <span class="pDot"></span>
                 <span id="playStateText">Paused</span>
               </div>
+            </div>
+
+            <!-- Stat row like Suno -->
+            <div class="statRow">
+              <div class="stat" id="statPlays" title="Play count">↻ <span id="statPlaysN">0</span></div>
+              <div class="stat" id="statLikes" title="Likes">👍 <span id="statLikesN">0</span></div>
+              <div class="stat" id="statComments" title="Comments">💬 <span id="statCommentsN">0</span></div>
+              <div class="stat" id="statCopy" title="Copy song info">↗</div>
             </div>
 
             <div class="npControls">
@@ -911,12 +1063,27 @@
               </div>
             </div>
 
+            <div class="bigActionRow">
+              <button id="btnRemix" type="button">Remix</button>
+              <button id="btnRemaster" type="button">Remaster</button>
+            </div>
+
             <div class="npSectionTitle">Lyrics preview</div>
             <div class="lyricsPreview" id="npLyrics">(no lyrics)</div>
 
             <div class="copyRow">
               <button id="btnCopyLyrics" type="button">Copy Lyrics</button>
               <button id="btnCopyStyle" type="button">Copy Style</button>
+            </div>
+
+            <div class="rpMoreWrap">
+              <button class="rpMoreBtn" id="btnShowMore" type="button">
+                <span>Show More</span><span>▾</span>
+              </button>
+              <div class="rpMoreMenu" id="rpMoreMenu">
+                <div class="line"><b>Style:</b> <span id="rpStyle">—</span></div>
+                <div class="line"><b>Created:</b> <span id="rpDate">—</span></div>
+              </div>
             </div>
 
             <div class="npSectionTitle">Queue</div>
@@ -927,9 +1094,9 @@
             Rule: You can’t copy other people’s lyrics/styles unless they allow it.
           </div>
         </div>
-      </section>
-
+      </div>
     </div>
+
   </main>
 
   <!-- PLAYER -->
@@ -954,7 +1121,6 @@
     <button class="pbtn" id="btnDislike" title="Dislike">👎</button>
     <button class="pbtn" id="btnShare" title="Share">↗</button>
   </footer>
-
 </div>
 
 <div class="toast" id="toast"><span class="dot" id="toastDot"></span><span id="toastText">Saved</span></div>
@@ -982,6 +1148,21 @@
   let timer = null;
   let sortMode = "new";
 
+  // Cadence (simulated)
+  const CADENCE_POOL = [
+    "Tight / On-beat",
+    "Loose / Human swing",
+    "Fast / Punchy",
+    "Slow / Dramatic",
+    "Staccato / Chopped",
+    "Legato / Flowing",
+    "Aggressive / Percussive",
+    "Minimal / Spacey",
+    "Build / Escalating",
+    "Break / Stop-start"
+  ];
+  let cadenceIndex = -1;
+
   // ===== Presets & Dice =====
   const STYLE_PRESETS = [
     "industrial rock, punchy drums, gritty bass",
@@ -993,25 +1174,34 @@
     "metal, tight palm-mutes, big breakdown",
     "synthwave, neon leads, nostalgic",
     "trap-rock, heavy 808, distorted guitars",
-    "ambient cinematic, slow swell, haunting"
+    "ambient cinematic, slow swell, haunting",
+    "pop-punk, fast guitars, big hook",
+    "doom metal, slow heavy, crushing tone",
+    "future bass, wide chords, sidechain pump",
+    "drum & bass, fast break, rolling bass",
+    "post-rock, crescendos, reverb guitars"
   ];
   const INSPO_CHIPS = [
     "punchy drums","gritty bass","anthem hook","accelerating","dark synth",
     "choir lift","industrial hits","cinematic drops","tight guitars","neon leads",
-    "broken beat","aggressive vocal","whisper verse","big chorus","bridge breakdown"
+    "broken beat","aggressive vocal","whisper verse","big chorus","bridge breakdown",
+    "half-time drop","double-time verse","wide stereo","dry vocals","huge reverb"
   ];
-  const DICE_POOL = [
-    "industrial rock + cinematic chorus + punchy drums",
-    "electro-industrial + mechanical pulse + gritty bass",
-    "ska-punk + bright horns + fast upbeat",
-    "alt rock + stadium anthem + huge hook",
-    "reggae-rock + warm guitar + laid back groove",
-    "metal + tight riffs + crushing breakdown",
-    "synthwave + neon leads + nostalgic haze",
-    "trap-rock + heavy 808 + distorted guitars",
-    "dark pop + glossy synths + emotional vocal",
-    "cinematic + orchestral swells + drum impacts"
+
+  // Dice pools (single pick)
+  const DICE_STYLE_POOL = [
+    "industrial rock + cinematic chorus",
+    "electro-industrial + mechanical pulse",
+    "ska-punk + bright horns",
+    "alt rock + stadium anthem",
+    "reggae-rock + warm guitar",
+    "metal + crushing breakdown",
+    "synthwave + neon leads",
+    "trap-rock + heavy 808",
+    "dark pop + glossy synths",
+    "cinematic + orchestral swells"
   ];
+  const DICE_INSPO_POOL = [...INSPO_CHIPS];
 
   // ===== Toast =====
   let toastTimer = null;
@@ -1034,6 +1224,7 @@
     localStorage.setItem(KEY_TRACKS, JSON.stringify(tracks));
     localStorage.setItem(KEY_TRASH, JSON.stringify(trash));
     $("#trashCount").textContent = String(trash.length);
+    $("#trashCountNav").textContent = String(trash.length);
   }
   function purgeTrash(){
     const cutoff = Date.now() - 30*24*60*60*1000;
@@ -1050,10 +1241,10 @@
       style: $("#style").value,
       inspo: getChipState("#inspoChips"),
       presets: getChipState("#presetChips"),
-      opts: getOpts()
+      opts: getOpts(),
+      cadenceIndex
     };
     localStorage.setItem(KEY_DRAFT, JSON.stringify(draft));
-    $("#draftPill").textContent = "Draft: Saved";
   }
   function loadDraft(){
     try{
@@ -1064,7 +1255,7 @@
       if(d.inspo) setChipState("#inspoChips", d.inspo);
       if(d.presets) setChipState("#presetChips", d.presets);
       if(d.opts) setOpts(d.opts);
-      $("#draftPill").textContent = "Draft: Restored";
+      if(Number.isFinite(d.cadenceIndex)) cadenceIndex = d.cadenceIndex;
       toast("Draft restored","warn");
     }catch{}
   }
@@ -1076,13 +1267,18 @@
   // ===== UI helpers =====
   function closeMenus(){
     $$(".menu.open").forEach(m=>m.classList.remove("open"));
-    $$(".more-menu.open").forEach(m=>{
-      m.classList.remove("open");
-      m.style.top = "";
-      m.style.left = "";
-    });
+    // close fixed more menus
+    $$(".more-menu.open").forEach(m=>m.classList.remove("open"));
+    $("#rpMoreMenu").classList.remove("open");
   }
-  document.addEventListener("click", closeMenus);
+  document.addEventListener("click", (e) => {
+    // don't auto-close if clicking inside the fixed more menu
+    const inMore = e.target.closest(".more-menu") || e.target.closest(".more-wrap");
+    const inRpMore = e.target.closest("#rpMoreMenu") || e.target.closest("#btnShowMore");
+    const inDrop = e.target.closest(".dropdown");
+    if(inMore || inDrop || inRpMore) return;
+    closeMenus();
+  });
 
   function bindDropdown(dropId, menuId){
     const drop = $(dropId);
@@ -1117,48 +1313,49 @@
     e.stopPropagation();
   });
 
-  // Sidebar collapse (arrow inside brand)
-  function syncSidebarArrow(){
+  // Sidebar collapse (arrow symbol indicates direction)
+  function updateCollapseArrow(){
     const collapsed = document.body.classList.contains("collapsed");
-    $("#toggleSidebar").textContent = collapsed ? "▶" : "◀";
-    $("#toggleSidebar").title = collapsed ? "Expand sidebar" : "Collapse sidebar";
+    $("#collapseArrow").textContent = collapsed ? "▶" : "◀";
   }
-  $("#toggleSidebar").addEventListener("click",(e)=>{
-    e.stopPropagation();
+  $("#toggleSidebar").addEventListener("click",()=>{
     document.body.classList.toggle("collapsed");
-    syncSidebarArrow();
+    updateCollapseArrow();
   });
-  syncSidebarArrow();
+  updateCollapseArrow();
 
-  // Now Playing collapse
-  function syncNpArrow(){
-    const c = document.body.classList.contains("np-collapsed");
-    $("#toggleNowPlaying").textContent = c ? "◀" : "▶";
-    $("#toggleNowPlaying").title = c ? "Expand Now Playing" : "Collapse Now Playing";
+  // Right panel (collapsible)
+  function setRightOpen(open){
+    document.body.classList.toggle("npOpen", !!open);
+    $("#btnToggleRight").textContent = open ? "‹" : "›";
   }
-  $("#toggleNowPlaying").addEventListener("click",(e)=>{
+  $("#btnToggleRight").addEventListener("click",(e)=>{
     e.stopPropagation();
-    document.body.classList.toggle("np-collapsed");
-    syncNpArrow();
+    setRightOpen(!document.body.classList.contains("npOpen"));
   });
-  syncNpArrow();
+  $("#btnOpenQueue").addEventListener("click",(e)=>{
+    e.stopPropagation();
+    setRightOpen(!document.body.classList.contains("npOpen"));
+    toast(document.body.classList.contains("npOpen") ? "Panel opened" : "Panel closed","ok");
+  });
+
+  // Trash nav
+  $("#trashLinkNav").addEventListener("click",(e)=>{
+    e.preventDefault();
+    toast("Trash kept 30 days (auto purge)","warn");
+  });
 
   // Toggles
   function toggleOn(el){ el.classList.toggle("on"); saveDraft(); }
   $("#togAudio").addEventListener("click",()=>toggleOn($("#togAudio")));
   $("#togLyrics").addEventListener("click",()=>toggleOn($("#togLyrics")));
   $("#togInst").addEventListener("click",()=>toggleOn($("#togInst")));
-
   $("#optAllowCopy").addEventListener("click",()=>toggleOn($("#optAllowCopy")));
   $("#optAllowDownload").addEventListener("click",()=>toggleOn($("#optAllowDownload")));
   $("#optDraftAutosave").addEventListener("click",()=>{
     toggleOn($("#optDraftAutosave"));
-    $("#draftPill").textContent = draftEnabled() ? "Draft: Saved" : "Draft: Off";
+    toast(draftEnabled() ? "Autosave on" : "Autosave off","warn");
   });
-
-  // Trash link (nav + footer)
-  $("#navTrash").addEventListener("click",(e)=>{ e.preventDefault(); toast("Trash is kept 30 days (auto purge)","warn"); });
-  $("#trashLink").addEventListener("click",()=> toast("Trash is kept 30 days (auto purge)","warn"));
 
   // Chips creation
   function mountChips(boxId, items){
@@ -1174,50 +1371,6 @@
   mountChips("#presetChips", STYLE_PRESETS);
   mountChips("#inspoChips", INSPO_CHIPS);
 
-  function chipClickHandler(boxId){
-    $(boxId).addEventListener("click",(e)=>{
-      const c = e.target.closest(".chip");
-      if(!c) return;
-
-      // Inspiration: one at a time (slot behavior)
-      if(boxId === "#inspoChips"){
-        $$("#inspoChips .chip.on").forEach(x=>{ if(x!==c) x.classList.remove("on"); });
-        c.classList.toggle("on");
-        syncStyleFromChips(true);
-        saveDraft();
-        return;
-      }
-
-      c.classList.toggle("on");
-      saveDraft();
-    });
-  }
-  chipClickHandler("#presetChips");
-  chipClickHandler("#inspoChips");
-
-  // Preset chips: click sets/appends style
-  $("#presetChips").addEventListener("click",(e)=>{
-    const c = e.target.closest(".chip");
-    if(!c) return;
-    if(c.classList.contains("on")){
-      const preset = c.textContent.trim();
-      if(preset){
-        const cur = $("#style").value.trim();
-        $("#style").value = cur ? (cur + " | " + preset) : preset;
-        rememberStyle($("#style").value.trim());
-        toast("Style added");
-      }
-    }
-    saveDraft();
-  });
-
-  $("#btnClearChips").addEventListener("click",()=>{
-    $$("#inspoChips .chip.on").forEach(x=>x.classList.remove("on"));
-    syncStyleFromChips(true);
-    toast("Chips cleared");
-    saveDraft();
-  });
-
   function getChipState(boxId){
     const out = {};
     $$(boxId + " .chip").forEach((c,i)=> out[i] = c.classList.contains("on"));
@@ -1227,20 +1380,51 @@
     $$(boxId + " .chip").forEach((c,i)=> c.classList.toggle("on", !!state[i]));
   }
 
-  // Sync style from inspo chips (single)
-  function syncStyleFromChips(forceReplace=false){
-    const on = [...$$("#inspoChips .chip.on")].map(x=>x.textContent.trim()).filter(Boolean);
-    const cur = $("#style").value.trim();
-    const base = cur.includes(" • ") ? cur.split(" • ")[0].trim() : cur;
+  // Single-select chips (ONLY ONE ON at a time)
+  function singleSelectChip(boxId, chipEl){
+    $$(boxId + " .chip.on").forEach(x=>{ if(x!==chipEl) x.classList.remove("on"); });
+    chipEl.classList.add("on");
+  }
 
-    if(!on.length){
-      if(forceReplace){
-        const idx = cur.indexOf(" • ");
-        if(idx !== -1) $("#style").value = cur.slice(0, idx).trim();
-      }
-      return;
+  // Style presets: clicking picks 1 and sets style field to EXACTLY that preset (no append)
+  $("#presetChips").addEventListener("click",(e)=>{
+    const c = e.target.closest(".chip");
+    if(!c) return;
+    singleSelectChip("#presetChips", c);
+    const preset = c.textContent.trim();
+    if(preset){
+      $("#style").value = preset;
+      rememberStyle($("#style").value.trim());
+      toast("Style selected","ok");
     }
-    $("#style").value = (base ? base : "") + (base ? " • " : "") + on[0];
+    saveDraft();
+  });
+
+  // Inspiration chips: clicking picks 1 and injects it as a single inspiration tag in style field using " • "
+  $("#inspoChips").addEventListener("click",(e)=>{
+    const c = e.target.closest(".chip");
+    if(!c) return;
+    singleSelectChip("#inspoChips", c);
+    syncStyleFromSingleInspo(c.textContent.trim());
+    saveDraft();
+  });
+
+  // Clear inspiration chips
+  $("#btnClearChips").addEventListener("click",()=>{
+    $$("#inspoChips .chip.on").forEach(x=>x.classList.remove("on"));
+    // remove inspo suffix
+    const cur = $("#style").value || "";
+    const idx = cur.indexOf(" • ");
+    if(idx !== -1) $("#style").value = cur.slice(0, idx).trim();
+    toast("Inspiration cleared","ok");
+    saveDraft();
+  });
+
+  function syncStyleFromSingleInspo(tag){
+    if(!tag) return;
+    const cur = ($("#style").value || "").trim();
+    const base = cur.includes(" • ") ? cur.split(" • ")[0].trim() : cur;
+    $("#style").value = base ? (base + " • " + tag) : tag;
     rememberStyle($("#style").value.trim());
   }
 
@@ -1258,30 +1442,47 @@
     setRecentStyles(arr);
   }
 
-  // Dice (STYLE): pick ONE item only (replace)
-  $("#btnDice").addEventListener("click",()=>{
-    const pick = DICE_POOL[Math.floor(Math.random()*DICE_POOL.length)];
+  // Style dice: SET style to ONE pick only
+  $("#btnDiceStyle").addEventListener("click",()=>{
+    const pick = DICE_STYLE_POOL[Math.floor(Math.random()*DICE_STYLE_POOL.length)];
     $("#style").value = pick;
     rememberStyle($("#style").value.trim());
-    toast("Dice rolled 🎲");
+    // reflect preset chips: none selected (dice is its own)
+    $$("#presetChips .chip.on").forEach(x=>x.classList.remove("on"));
+    toast("Style dice 🎲","ok");
     saveDraft();
   });
 
-  // Dice (INSPIRATION): pick ONE chip only (replace selection)
+  // Inspiration dice: pick ONE inspiration chip and set it
   $("#btnDiceInspo").addEventListener("click",()=>{
-    const pick = INSPO_CHIPS[Math.floor(Math.random()*INSPO_CHIPS.length)];
+    const pick = DICE_INSPO_POOL[Math.floor(Math.random()*DICE_INSPO_POOL.length)];
+    // find chip and select it
     const chips = [...$$("#inspoChips .chip")];
-    chips.forEach(c=>c.classList.toggle("on", c.textContent.trim()===pick));
-    syncStyleFromChips(true);
-    toast("Inspiration rolled 🎲");
+    const chip = chips.find(x=>x.textContent.trim()===pick);
+    if(chip){
+      singleSelectChip("#inspoChips", chip);
+      syncStyleFromSingleInspo(pick);
+    } else {
+      syncStyleFromSingleInspo(pick);
+    }
+    toast("Inspo dice 🎲","ok");
     saveDraft();
   });
 
-  // Advanced tool chips
-  $$("#advBox .chipbar .chip").forEach(ch=>{
-    ch.addEventListener("click",()=>{
-      toast("Soon","warn");
+  // Search filter for presets/inspo (hide non-matching chips)
+  function filterChips(inputId, chipsId){
+    const q = ($(inputId).value || "").trim().toLowerCase();
+    $$(chipsId + " .chip").forEach(ch=>{
+      const hit = ch.textContent.toLowerCase().includes(q);
+      ch.style.display = hit ? "" : "none";
     });
+  }
+  $("#presetSearch").addEventListener("input", ()=>filterChips("#presetSearch","#presetChips"));
+  $("#inspoSearch").addEventListener("input", ()=>filterChips("#inspoSearch","#inspoChips"));
+
+  // Advanced tool chips (Soon)
+  $$("#advBox .chipbar .chip").forEach(ch=>{
+    ch.addEventListener("click",()=> toast("Soon","warn"));
   });
 
   // Options get/set
@@ -1319,6 +1520,73 @@
     saveDraft();
   });
 
+  // Cadence button: every click changes, no repeat back-to-back; includes revert to original
+  let originalLyrics = "";
+  $("#btnCadence").addEventListener("click",()=>{
+    const lyr = $("#lyrics").value || "";
+    if(!originalLyrics) originalLyrics = lyr;
+
+    // if empty lyrics, just cycle label
+    let next = Math.floor(Math.random()*CADENCE_POOL.length);
+    if(next === cadenceIndex) next = (next + 1) % CADENCE_POOL.length;
+    cadenceIndex = next;
+
+    // Simulated cadence formatting: tiny non-destructive spacing tweaks (safe)
+    // DOES NOT remove user's words.
+    let out = lyr;
+    if(out.trim()){
+      // simple effect: add blank lines between stanzas depending on cadence index
+      if(cadenceIndex % 2 === 0){
+        out = out.replace(/\n{2,}/g, "\n\n").replace(/\n/g, "\n");
+      } else {
+        out = out.replace(/\n{2,}/g, "\n\n").replace(/\n/g, "\n");
+        out = out.replace(/\n/g, "\n"); // keeps stable
+      }
+      $("#lyrics").value = out;
+    }
+    toast("Cadence: " + CADENCE_POOL[cadenceIndex],"ok");
+    saveDraft();
+  });
+
+  // Revert cadence: long press / double click behavior (simple)
+  $("#btnCadence").addEventListener("dblclick",()=>{
+    if(originalLyrics){
+      $("#lyrics").value = originalLyrics;
+      toast("Cadence reverted","warn");
+      saveDraft();
+    }
+  });
+
+  // Spell + Punct button
+  $("#btnSpellPunct").addEventListener("click",()=>{
+    const text = ($("#lyrics").value || "");
+    if(!text.trim()){
+      toast("No lyrics","warn");
+      return;
+    }
+    // Safe cleanup: spacing around punctuation + collapse double spaces + ensure end punctuation per line only if needed
+    let cleaned = text.replace(/\r/g,"");
+    while(cleaned.includes("  ")) cleaned = cleaned.replace(/  +/g," ");
+    cleaned = cleaned
+      .replace(/ \,/g, ",")
+      .replace(/ \./g, ".")
+      .replace(/ \!/g, "!")
+      .replace(/ \?/g, "?")
+      .replace(/\(\s+/g,"(")
+      .replace(/\s+\)/g,")");
+
+    // light capitalization: first char of each line (non-destructive)
+    cleaned = cleaned.split("\n").map(line=>{
+      const t = line.trimEnd();
+      if(!t) return "";
+      return t.charAt(0).toUpperCase() + t.slice(1);
+    }).join("\n");
+
+    $("#lyrics").value = cleaned;
+    toast("Spell + punct applied","ok");
+    saveDraft();
+  });
+
   // ===== Create Track =====
   function titleFromLyrics(lyrics){
     const first = (lyrics||"").split("\n").map(x=>x.trim()).find(Boolean) || "Untitled";
@@ -1352,15 +1620,20 @@
       createdAt: Date.now(),
       lyrics,
       liked:false,
-      disliked:false
+      disliked:false,
+
+      // stats placeholders
+      plays: 0,
+      comments: 0
     };
     tracks.unshift(t);
     saveAll();
     render();
     selectTrack(t.id, true);
     toast("Created","ok");
+
+    // Clear panel for next song (lyrics cleared; style kept)
     $("#lyrics").value = "";
-    $("#draftPill").textContent = "Draft: Saved";
     saveDraft();
   }
   $("#btnCreate").addEventListener("click", createTrack);
@@ -1383,27 +1656,65 @@
 
   // ===== Render Feed =====
   $("#search").addEventListener("input", render);
-
   function passesFilter(t){
     const fLiked = $("#filtersMenu [data-filter='liked'] input").checked;
     const fPublic = $("#filtersMenu [data-filter='public'] input").checked;
-    const fDraft = $("#filtersMenu [data-filter='draft'] input").checked;
-
+    const hideDis = $("#filtersMenu .mrow:last-of-type input").checked;
     if(fLiked && !t.liked) return false;
     if(fPublic && t.visibility !== "public") return false;
-    if(fDraft && false) { /* reserved */ }
+    if(hideDis && t.disliked) return false;
     return true;
+  }
+
+  // Fixed menu positioning for per-track menu (so it never hides behind anything)
+  function positionFixedMenu(menuEl, anchorEl){
+    const r = anchorEl.getBoundingClientRect();
+    const pad = 8;
+    const maxW = 260;
+    menuEl.style.minWidth = "220px";
+    menuEl.style.maxWidth = maxW + "px";
+
+    // initial position: under anchor
+    let top = r.bottom + pad;
+    let left = r.right - 220;
+
+    // keep inside viewport
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    // measure after display
+    menuEl.style.visibility = "hidden";
+    menuEl.classList.add("open");
+    const mr = menuEl.getBoundingClientRect();
+    menuEl.classList.remove("open");
+    menuEl.style.visibility = "";
+
+    const mw = mr.width || 220;
+    const mh = mr.height || 200;
+
+    left = r.right - mw;
+    if(left < pad) left = pad;
+    if(left + mw > vw - pad) left = vw - mw - pad;
+
+    if(top + mh > vh - pad){
+      top = r.top - mh - pad;
+    }
+    if(top < pad) top = pad;
+
+    menuEl.style.left = left + "px";
+    menuEl.style.top = top + "px";
   }
 
   function render(){
     const box = $("#tracks");
     box.innerHTML = "";
+    purgeTrash();
+    $("#trashCount").textContent = String(trash.length);
+    $("#trashCountNav").textContent = String(trash.length);
 
     let list = [...tracks];
 
-    purgeTrash();
-    $("#trashCount").textContent = String(trash.length);
-
+    // search
     const q = $("#search").value.trim().toLowerCase();
     if(q){
       list = list.filter(t =>
@@ -1413,8 +1724,10 @@
       );
     }
 
+    // filters
     list = list.filter(passesFilter);
 
+    // sort
     list.sort((a,b)=> sortMode==="new" ? (b.createdAt-a.createdAt) : (a.createdAt-b.createdAt));
 
     list.forEach(t => box.appendChild(trackCard(t)));
@@ -1436,21 +1749,27 @@
 
     const meta = document.createElement("div");
     meta.className = "meta";
+
     const title = document.createElement("div");
     title.className = "title";
+
     const b = document.createElement("span");
     b.textContent = t.title || "Untitled";
+
     const v = document.createElement("span");
     v.className = "tagv";
     v.textContent = t.v || "v5";
+
     const st = document.createElement("span");
     st.className = "statusTag";
     st.textContent = (t.visibility==="public" ? "Public" : "Private");
+
     title.appendChild(b); title.appendChild(v); title.appendChild(st);
 
     const desc = document.createElement("div");
     desc.className = "desc";
     desc.textContent = t.desc || "No style set";
+
     meta.appendChild(title);
     meta.appendChild(desc);
 
@@ -1487,6 +1806,7 @@
 
     const moreWrap = document.createElement("div");
     moreWrap.className = "more-wrap";
+
     const btnMore = document.createElement("button");
     btnMore.className = "iconbtn";
     btnMore.textContent = "⋯";
@@ -1516,22 +1836,15 @@
 
     btnMore.addEventListener("click",(e)=>{
       e.stopPropagation();
-      // close others
+      // close other open menus
       $$(".more-menu.open").forEach(x=>{ if(x!==mm) x.classList.remove("open"); });
 
-      // toggle + position next to button (fixed, above everything)
-      const willOpen = !mm.classList.contains("open");
-      if(!willOpen){
+      // toggle this menu
+      if(mm.classList.contains("open")){
         mm.classList.remove("open");
         return;
       }
-
-      const r = btnMore.getBoundingClientRect();
-      const top = Math.min(r.bottom + 8, window.innerHeight - 240);
-      const left = Math.min(r.right - 210, window.innerWidth - 220);
-
-      mm.style.top = `${Math.max(8, top)}px`;
-      mm.style.left = `${Math.max(8, left)}px`;
+      positionFixedMenu(mm, btnMore);
       mm.classList.add("open");
     });
 
@@ -1560,27 +1873,51 @@
     else setPlaying(false);
   }
 
+  function fmtDateTime(ts){
+    try{
+      const d = new Date(ts);
+      const date = d.toLocaleDateString(undefined,{year:"numeric",month:"2-digit",day:"2-digit"});
+      const time = d.toLocaleTimeString(undefined,{hour:"2-digit",minute:"2-digit"});
+      return `${date} ${time}`;
+    }catch{ return "—"; }
+  }
+
   function updateNowPlaying(id){
     const t = tracks.find(x=>x.id===id);
+
     $("#playerTitle").textContent = t ? t.title : "No track selected";
     $("#playerSub").textContent = t ? (t.desc || "—") : "—";
+
     $("#npTitle").textContent = t ? t.title : "No track selected";
     $("#npSub").textContent = t ? (t.desc || "—") : "—";
     $("#npLyrics").textContent = t ? (t.lyrics || "(no lyrics)") : "(no lyrics)";
 
+    // Right panel show more info
+    $("#rpStyle").textContent = t ? (t.style || "—") : "—";
+    $("#rpDate").textContent = t ? fmtDateTime(t.createdAt) : "—";
+
+    // stats placeholders
+    $("#statPlaysN").textContent = String(t ? (t.plays||0) : 0);
+    $("#statLikesN").textContent = String(t ? (t.liked ? 1 : 0) : 0);
+    $("#statCommentsN").textContent = String(t ? (t.comments||0) : 0);
+
+    // Copy protection
     const allow = t ? (t.owned || (t.visibility==="public" && t.allowCopy)) : false;
     $("#npLyrics").classList.toggle("noCopy", !allow);
     $("#btnCopyLyrics").disabled = !allow;
     $("#btnCopyStyle").disabled = !allow;
 
+    // Reset time
     sec = 0;
     updateProgress();
   }
 
   function setPlaying(on){
     isPlaying = !!on;
+
     $("#btnPlay").textContent = isPlaying ? "❚❚" : "▶";
     $("#npPlay").textContent = isPlaying ? "❚❚ Pause" : "▶ Play";
+
     $("#playState").classList.toggle("playing", isPlaying);
     $("#playStateText").textContent = isPlaying ? "Playing" : "Paused";
     $("#npStatusPill").textContent = isPlaying ? "Playing" : "Ready";
@@ -1596,6 +1933,11 @@
         $("#npStatusPill").textContent = "Ready";
         return;
       }
+
+      // increment play count once per play start
+      const t = tracks.find(x=>x.id===nowId);
+      if(t){ t.plays = (t.plays||0) + 1; saveAll(); $("#statPlaysN").textContent = String(t.plays); }
+
       if(!timer){
         timer = setInterval(()=>{
           if(!isPlaying) return;
@@ -1607,7 +1949,7 @@
   }
 
   function updateProgress(){
-    const dur = 180;
+    const dur = 180; // simulated 3:00
     const pct = clamp((sec/dur)*100, 0, 100);
     $("#fill").style.width = pct + "%";
     $("#npFill").style.width = pct + "%";
@@ -1622,7 +1964,6 @@
     sec = Math.floor(pct * 180);
     updateProgress();
   }
-
   $("#progress").addEventListener("click",(e)=> seekFromBar(e.currentTarget, e.clientX));
   $("#npProgress").addEventListener("click",(e)=> seekFromBar(e.currentTarget, e.clientX));
 
@@ -1640,22 +1981,44 @@
   $("#npPrev").addEventListener("click",()=> nextTrack(-1));
   $("#npNext").addEventListener("click",()=> nextTrack(1));
 
+  // Likes in bottom bar apply to current track
   $("#btnLike").addEventListener("click",()=>{
     const t = tracks.find(x=>x.id===nowId); if(!t) return toast("No track","warn");
     t.liked = !t.liked; if(t.liked) t.disliked=false;
     saveAll(); render(); toast(t.liked ? "Liked" : "Unliked");
+    $("#statLikesN").textContent = String(t.liked ? 1 : 0);
   });
   $("#btnDislike").addEventListener("click",()=>{
     const t = tracks.find(x=>x.id===nowId); if(!t) return toast("No track","warn");
     t.disliked = !t.disliked; if(t.disliked) t.liked=false;
     saveAll(); render(); toast(t.disliked ? "Disliked" : "Undisliked");
+    $("#statLikesN").textContent = String(t.liked ? 1 : 0);
   });
   $("#btnShare").addEventListener("click",()=> toast("Share (Soon)","warn"));
 
-  $("#btnOpenQueue").addEventListener("click",()=>{
-    toast("Now Playing","ok");
+  // Right panel buttons
+  $("#btnRemix").addEventListener("click",()=> toast("Remix (opens Editor later)","warn"));
+  $("#btnRemaster").addEventListener("click",()=> toast("Remaster (opens Editor later)","warn"));
+
+  // Show more dropdown (style/date)
+  $("#btnShowMore").addEventListener("click",(e)=>{
+    e.stopPropagation();
+    $("#rpMoreMenu").classList.toggle("open");
   });
 
+  // Stat row behavior
+  $("#statPlays").addEventListener("click",()=> toast("Play count","ok"));
+  $("#statLikes").addEventListener("click",()=> toast("Likes","ok"));
+  $("#statComments").addEventListener("click",()=> toast("Comments (Soon)","warn"));
+  $("#statCopy").addEventListener("click",()=>{
+    const t = tracks.find(x=>x.id===nowId);
+    if(!t) return toast("No track","warn");
+    const txt = `Title: ${t.title}\nStyle: ${t.style||""}\nCreated: ${fmtDateTime(t.createdAt)}`;
+    navigator.clipboard?.writeText(txt);
+    toast("Copied song info","ok");
+  });
+
+  // Copy buttons (respect allow)
   $("#btnCopyLyrics").addEventListener("click",()=>{
     const t = tracks.find(x=>x.id===nowId); if(!t) return;
     navigator.clipboard?.writeText(t.lyrics || "");
@@ -1671,31 +2034,24 @@
   function safeName(name){
     return (name||"file").replace(/[^a-z0-9\-_ ]/gi,"").trim().slice(0,40) || "file";
   }
-
   function downloadLyricsPDF(title, style, lyrics){
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ unit:"pt", format:"letter" });
-
     const margin = 48;
     let y = 64;
-
     doc.setFont("helvetica","bold");
     doc.setFontSize(16);
     doc.text(title || "Sing My Lyrics", margin, y);
     y += 18;
-
     doc.setFont("helvetica","normal");
     doc.setFontSize(11);
     doc.setTextColor(120);
     doc.text(`Style: ${style || "—"}`, margin, y);
     y += 18;
-
     doc.setTextColor(30);
     doc.setFontSize(12);
-
     const body = (lyrics || "").trim() || "(No lyrics provided)";
     const lines = doc.splitTextToSize(body, 520);
-
     lines.forEach(line => {
       if(y > 740){
         doc.addPage();
@@ -1704,23 +2060,19 @@
       doc.text(line, margin, y);
       y += 16;
     });
-
     doc.save(`${safeName(title)}-lyrics.pdf`);
     toast("Lyrics PDF downloaded","ok");
   }
-
   function downloadSheetPDF(title){
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ unit:"pt", format:"letter" });
-
     doc.setFont("helvetica","bold");
     doc.setFontSize(16);
     doc.text(`Sheet Music PDF (placeholder)`, 48, 64);
-
     doc.setFont("helvetica","normal");
     doc.setFontSize(12);
     doc.text(`Title: ${title || "Untitled"}`, 48, 92);
-
+    // simple staff lines placeholder
     let y = 140;
     for(let staff=0; staff<6; staff++){
       for(let i=0; i<5; i++){
@@ -1729,11 +2081,9 @@
       }
       y += 80;
     }
-
     doc.setFontSize(10);
     doc.setTextColor(120);
     doc.text("Placeholder staff. Real notation will be wired later.", 48, 740);
-
     doc.save(`${safeName(title)}-sheet.pdf`);
     toast("Sheet PDF downloaded","ok");
   }
@@ -1774,14 +2124,11 @@
 
   // ===== Draft listeners =====
   ["#lyrics","#style","#optBpm","#optMood","#optIntensity","#optVocal","#optVisibility"].forEach(id=>{
-    $(id).addEventListener("input", ()=>{
-      $("#draftPill").textContent = "Draft: Saving…";
-      saveDraft();
-    });
+    $(id).addEventListener("input", saveDraft);
     $(id).addEventListener("change", saveDraft);
   });
 
-  // ===== Initial seed tracks (if empty) =====
+  // ===== Seed tracks (if empty) =====
   function seedIfEmpty(){
     if(tracks.length) return;
     tracks = [
@@ -1800,7 +2147,9 @@
         createdAt: Date.now() - 1000*60*30,
         lyrics:"Where you look\nI follow\nIn the dark\nWe glow",
         liked:false,
-        disliked:false
+        disliked:false,
+        plays: 0,
+        comments: 0
       }
     ];
     saveAll();
@@ -1817,6 +2166,9 @@
   // Load draft after UI is mounted
   loadDraft();
 
+  // Default: right panel closed
+  setRightOpen(false);
+
   render();
 
   // Select first track but do NOT autoplay
@@ -1829,7 +2181,6 @@
     updateNowPlaying(null);
     setPlaying(false);
   }
-
 })();
 </script>
 </body>
