@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>SingMyLyrics — SML</title>
+  <title>SingMyLyrics — Create</title>
 
   <!-- jsPDF (REAL downloads) -->
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
@@ -60,12 +60,17 @@
     body.collapsed .app{grid-template-columns: 76px 1fr;}
     body.collapsed .nav-label{display:none}
     body.collapsed .brand-text{display:none}
+    body.collapsed .account-pill{display:none}
     body.collapsed .credits-big{display:none}
     body.collapsed .logo{display:none}
-    body.collapsed .brand{justify-content:center; padding:10px 8px;}
+    body.collapsed .brand{
+      justify-content:center;
+      padding:10px 8px;
+    }
     body.collapsed .brand-toggle{
-      width:72px; height:72px; border-radius:16px; display:grid; place-items:center;
-      font-size:48px; line-height:1;
+      width:52px;
+      height:40px;
+      border-radius:14px;
     }
 
     /* Now Playing collapse */
@@ -79,19 +84,35 @@
     .brand{
       display:flex; align-items:center; gap:10px;
       padding:14px 12px 10px;
-      position:sticky; top:0;
-      background:linear-gradient(180deg,#0f1620,#0f1620cc);
-      backdrop-filter: blur(8px);
+      position:sticky; top:0; background:linear-gradient(180deg,#0f1620,#0f1620cc); backdrop-filter: blur(8px);
       border-bottom:1px solid var(--stroke);
       z-index:5;
     }
-    .brand-left{display:flex; align-items:center; gap:12px; min-width:0;}
-    .brand-toggle{
-      background:#ffffff10; border:1px solid #ffffff14; color:var(--text);
-      width:44px; height:34px; border-radius:12px; cursor:pointer;
-      font-weight:1000; display:grid; place-items:center; user-select:none;
+    .brand-left{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      flex:1;
+      min-width:0;
     }
-    .brand-row{display:flex; align-items:center; justify-content:flex-start; gap:10px; min-width:0;}
+    .brand-toggle{
+      background:#ffffff10;
+      border:1px solid #ffffff14;
+      color:var(--text);
+      width:44px;
+      height:34px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:1000;
+      display:grid;
+      place-items:center;
+      user-select:none;
+    }
+    .brand-toggle:hover{background:#ffffff14}
+    .brand-row{
+      display:flex; align-items:center; gap:10px;
+      min-width:0;
+    }
     .logo{
       width:42px; height:42px; border-radius:14px;
       background:linear-gradient(135deg,#2bd576,#5fd3ff);
@@ -99,19 +120,18 @@
       display:grid; place-items:center; font-weight:1000; color:#00150a;
       flex:0 0 auto;
     }
-    .brand-text{display:flex; align-items:center; line-height:1; min-width:0;}
-    .brand-text .t1{font-size:42px; font-weight:1000; line-height:1; display:block; letter-spacing:.6px}
+    .brand-text{line-height:1.1; min-width:0}
+    .brand-text .t1{font-weight:1000; letter-spacing:.8px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+    .brand-text .t2{font-size:12px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 
     .user{display:flex; align-items:center; gap:10px; padding:10px 12px}
     .avatar{
       width:34px; height:34px; border-radius:50%;
-      background: radial-gradient(circle at 30% 30%, #fff4, #0000 55%),
-                  linear-gradient(135deg,#7c4dff,#00d4ff);
+      background: radial-gradient(circle at 30% 30%, #fff4, #0000 55%), linear-gradient(135deg,#7c4dff,#00d4ff);
       border:1px solid #ffffff22;
     }
     .user .name{font-weight:900; font-size:13px}
     .user .handle{font-size:12px; color:var(--muted)}
-
     .nav{padding:6px 8px 14px}
     .nav a{
       display:flex; align-items:center; gap:10px;
@@ -120,7 +140,6 @@
       text-decoration:none;
       color:var(--text);
       opacity:.92;
-      cursor:pointer;
     }
     .nav a:hover{background:#ffffff08}
     .nav a.active{background:#ffffff10; border:1px solid #ffffff12}
@@ -141,6 +160,15 @@
       border-radius:999px;
     }
     .credits-big{padding:0 12px 10px; color:#cfe1ff; font-weight:900; font-size:13px; opacity:.9;}
+    .account-pill{
+      margin: 0 12px 10px;
+      background:#ffffff12;
+      border:1px solid #ffffff12;
+      border-radius:999px;
+      padding:10px 12px;
+      display:flex; justify-content:center;
+      font-weight:1000;
+    }
     .side-footer{
       padding:10px 12px 18px;
       color:var(--muted);
@@ -161,11 +189,7 @@
       user-select:none;
       white-space:nowrap;
     }
-    .pill .dot{
-      width:8px;height:8px;border-radius:50%;
-      background:var(--green);
-      box-shadow:0 0 0 3px #2bd57622
-    }
+    .pill .dot{width:8px;height:8px;border-radius:50%;background:var(--green); box-shadow:0 0 0 3px #2bd57622}
     .spacer{flex:1}
     .top-actions{display:flex; align-items:center; gap:8px}
     .btn-ghost{
@@ -188,8 +212,9 @@
       cursor:pointer;
     }
     .btn-green:hover{filter:brightness(1.05)}
+    .kbd{opacity:.7; font-size:11px; padding:1px 6px; border:1px solid #ffffff22; border-radius:8px; margin-left:6px}
 
-    /* ===== MAIN GRID ===== */
+    /* ===== MAIN GRID (Composer + Feed + Now Playing) ===== */
     .main-wrap{
       height:100%;
       display:grid;
@@ -216,11 +241,10 @@
     .panel-header h3{margin:0; font-size:14px; letter-spacing:.2px}
     .panel-body{padding:12px; overflow:auto; min-height:0}
 
-    /* Feed panel: prevent 3-dot menu from clipping */
+    /* Feed panel: prevent 3-dot menu from going behind/clipping */
     #feedPanel .panel-body{overflow:visible}
     #feedPanel .tracks{max-height:calc(100vh - 56px - 72px - 24px - 56px - 24px); overflow:auto; padding-right:6px}
 
-    /* Inputs */
     .field-label{font-size:12px; color:var(--muted); margin:10px 0 6px}
     textarea, input, select{
       width:100%;
@@ -299,7 +323,8 @@
     /* ===== FEED CONTROLS ===== */
     .feed-top{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
     .search{
-      flex:1; min-width:220px;
+      flex:1;
+      min-width:220px;
       display:flex; align-items:center; gap:8px;
       background:#0b1220;
       border:1px solid var(--stroke);
@@ -428,11 +453,11 @@
       background:#0e1520;
       border:1px solid #ffffff14;
       border-radius:14px;
-      min-width:230px;
+      min-width:210px;
       padding:8px;
       box-shadow: var(--shadow);
       display:none;
-      z-index:9999;
+      z-index:9999; /* always above */
     }
     .more-menu.open{display:block}
     .more-menu button{
@@ -449,7 +474,6 @@
     .more-menu button:hover{background:#ffffff10}
     .more-menu button.danger{color:#ffd1d7}
     .more-menu button.danger:hover{background:#ff5b6e22}
-    .more-menu small{display:block; padding:6px 10px; color:var(--muted)}
 
     /* ===== NOW PLAYING (RIGHT PANEL) ===== */
     .npCard{
@@ -550,7 +574,11 @@
       max-height:160px;
       overflow:auto;
     }
-    .noCopy{user-select:none; -webkit-user-select:none; -ms-user-select:none;}
+    .noCopy{
+      user-select:none;
+      -webkit-user-select:none;
+      -ms-user-select:none;
+    }
     .copyRow{display:flex; gap:8px; margin-top:8px}
     .copyRow button{
       flex:1;
@@ -564,6 +592,26 @@
     }
     .copyRow button:hover{background:#ffffff14}
     .copyRow button[disabled]{opacity:.45; cursor:not-allowed}
+    .toast{
+      position:fixed;
+      bottom:90px;
+      left:50%;
+      transform:translateX(-50%);
+      background:#0e1520;
+      border:1px solid #ffffff14;
+      border-radius:999px;
+      padding:10px 12px;
+      box-shadow: var(--shadow);
+      font-size:12px;
+      display:none;
+      align-items:center;
+      gap:10px;
+      z-index:999;
+    }
+    .toast.show{display:flex}
+    .toast .dot{width:10px;height:10px;border-radius:50%;background:var(--green); box-shadow:0 0 0 3px #2bd57622}
+    .toast .dot.warn{background:var(--warn); box-shadow:0 0 0 3px #ffb02022}
+    .toast .dot.bad{background:var(--danger); box-shadow:0 0 0 3px #ff5b6e22}
 
     /* ===== PLAYER (BOTTOM) ===== */
     .pbtn{
@@ -592,68 +640,6 @@
     }
     .time{color:var(--muted); font-size:12px; width:64px; text-align:right}
 
-    /* Toast */
-    .toast{
-      position:fixed;
-      bottom:90px;
-      left:50%;
-      transform:translateX(-50%);
-      background:#0e1520;
-      border:1px solid #ffffff14;
-      border-radius:999px;
-      padding:10px 12px;
-      box-shadow: var(--shadow);
-      font-size:12px;
-      display:none;
-      align-items:center;
-      gap:10px;
-      z-index:999;
-    }
-    .toast.show{display:flex}
-    .toast .dot{width:10px;height:10px;border-radius:50%;background:var(--green); box-shadow:0 0 0 3px #2bd57622}
-    .toast .dot.warn{background:var(--warn); box-shadow:0 0 0 3px #ffb02022}
-    .toast .dot.bad{background:var(--danger); box-shadow:0 0 0 3px #ff5b6e22}
-
-    /* Simple hero on Home */
-    .hero{
-      background:linear-gradient(180deg,#101827,#0e1520);
-      border:1px solid #ffffff14;
-      border-radius:18px;
-      padding:14px;
-      box-shadow: var(--shadow);
-    }
-    .hero h2{margin:0 0 6px; font-size:18px; letter-spacing:.2px}
-    .hero p{margin:0; color:var(--muted); font-size:13px; line-height:1.35}
-    .hero .ctaRow{display:flex; gap:10px; margin-top:12px; flex-wrap:wrap}
-    .hero .ctaRow button{flex:1; min-width:180px}
-
-    /* Trash panel list */
-    .trashTip{
-      font-size:12px; color:var(--muted);
-      margin-top:8px;
-      background:#ffffff08;
-      border:1px solid #ffffff10;
-      border-radius:14px;
-      padding:10px 12px;
-    }
-    .trashActions{
-      display:flex; gap:8px; flex-wrap:wrap;
-      margin-top:10px;
-    }
-    .trashActions button{flex:1; min-width:180px}
-    .miniRow{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
-    .miniPill{
-      background:#ffffff10;
-      border:1px solid #ffffff14;
-      border-radius:999px;
-      padding:6px 10px;
-      font-size:12px;
-      font-weight:900;
-      display:inline-flex;
-      gap:8px;
-      align-items:center;
-    }
-
     /* Responsive */
     @media (max-width: 1200px){
       .main-wrap{grid-template-columns: 460px 1fr}
@@ -674,11 +660,14 @@
   <aside class="sidebar">
     <div class="brand">
       <div class="brand-left">
+        <!-- Collapse arrow INSIDE brand box, ABOVE the title -->
         <button class="brand-toggle" id="toggleSidebar" title="Collapse sidebar">◀</button>
+
         <div class="brand-row">
           <div class="logo">S</div>
           <div class="brand-text">
-            <div class="t1">SML</div>
+            <div class="t1">SING MY LYRICS</div>
+            <div class="t2">Create (Full Standard)</div>
           </div>
         </div>
       </div>
@@ -692,37 +681,39 @@
       </div>
     </div>
 
-    <div class="nav" id="navLinks">
-      <a data-route="home" class="active" id="navHome">
+    <!-- ONLY: Home, Create, Trash -->
+    <div class="nav">
+      <a href="index.html">
         <div class="icon">⌂</div><div class="nav-label">Home</div>
       </a>
-      <a data-route="create" id="navCreate">
+      <a href="create.html" class="active">
         <div class="icon">♪</div><div class="nav-label">Create</div>
       </a>
-      <a data-route="trash" id="navTrash">
+      <a href="#" id="navTrash">
         <div class="icon">🗑</div><div class="nav-label">Trash</div>
-        <span class="badge" id="trashBadge">0</span>
       </a>
     </div>
 
     <div class="credits-big"><span id="credits">7,537</span> Credits</div>
 
     <div class="side-footer">
-      <div class="row">🗑 <span id="trashLink" style="cursor:pointer">Trash (30 days)</span> <span class="badge" style="background:#ffffff18;color:#cfe1ff;border:1px solid #ffffff22" id="trashCount">0</span></div>
+      <div class="row">🗑 <span id="trashLink">Trash (30 days)</span> <span class="badge" style="background:#ffffff18;color:#cfe1ff;border:1px solid #ffffff22" id="trashCount">0</span></div>
       <div class="row">🧾 <span>Ownership: 100% You</span></div>
-      <div class="row">📢 <span class="muted">Monetize-ready: hooks included (publish/permissions later)</span></div>
     </div>
   </aside>
 
   <!-- TOPBAR -->
   <header class="topbar">
     <div class="pill"><span class="dot"></span><span><b id="creditsPill">7.8k</b> Credits</span></div>
-    <div class="pill" id="routePill">Home</div>
+    <div class="pill">Create</div>
+
     <div class="spacer"></div>
+
     <div class="pill">Workspace ▸ <b>My Workspace</b></div>
+
     <div class="top-actions">
-      <button class="btn-ghost" id="btnGoHome" title="Home">Home</button>
-      <button class="btn-ghost" id="btnGoCreate" title="Create">Create</button>
+      <a class="btn-ghost" href="index.html" id="btnBackHome" title="Back to Home">Home</a>
+      <button class="btn-ghost" id="btnOpenQueue" title="Jump to Now Playing">Now Playing</button>
       <button class="btn-green" id="btnQuickTest">Quick Test</button>
     </div>
   </header>
@@ -731,183 +722,116 @@
   <main class="main">
     <div class="main-wrap">
 
-      <!-- LEFT PANEL (ROUTE CONTENT) -->
-      <section class="panel" id="leftPanel">
+      <!-- CREATE PANEL -->
+      <section class="panel" id="createPanel">
         <div class="panel-header">
-          <h3 id="leftTitle">Home</h3>
+          <h3>Create</h3>
           <div class="spacer"></div>
           <div class="pill" style="padding:6px 10px" id="draftPill">Draft: Saved</div>
         </div>
+
         <div class="panel-body">
+          <div class="field-label">Lyrics (User-only)</div>
+          <textarea id="lyrics" placeholder="Write lyrics here..."></textarea>
 
-          <!-- HOME VIEW -->
-          <div id="viewHome">
-            <div class="hero">
-              <h2>SingMyLyrics</h2>
-              <p>
-                Put in <b>your</b> words. Pick a vibe. Generate a track. Export PDFs. Keep ownership.
-                <br/>This demo is <b>fully functional</b> as an app shell: create tracks, play, like/dislike, privacy toggles, copy rules, trash+restore (30 days), downloads.
-              </p>
-              <div class="ctaRow">
-                <button class="btn-wide btn-green" id="homeCtaCreate" type="button">🎵 Go to Create</button>
-                <button class="btn-wide export" id="homeCtaTrash" type="button">🗑 View Trash</button>
-              </div>
-            </div>
-
-            <div class="field-label" style="margin-top:14px">Your library at a glance</div>
-            <div class="miniRow">
-              <span class="miniPill">🎶 Tracks: <b id="statTracks">0</b></span>
-              <span class="miniPill">🗑 Trash: <b id="statTrash">0</b></span>
-              <span class="miniPill">🌐 Public: <b id="statPublic">0</b></span>
-              <span class="miniPill">🔒 Private: <b id="statPrivate">0</b></span>
-              <span class="miniPill">👍 Liked: <b id="statLiked">0</b></span>
-            </div>
-
-            <div class="trashTip" style="margin-top:12px">
-              <b>Rule:</b> This app never generates lyrics. It only uses what you type. <br/>
-              <b>Copy rule:</b> You can copy your own lyrics/styles. Public tracks can be copied only if the owner enabled “Allow Copy”.
-            </div>
-
-            <div class="stack">
-              <button class="btn-wide dice" id="btnSeedDemo" type="button">✨ Seed Demo Tracks</button>
-              <button class="btn-wide export" id="btnExportLibraryJson" type="button">⬇ Export Library JSON</button>
-              <button class="btn-wide export" id="btnImportLibraryJson" type="button">⬆ Import Library JSON</button>
-              <input id="importJsonInput" class="hidden" type="file" accept="application/json" />
-            </div>
+          <div class="row" style="margin-top:10px; flex-wrap:wrap">
+            <div class="toggle on" id="togAudio">+ Audio</div>
+            <div class="toggle on" id="togLyrics">+ Lyrics</div>
+            <div class="toggle" id="togInst">Instrumental</div>
           </div>
 
-          <!-- CREATE VIEW -->
-          <div id="viewCreate" class="hidden">
-            <div class="field-label">Lyrics (User-only)</div>
-            <textarea id="lyrics" placeholder="Write lyrics here..."></textarea>
+          <div class="field-label">Style</div>
+          <input id="style" placeholder="e.g. industrial rock, cinematic, punchy drums" />
 
-            <div class="row" style="margin-top:10px; flex-wrap:wrap">
-              <div class="toggle on" id="togAudio">+ Audio</div>
-              <div class="toggle on" id="togLyrics">+ Lyrics</div>
-              <div class="toggle" id="togInst">Instrumental</div>
-            </div>
-
-            <div class="field-label">Style</div>
-            <input id="style" placeholder="e.g. industrial rock, cinematic, punchy drums" />
-
-            <div class="row" style="margin-top:10px">
-              <button class="btn-wide dice" id="btnDice" type="button">🎲 Random Dice (Style)</button>
-            </div>
-
-            <div class="field-label">Style Presets</div>
-            <div class="chips" id="presetChips"></div>
-
-            <div class="field-label">Inspiration (chips)</div>
-            <div class="row" style="gap:8px; margin-top:4px; flex-wrap:wrap">
-              <button class="btn-ghost" id="btnClearChips" type="button">Clear</button>
-              <button class="btn-ghost" id="btnDiceInspo" type="button">🎲 Random Dice (Inspiration)</button>
-              <span class="muted" style="font-size:12px">Tap chips to add/remove</span>
-            </div>
-            <div class="chips" id="inspoChips"></div>
-
-            <details class="adv" id="advBox">
-              <summary>
-                <span>Advanced options</span>
-                <span class="muted" style="font-size:12px">Collapsed by default</span>
-              </summary>
-              <div class="adv-body">
-                <div class="grid3">
-                  <div>
-                    <div class="field-label">BPM</div>
-                    <input id="optBpm" placeholder="e.g. 120" />
-                  </div>
-                  <div>
-                    <div class="field-label">Mood</div>
-                    <input id="optMood" placeholder="e.g. angry, hopeful" />
-                  </div>
-                  <div>
-                    <div class="field-label">Intensity</div>
-                    <input id="optIntensity" placeholder="e.g. low / medium / high" />
-                  </div>
-                </div>
-
-                <div class="grid2" style="margin-top:10px">
-                  <div>
-                    <div class="field-label">Vocal Type</div>
-                    <select id="optVocal">
-                      <option value="">(default)</option>
-                      <option>Male</option>
-                      <option>Female</option>
-                      <option>Choir</option>
-                      <option>Duo</option>
-                      <option>Robotic</option>
-                      <option>Spoken</option>
-                    </select>
-                  </div>
-                  <div>
-                    <div class="field-label">Visibility</div>
-                    <select id="optVisibility">
-                      <option value="private">Private</option>
-                      <option value="public">Public</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="row" style="margin-top:10px; flex-wrap:wrap">
-                  <div class="toggle" id="optAllowCopy">Allow Copy</div>
-                  <div class="toggle" id="optAllowDownload">Allow Download</div>
-                  <div class="toggle on" id="optDraftAutosave">Autosave Draft</div>
-                </div>
-
-                <div class="field-label">Edit Tools (live later)</div>
-                <div class="chipbar">
-                  <div class="chip" data-tool="adjust">Adjust Speed</div>
-                  <div class="chip" data-tool="crop">Crop</div>
-                  <div class="chip" data-tool="replace">Replace Section</div>
-                  <div class="chip" data-tool="extend">Extend</div>
-                  <div class="chip" data-tool="remaster">Remaster</div>
-                  <div class="chip" data-tool="publish">Publish</div>
-                  <div class="chip" data-tool="permissions">Visibility & Permissions</div>
-                  <div class="chip" data-tool="report">Report</div>
-                </div>
-
-                <div class="muted" style="margin-top:10px">
-                  These buttons are present (no missing buttons). They show “Soon” notices until backend exists.
-                </div>
-              </div>
-            </details>
-
-            <div class="stack">
-              <button class="btn-wide btn-green" id="btnCreate" type="button">🎵 Create (Generate Track)</button>
-              <button class="btn-wide export" id="btnLyricsPdf" type="button">Export Lyrics PDF</button>
-              <button class="btn-wide export" id="btnSheetPdf" type="button">Export Sheet Music PDF</button>
-            </div>
-
-            <div style="margin-top:10px; font-size:12px; color:var(--muted)">
-              This build generates audio locally (synth tone) + saves your track.
-              PDFs download directly using <b>jsPDF</b>.
-            </div>
+          <div class="row" style="margin-top:10px">
+            <button class="btn-wide dice" id="btnDice" type="button">🎲 Random Dice (Style)</button>
           </div>
 
-          <!-- TRASH VIEW -->
-          <div id="viewTrash" class="hidden">
-            <div class="hero">
-              <h2>Trash</h2>
-              <p>Deleted tracks stay here for <b>30 days</b>. You can restore or permanently delete.</p>
-              <div class="miniRow" style="margin-top:10px">
-                <span class="miniPill">🗑 Items: <b id="trashTotal">0</b></span>
-                <span class="miniPill">⏳ Auto-purge: <b>30 days</b></span>
+          <div class="field-label">Style Presets</div>
+          <div class="chips" id="presetChips"></div>
+
+          <div class="field-label">Inspiration (chips)</div>
+          <div class="row" style="gap:8px; margin-top:4px; flex-wrap:wrap">
+            <button class="btn-ghost" id="btnClearChips" type="button">Clear</button>
+            <button class="btn-ghost" id="btnDiceInspo" type="button">🎲 Random Dice (Inspiration)</button>
+            <span class="muted" style="font-size:12px">Tap chips to add/remove</span>
+          </div>
+          <div class="chips" id="inspoChips"></div>
+
+          <details class="adv" id="advBox">
+            <summary>
+              <span>Advanced options</span>
+              <span class="muted" style="font-size:12px">Collapsed by default</span>
+            </summary>
+            <div class="adv-body">
+              <div class="grid3">
+                <div>
+                  <div class="field-label">BPM</div>
+                  <input id="optBpm" placeholder="e.g. 120" />
+                </div>
+                <div>
+                  <div class="field-label">Mood</div>
+                  <input id="optMood" placeholder="e.g. angry, hopeful" />
+                </div>
+                <div>
+                  <div class="field-label">Intensity</div>
+                  <input id="optIntensity" placeholder="e.g. low / medium / high" />
+                </div>
               </div>
-              <div class="trashActions">
-                <button class="btn-wide export" id="btnRestoreAll" type="button">↩ Restore All</button>
-                <button class="btn-wide export" id="btnEmptyTrash" type="button">🔥 Empty Trash (Permanent)</button>
+
+              <div class="grid2" style="margin-top:10px">
+                <div>
+                  <div class="field-label">Vocal Type</div>
+                  <select id="optVocal">
+                    <option value="">(default)</option>
+                    <option>Male</option>
+                    <option>Female</option>
+                    <option>Choir</option>
+                    <option>Duo</option>
+                    <option>Robotic</option>
+                    <option>Spoken</option>
+                  </select>
+                </div>
+                <div>
+                  <div class="field-label">Visibility</div>
+                  <select id="optVisibility">
+                    <option value="private">Private</option>
+                    <option value="public">Public</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row" style="margin-top:10px; flex-wrap:wrap">
+                <div class="toggle" id="optAllowCopy">Allow Copy</div>
+                <div class="toggle" id="optAllowDownload">Allow Download</div>
+                <div class="toggle on" id="optDraftAutosave">Autosave Draft</div>
+              </div>
+
+              <div class="field-label">Edit Tools (buttons live later)</div>
+              <div class="chipbar">
+                <div class="chip" data-tool="crop">Crop</div>
+                <div class="chip" data-tool="replace">Replace Section</div>
+                <div class="chip" data-tool="extend">Extend</div>
+                <div class="chip" data-tool="remaster">Remaster</div>
+                <div class="chip" data-tool="publish">Publish</div>
+                <div class="chip" data-tool="report">Report</div>
+              </div>
+
+              <div class="muted" style="margin-top:10px">
+                These tools are present (no missing buttons). They show “Soon” notices until backend exists.
               </div>
             </div>
+          </details>
 
-            <div class="trashTip">
-              <b>Counter:</b> matches the sidebar badge. <br/>
-              <b>Restore:</b> returns track to your library with all metadata preserved. <br/>
-              <b>Permanent delete:</b> removes it forever.
-            </div>
-
-            <div class="tracks" id="trashList" style="margin-top:12px"></div>
+          <div class="stack">
+            <button class="btn-wide btn-green" id="btnCreate" type="button">🎵 Create</button>
+            <button class="btn-wide export" id="btnLyricsPdf" type="button">Export Lyrics PDF</button>
+            <button class="btn-wide export" id="btnSheetPdf" type="button">Export Sheet Music PDF</button>
           </div>
 
+          <div style="margin-top:10px; font-size:12px; color:var(--muted)">
+            PDFs must download directly. This build uses <b>jsPDF</b> and saves a real file.
+          </div>
         </div>
       </section>
 
@@ -931,9 +855,9 @@
               <div class="menu" id="filtersMenu">
                 <div class="mrow" data-filter="liked"><div class="left">👍 <b>Liked</b></div><input type="checkbox" /></div>
                 <div class="mrow" data-filter="public"><div class="left">🌐 <b>Public</b></div><input type="checkbox" /></div>
-                <div class="mrow" data-filter="private"><div class="left">🔒 <b>Private</b></div><input type="checkbox" /></div>
+                <div class="mrow" data-filter="draft"><div class="left">📝 <b>Drafts</b></div><input type="checkbox" checked/></div>
                 <hr />
-                <div class="mrow" data-filter="hideDisliked"><div class="left">🙈 <b>Hide Disliked</b></div><input type="checkbox" checked/></div>
+                <div class="mrow"><div class="left">🙈 <b>Hide Disliked</b></div><input type="checkbox" checked/></div>
               </div>
             </div>
 
@@ -983,7 +907,7 @@
               </div>
               <div class="timeRow">
                 <span id="npTime">0:00</span>
-                <span id="npDur">0:00</span>
+                <span id="npDur">3:00</span>
               </div>
             </div>
 
@@ -1044,10 +968,10 @@
   const uuid = () => (crypto?.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2));
 
   // ===== Storage Keys =====
-  const KEY_TRACKS = "sml_tracks_v3";
-  const KEY_TRASH  = "sml_trash_v3";
-  const KEY_DRAFT  = "sml_draft_v3";
-  const KEY_RECENT_STYLES = "sml_recent_styles_v2";
+  const KEY_TRACKS = "sml_tracks_v2";
+  const KEY_TRASH  = "sml_trash_v2";
+  const KEY_DRAFT  = "sml_draft_v2";
+  const KEY_RECENT_STYLES = "sml_recent_styles_v1";
 
   // ===== State =====
   let tracks = [];
@@ -1057,84 +981,6 @@
   let sec = 0;
   let timer = null;
   let sortMode = "new";
-  let route = "home";
-
-  // ===== WebAudio (local “song” generation) =====
-  let audioCtx = null;
-  let osc = null;
-  let gain = null;
-  let noise = null;
-  let noiseGain = null;
-  let audioOn = false;
-
-  function ensureAudio(){
-    if(audioCtx) return;
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    gain = audioCtx.createGain();
-    gain.gain.value = 0.0;
-    gain.connect(audioCtx.destination);
-
-    // main tone
-    osc = audioCtx.createOscillator();
-    osc.type = "sawtooth";
-    osc.frequency.value = 110;
-    osc.connect(gain);
-    osc.start();
-
-    // noise layer (for “industrial” texture)
-    const bufferSize = 2 * audioCtx.sampleRate;
-    const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-    const output = noiseBuffer.getChannelData(0);
-    for(let i=0;i<bufferSize;i++) output[i] = (Math.random()*2 - 1) * 0.2;
-
-    noise = audioCtx.createBufferSource();
-    noise.buffer = noiseBuffer;
-    noise.loop = true;
-    noiseGain = audioCtx.createGain();
-    noiseGain.gain.value = 0.0;
-    noise.connect(noiseGain);
-    noiseGain.connect(audioCtx.destination);
-    noise.start();
-  }
-
-  function setAudioPlaying(on, styleText=""){
-    ensureAudio();
-    audioOn = !!on;
-    const t = audioCtx.currentTime;
-
-    const base = styleText.toLowerCase();
-    const isIndustrial = base.includes("industrial") || base.includes("electro") || base.includes("mechanical");
-    const isCinematic = base.includes("cinematic") || base.includes("orches") || base.includes("dramatic");
-    const isSka = base.includes("ska");
-    const isTrap = base.includes("trap") || base.includes("808");
-
-    // pick a “vibe” frequency
-    let freq = 110;
-    if(isCinematic) freq = 98;
-    if(isSka) freq = 165;
-    if(isTrap) freq = 55;
-    if(isIndustrial) freq = 130;
-
-    osc.frequency.cancelScheduledValues(t);
-    osc.frequency.setValueAtTime(freq, t);
-
-    gain.gain.cancelScheduledValues(t);
-    noiseGain.gain.cancelScheduledValues(t);
-
-    if(audioOn){
-      // ramp in
-      gain.gain.setValueAtTime(gain.gain.value, t);
-      gain.gain.linearRampToValueAtTime(0.12, t + 0.15);
-      noiseGain.gain.setValueAtTime(noiseGain.gain.value, t);
-      noiseGain.gain.linearRampToValueAtTime(isIndustrial ? 0.06 : 0.02, t + 0.2);
-    }else{
-      // ramp out
-      gain.gain.setValueAtTime(gain.gain.value, t);
-      gain.gain.linearRampToValueAtTime(0.0, t + 0.1);
-      noiseGain.gain.setValueAtTime(noiseGain.gain.value, t);
-      noiseGain.gain.linearRampToValueAtTime(0.0, t + 0.1);
-    }
-  }
 
   // ===== Presets & Dice =====
   const STYLE_PRESETS = [
@@ -1187,15 +1033,7 @@
   function saveAll(){
     localStorage.setItem(KEY_TRACKS, JSON.stringify(tracks));
     localStorage.setItem(KEY_TRASH, JSON.stringify(trash));
-    const n = trash.length;
-    $("#trashCount").textContent = String(n);
-    $("#trashBadge").textContent = String(n);
-    $("#trashTotal").textContent = String(n);
-    $("#statTracks").textContent = String(tracks.length);
-    $("#statTrash").textContent = String(n);
-    $("#statPublic").textContent = String(tracks.filter(t=>t.visibility==="public").length);
-    $("#statPrivate").textContent = String(tracks.filter(t=>t.visibility!=="public").length);
-    $("#statLiked").textContent = String(tracks.filter(t=>t.liked).length);
+    $("#trashCount").textContent = String(trash.length);
   }
   function purgeTrash(){
     const cutoff = Date.now() - 30*24*60*60*1000;
@@ -1204,9 +1042,8 @@
 
   // ===== Draft autosave =====
   let draftTimer = null;
-  function draftEnabled(){ return $("#optDraftAutosave")?.classList.contains("on"); }
+  function draftEnabled(){ return $("#optDraftAutosave").classList.contains("on"); }
   function saveDraft(){
-    if(route !== "create") return;
     if(!draftEnabled()) return;
     const draft = {
       lyrics: $("#lyrics").value,
@@ -1280,7 +1117,7 @@
     e.stopPropagation();
   });
 
-  // Sidebar collapse
+  // Sidebar collapse (arrow inside brand)
   function syncSidebarArrow(){
     const collapsed = document.body.classList.contains("collapsed");
     $("#toggleSidebar").textContent = collapsed ? "▶" : "◀";
@@ -1306,48 +1143,22 @@
   });
   syncNpArrow();
 
-  // Route navigation
-  function setActiveNav(){
-    $$("#navLinks a").forEach(a=>{
-      a.classList.toggle("active", a.dataset.route === route);
-    });
-    $("#routePill").textContent = route[0].toUpperCase() + route.slice(1);
-    $("#leftTitle").textContent = route[0].toUpperCase() + route.slice(1);
-    $("#draftPill").style.visibility = (route==="create") ? "visible" : "hidden";
-  }
+  // Toggles
+  function toggleOn(el){ el.classList.toggle("on"); saveDraft(); }
+  $("#togAudio").addEventListener("click",()=>toggleOn($("#togAudio")));
+  $("#togLyrics").addEventListener("click",()=>toggleOn($("#togLyrics")));
+  $("#togInst").addEventListener("click",()=>toggleOn($("#togInst")));
 
-  function showRoute(r){
-    route = r;
-    $("#viewHome").classList.toggle("hidden", route!=="home");
-    $("#viewCreate").classList.toggle("hidden", route!=="create");
-    $("#viewTrash").classList.toggle("hidden", route!=="trash");
-    setActiveNav();
-    saveAll();
-    render();
-    if(route==="create"){
-      // ensure autosave toggle exists + load draft
-      $("#optDraftAutosave")?.classList.add("on");
-      loadDraft();
-      startDraftAutosave();
-    }
-    if(route==="trash"){
-      renderTrash();
-    }
-  }
-
-  $$("#navLinks a").forEach(a=>{
-    a.addEventListener("click",(e)=>{
-      e.preventDefault();
-      showRoute(a.dataset.route);
-    });
+  $("#optAllowCopy").addEventListener("click",()=>toggleOn($("#optAllowCopy")));
+  $("#optAllowDownload").addEventListener("click",()=>toggleOn($("#optAllowDownload")));
+  $("#optDraftAutosave").addEventListener("click",()=>{
+    toggleOn($("#optDraftAutosave"));
+    $("#draftPill").textContent = draftEnabled() ? "Draft: Saved" : "Draft: Off";
   });
-  $("#btnGoHome").addEventListener("click",()=>showRoute("home"));
-  $("#btnGoCreate").addEventListener("click",()=>showRoute("create"));
-  $("#homeCtaCreate").addEventListener("click",()=>showRoute("create"));
-  $("#homeCtaTrash").addEventListener("click",()=>showRoute("trash"));
 
-  // Trash tip click
-  $("#trashLink").addEventListener("click",()=> toast("Trash kept 30 days (auto purge)","warn"));
+  // Trash link (nav + footer)
+  $("#navTrash").addEventListener("click",(e)=>{ e.preventDefault(); toast("Trash is kept 30 days (auto purge)","warn"); });
+  $("#trashLink").addEventListener("click",()=> toast("Trash is kept 30 days (auto purge)","warn"));
 
   // Chips creation
   function mountChips(boxId, items){
@@ -1447,7 +1258,7 @@
     setRecentStyles(arr);
   }
 
-  // Dice
+  // Dice (STYLE): pick ONE item only (replace)
   $("#btnDice").addEventListener("click",()=>{
     const pick = DICE_POOL[Math.floor(Math.random()*DICE_POOL.length)];
     $("#style").value = pick;
@@ -1456,6 +1267,7 @@
     saveDraft();
   });
 
+  // Dice (INSPIRATION): pick ONE chip only (replace selection)
   $("#btnDiceInspo").addEventListener("click",()=>{
     const pick = INSPO_CHIPS[Math.floor(Math.random()*INSPO_CHIPS.length)];
     const chips = [...$$("#inspoChips .chip")];
@@ -1467,19 +1279,9 @@
 
   // Advanced tool chips
   $$("#advBox .chipbar .chip").forEach(ch=>{
-    ch.addEventListener("click",()=> toast("Soon","warn"));
-  });
-
-  // Toggles
-  function toggleOn(el){ el.classList.toggle("on"); saveDraft(); }
-  $("#togAudio").addEventListener("click",()=>toggleOn($("#togAudio")));
-  $("#togLyrics").addEventListener("click",()=>toggleOn($("#togLyrics")));
-  $("#togInst").addEventListener("click",()=>toggleOn($("#togInst")));
-  $("#optAllowCopy").addEventListener("click",()=>toggleOn($("#optAllowCopy")));
-  $("#optAllowDownload").addEventListener("click",()=>toggleOn($("#optAllowDownload")));
-  $("#optDraftAutosave").addEventListener("click",()=>{
-    toggleOn($("#optDraftAutosave"));
-    $("#draftPill").textContent = draftEnabled() ? "Draft: Saved" : "Draft: Off";
+    ch.addEventListener("click",()=>{
+      toast("Soon","warn");
+    });
   });
 
   // Options get/set
@@ -1506,7 +1308,6 @@
 
   // Quick test
   $("#btnQuickTest").addEventListener("click",()=>{
-    showRoute("create");
     if(!$("#lyrics").value.trim()){
       $("#lyrics").value = "Black hole hearts\nZip tied and caught\nAltercating gravity\nRipping it apart\n\nOh Demon Days…";
     }
@@ -1518,7 +1319,7 @@
     saveDraft();
   });
 
-  // ===== Track creation =====
+  // ===== Create Track =====
   function titleFromLyrics(lyrics){
     const first = (lyrics||"").split("\n").map(x=>x.trim()).find(Boolean) || "Untitled";
     return first.length > 40 ? first.slice(0,40) + "…" : first;
@@ -1528,17 +1329,6 @@
     const s = String(Math.floor(Math.random()*60)).padStart(2,"0");
     return `${m}:${s}`;
   }
-
-  function fakeWaveformHash(lyrics, style){
-    const s = (lyrics + "|" + style).slice(0,2000);
-    let h = 2166136261;
-    for(let i=0;i<s.length;i++){
-      h ^= s.charCodeAt(i);
-      h = Math.imul(h, 16777619);
-    }
-    return (h>>>0).toString(16).padStart(8,"0");
-  }
-
   function createTrack(){
     const lyrics = $("#lyrics").value.trim();
     if(!lyrics){
@@ -1562,33 +1352,25 @@
       createdAt: Date.now(),
       lyrics,
       liked:false,
-      disliked:false,
-      generated: true,
-      audioHash: fakeWaveformHash(lyrics, style)
+      disliked:false
     };
     tracks.unshift(t);
     saveAll();
     render();
     selectTrack(t.id, true);
-    toast("Created (audio generated)","ok");
-
-    // clear composer
+    toast("Created","ok");
     $("#lyrics").value = "";
-    $("#style").value = "";
-    $$("#presetChips .chip.on").forEach(x=>x.classList.remove("on"));
-    $$("#inspoChips .chip.on").forEach(x=>x.classList.remove("on"));
     $("#draftPill").textContent = "Draft: Saved";
     saveDraft();
   }
   $("#btnCreate").addEventListener("click", createTrack);
 
-  // ===== Soft delete / Restore / Empty trash =====
+  // ===== Soft Delete (30 days) =====
   function softDelete(id){
     const t = tracks.find(x=>x.id===id);
     if(!t) return;
     tracks = tracks.filter(x=>x.id!==id);
     trash.unshift({ ...t, deletedAt: Date.now() });
-
     if(nowId === id){
       nowId = null;
       setPlaying(false);
@@ -1598,89 +1380,46 @@
     render();
     toast("Moved to Trash (30 days)","warn");
   }
-  function restoreFromTrash(id){
-    const t = trash.find(x=>x.id===id);
-    if(!t) return;
-    trash = trash.filter(x=>x.id!==id);
-    const restored = { ...t };
-    delete restored.deletedAt;
-    tracks.unshift(restored);
-    saveAll();
-    render();
-    renderTrash();
-    toast("Restored","ok");
-  }
-  function hardDeleteFromTrash(id){
-    trash = trash.filter(x=>x.id!==id);
-    saveAll();
-    renderTrash();
-    toast("Deleted forever","warn");
-  }
 
-  $("#btnRestoreAll").addEventListener("click",()=>{
-    if(!trash.length) return toast("Trash empty","warn");
-    const items = [...trash];
-    trash = [];
-    items.forEach(t=>{
-      const restored = { ...t };
-      delete restored.deletedAt;
-      tracks.unshift(restored);
-    });
-    saveAll();
-    render();
-    renderTrash();
-    toast("Restored all","ok");
-  });
-
-  $("#btnEmptyTrash").addEventListener("click",()=>{
-    if(!trash.length) return toast("Trash empty","warn");
-    if(!confirm("Empty Trash permanently? This cannot be undone.")) return;
-    trash = [];
-    saveAll();
-    renderTrash();
-    toast("Trash emptied","warn");
-  });
-
-  // ===== Feed render =====
+  // ===== Render Feed =====
   $("#search").addEventListener("input", render);
 
   function passesFilter(t){
     const fLiked = $("#filtersMenu [data-filter='liked'] input").checked;
     const fPublic = $("#filtersMenu [data-filter='public'] input").checked;
-    const fPrivate = $("#filtersMenu [data-filter='private'] input").checked;
-    const hideDisliked = $("#filtersMenu [data-filter='hideDisliked'] input").checked;
+    const fDraft = $("#filtersMenu [data-filter='draft'] input").checked;
 
     if(fLiked && !t.liked) return false;
     if(fPublic && t.visibility !== "public") return false;
-    if(fPrivate && t.visibility !== "private") return false;
-    if(hideDisliked && t.disliked) return false;
+    if(fDraft && false) { /* reserved */ }
     return true;
   }
 
   function render(){
-    purgeTrash();
-    saveAll();
-
     const box = $("#tracks");
     box.innerHTML = "";
 
     let list = [...tracks];
+
+    purgeTrash();
+    $("#trashCount").textContent = String(trash.length);
 
     const q = $("#search").value.trim().toLowerCase();
     if(q){
       list = list.filter(t =>
         (t.title||"").toLowerCase().includes(q) ||
         (t.desc||"").toLowerCase().includes(q) ||
-        (t.style||"").toLowerCase().includes(q) ||
-        (t.lyrics||"").toLowerCase().includes(q)
+        (t.style||"").toLowerCase().includes(q)
       );
     }
 
     list = list.filter(passesFilter);
+
     list.sort((a,b)=> sortMode==="new" ? (b.createdAt-a.createdAt) : (a.createdAt-b.createdAt));
+
     list.forEach(t => box.appendChild(trackCard(t)));
+
     renderQueue();
-    if(route==="trash") renderTrash();
   }
 
   function trackCard(t){
@@ -1699,24 +1438,19 @@
     meta.className = "meta";
     const title = document.createElement("div");
     title.className = "title";
-
     const b = document.createElement("span");
     b.textContent = t.title || "Untitled";
-
     const v = document.createElement("span");
     v.className = "tagv";
     v.textContent = t.v || "v5";
-
     const st = document.createElement("span");
     st.className = "statusTag";
     st.textContent = (t.visibility==="public" ? "Public" : "Private");
-
     title.appendChild(b); title.appendChild(v); title.appendChild(st);
 
     const desc = document.createElement("div");
     desc.className = "desc";
     desc.textContent = t.desc || "No style set";
-
     meta.appendChild(title);
     meta.appendChild(desc);
 
@@ -1761,106 +1495,40 @@
     const mm = document.createElement("div");
     mm.className = "more-menu";
 
-    // --- “everything in the 3 dots”: metadata + actions ---
-    const info = document.createElement("small");
-    const dt = new Date(t.createdAt || Date.now());
-    info.textContent = `ID: ${t.id.slice(0,8)} • ${dt.toLocaleString()} • Hash: ${t.audioHash || "—"}`;
-    mm.appendChild(info);
+    const m1 = document.createElement("button");
+    m1.textContent = "Lyrics PDF";
+    m1.addEventListener("click",(e)=>{ e.stopPropagation(); mm.classList.remove("open"); downloadLyricsPDF(t.title, t.style, t.lyrics||""); });
 
-    const mVis = document.createElement("button");
-    mVis.textContent = (t.visibility==="public") ? "🔒 Set Private" : "🌐 Set Public";
-    mVis.addEventListener("click",(e)=>{
-      e.stopPropagation();
-      mm.classList.remove("open");
-      t.visibility = (t.visibility==="public") ? "private" : "public";
-      saveAll(); render();
-      toast(`Visibility: ${t.visibility}`,"ok");
-    });
+    const m2 = document.createElement("button");
+    m2.textContent = "Sheet Music PDF";
+    m2.addEventListener("click",(e)=>{ e.stopPropagation(); mm.classList.remove("open"); downloadSheetPDF(t.title); });
 
-    const mAllowCopy = document.createElement("button");
-    mAllowCopy.textContent = t.allowCopy ? "🚫 Disable Copy" : "✅ Enable Copy";
-    mAllowCopy.addEventListener("click",(e)=>{
-      e.stopPropagation();
-      mm.classList.remove("open");
-      t.allowCopy = !t.allowCopy;
-      saveAll(); render();
-      toast(`Allow Copy: ${t.allowCopy ? "On" : "Off"}`,"ok");
-    });
+    const m3 = document.createElement("button");
+    m3.textContent = "Copy Title";
+    m3.addEventListener("click",(e)=>{ e.stopPropagation(); mm.classList.remove("open"); navigator.clipboard?.writeText(t.title||""); toast("Copied","ok"); });
 
-    const mAllowDl = document.createElement("button");
-    mAllowDl.textContent = t.allowDownload ? "🚫 Disable Download" : "✅ Enable Download";
-    mAllowDl.addEventListener("click",(e)=>{
-      e.stopPropagation();
-      mm.classList.remove("open");
-      t.allowDownload = !t.allowDownload;
-      saveAll(); render();
-      toast(`Allow Download: ${t.allowDownload ? "On" : "Off"}`,"ok");
-    });
+    const m4 = document.createElement("button");
+    m4.textContent = "Delete (30 days)";
+    m4.className = "danger";
+    m4.addEventListener("click",(e)=>{ e.stopPropagation(); mm.classList.remove("open"); softDelete(t.id); });
 
-    const mLyPdf = document.createElement("button");
-    mLyPdf.textContent = "📄 Lyrics PDF";
-    mLyPdf.addEventListener("click",(e)=>{ e.stopPropagation(); mm.classList.remove("open"); downloadLyricsPDF(t.title, t.style, t.lyrics||""); });
-
-    const mShPdf = document.createElement("button");
-    mShPdf.textContent = "🎼 Sheet Music PDF";
-    mShPdf.addEventListener("click",(e)=>{ e.stopPropagation(); mm.classList.remove("open"); downloadSheetPDF(t.title); });
-
-    const mCopyTitle = document.createElement("button");
-    mCopyTitle.textContent = "📋 Copy Title";
-    mCopyTitle.addEventListener("click",(e)=>{ e.stopPropagation(); mm.classList.remove("open"); navigator.clipboard?.writeText(t.title||""); toast("Copied","ok"); });
-
-    const mCopyStyle = document.createElement("button");
-    mCopyStyle.textContent = "📋 Copy Style";
-    mCopyStyle.addEventListener("click",(e)=>{ e.stopPropagation(); mm.classList.remove("open"); navigator.clipboard?.writeText(t.style||""); toast("Copied","ok"); });
-
-    const mCopyLyrics = document.createElement("button");
-    mCopyLyrics.textContent = "📋 Copy Lyrics";
-    mCopyLyrics.addEventListener("click",(e)=>{
-      e.stopPropagation();
-      mm.classList.remove("open");
-      const allow = (t.owned || (t.visibility==="public" && t.allowCopy));
-      if(!allow) return toast("Copy blocked (permissions)","bad");
-      navigator.clipboard?.writeText(t.lyrics||"");
-      toast("Copied","ok");
-    });
-
-    const mPublish = document.createElement("button");
-    mPublish.textContent = "📣 Publish (Soon)";
-    mPublish.addEventListener("click",(e)=>{ e.stopPropagation(); mm.classList.remove("open"); toast("Soon","warn"); });
-
-    const mReport = document.createElement("button");
-    mReport.textContent = "🚩 Report (Soon)";
-    mReport.addEventListener("click",(e)=>{ e.stopPropagation(); mm.classList.remove("open"); toast("Soon","warn"); });
-
-    const mDelete = document.createElement("button");
-    mDelete.textContent = "🗑 Delete (30 days)";
-    mDelete.className = "danger";
-    mDelete.addEventListener("click",(e)=>{ e.stopPropagation(); mm.classList.remove("open"); softDelete(t.id); });
-
-    mm.appendChild(mVis);
-    mm.appendChild(mAllowCopy);
-    mm.appendChild(mAllowDl);
-    mm.appendChild(mLyPdf);
-    mm.appendChild(mShPdf);
-    mm.appendChild(mCopyTitle);
-    mm.appendChild(mCopyStyle);
-    mm.appendChild(mCopyLyrics);
-    mm.appendChild(mPublish);
-    mm.appendChild(mReport);
-    mm.appendChild(mDelete);
+    mm.appendChild(m1); mm.appendChild(m2); mm.appendChild(m3); mm.appendChild(m4);
 
     btnMore.addEventListener("click",(e)=>{
       e.stopPropagation();
+      // close others
       $$(".more-menu.open").forEach(x=>{ if(x!==mm) x.classList.remove("open"); });
 
+      // toggle + position next to button (fixed, above everything)
       const willOpen = !mm.classList.contains("open");
       if(!willOpen){
         mm.classList.remove("open");
         return;
       }
+
       const r = btnMore.getBoundingClientRect();
-      const top = Math.min(r.bottom + 8, window.innerHeight - 280);
-      const left = Math.min(r.right - 230, window.innerWidth - 240);
+      const top = Math.min(r.bottom + 8, window.innerHeight - 240);
+      const left = Math.min(r.right - 210, window.innerWidth - 220);
 
       mm.style.top = `${Math.max(8, top)}px`;
       mm.style.left = `${Math.max(8, left)}px`;
@@ -1881,81 +1549,6 @@
 
     card.addEventListener("click",()=> selectTrack(t.id, false));
     return card;
-  }
-
-  // ===== Trash render =====
-  function trashCard(t){
-    const card = document.createElement("div");
-    card.className = "track";
-    card.title = "Trash item";
-
-    const cover = document.createElement("div");
-    cover.className = "cover";
-    const dur = document.createElement("div");
-    dur.className = "dur";
-    dur.textContent = t.dur || "—";
-    cover.appendChild(dur);
-
-    const meta = document.createElement("div");
-    meta.className = "meta";
-
-    const title = document.createElement("div");
-    title.className = "title";
-    const b = document.createElement("span");
-    b.textContent = t.title || "Untitled";
-    const st = document.createElement("span");
-    st.className = "statusTag";
-    st.textContent = "Deleted";
-
-    title.appendChild(b);
-    title.appendChild(st);
-
-    const desc = document.createElement("div");
-    desc.className = "desc";
-    const delAt = new Date(t.deletedAt || Date.now());
-    const expires = new Date((t.deletedAt || Date.now()) + 30*24*60*60*1000);
-    desc.textContent = `Deleted: ${delAt.toLocaleString()} • Expires: ${expires.toLocaleDateString()} • ${t.desc || ""}`;
-
-    meta.appendChild(title);
-    meta.appendChild(desc);
-
-    const actions = document.createElement("div");
-    actions.className = "actions";
-
-    const btnRestore = document.createElement("button");
-    btnRestore.className = "iconbtn";
-    btnRestore.textContent = "↩";
-    btnRestore.title = "Restore";
-    btnRestore.addEventListener("click",(e)=>{ e.stopPropagation(); restoreFromTrash(t.id); });
-
-    const btnDel = document.createElement("button");
-    btnDel.className = "iconbtn";
-    btnDel.textContent = "✖";
-    btnDel.title = "Delete forever";
-    btnDel.addEventListener("click",(e)=>{ e.stopPropagation(); hardDeleteFromTrash(t.id); });
-
-    actions.appendChild(btnRestore);
-    actions.appendChild(btnDel);
-
-    card.appendChild(cover);
-    card.appendChild(meta);
-    card.appendChild(actions);
-    return card;
-  }
-
-  function renderTrash(){
-    purgeTrash();
-    saveAll();
-    const box = $("#trashList");
-    box.innerHTML = "";
-    if(!trash.length){
-      const empty = document.createElement("div");
-      empty.className = "trashTip";
-      empty.innerHTML = "<b>Trash is empty.</b> Delete a track (⋯ → Delete) to test restore.";
-      box.appendChild(empty);
-      return;
-    }
-    trash.forEach(t=>box.appendChild(trashCard(t)));
   }
 
   // ===== Selection + Player =====
@@ -1992,15 +1585,11 @@
     $("#playStateText").textContent = isPlaying ? "Playing" : "Paused";
     $("#npStatusPill").textContent = isPlaying ? "Playing" : "Ready";
 
-    const t = tracks.find(x=>x.id===nowId);
-    setAudioPlaying(isPlaying, t?.style || "");
-
     if(isPlaying){
       if(!nowId){
         if(tracks[0]?.id){ selectTrack(tracks[0].id, true); return; }
         toast("No track","warn");
         isPlaying = false;
-        setAudioPlaying(false);
         $("#btnPlay").textContent = "▶";
         $("#npPlay").textContent = "▶ Play";
         $("#playStateText").textContent = "Paused";
@@ -2061,18 +1650,14 @@
     t.disliked = !t.disliked; if(t.disliked) t.liked=false;
     saveAll(); render(); toast(t.disliked ? "Disliked" : "Undisliked");
   });
-  $("#btnShare").addEventListener("click",()=>{
-    const t = tracks.find(x=>x.id===nowId);
-    if(!t) return toast("No track","warn");
-    const txt = `SML • ${t.title}\n${t.desc || ""}\nVisibility: ${t.visibility}\n\n(Share feed later)`;
-    navigator.clipboard?.writeText(txt);
-    toast("Share text copied","ok");
+  $("#btnShare").addEventListener("click",()=> toast("Share (Soon)","warn"));
+
+  $("#btnOpenQueue").addEventListener("click",()=>{
+    toast("Now Playing","ok");
   });
 
   $("#btnCopyLyrics").addEventListener("click",()=>{
     const t = tracks.find(x=>x.id===nowId); if(!t) return;
-    const allow = (t.owned || (t.visibility==="public" && t.allowCopy));
-    if(!allow) return toast("Copy blocked (permissions)","bad");
     navigator.clipboard?.writeText(t.lyrics || "");
     toast("Lyrics copied","ok");
   });
@@ -2082,16 +1667,15 @@
     toast("Style copied","ok");
   });
 
-  // ===== PDF Downloads =====
+  // ===== PDF Downloads (REAL) =====
   function safeName(name){
     return (name||"file").replace(/[^a-z0-9\-_ ]/gi,"").trim().slice(0,40) || "file";
   }
 
   function downloadLyricsPDF(title, style, lyrics){
     const { jsPDF } = window.jspdf;
-    if(!jsPDF) return toast("jsPDF failed to load","bad");
-
     const doc = new jsPDF({ unit:"pt", format:"letter" });
+
     const margin = 48;
     let y = 64;
 
@@ -2127,13 +1711,11 @@
 
   function downloadSheetPDF(title){
     const { jsPDF } = window.jspdf;
-    if(!jsPDF) return toast("jsPDF failed to load","bad");
-
     const doc = new jsPDF({ unit:"pt", format:"letter" });
 
     doc.setFont("helvetica","bold");
     doc.setFontSize(16);
-    doc.text("Sheet Music PDF (placeholder)", 48, 64);
+    doc.text(`Sheet Music PDF (placeholder)`, 48, 64);
 
     doc.setFont("helvetica","normal");
     doc.setFontSize(12);
@@ -2199,45 +1781,9 @@
     $(id).addEventListener("change", saveDraft);
   });
 
-  // ===== Home Import/Export =====
-  $("#btnExportLibraryJson").addEventListener("click",()=>{
-    const payload = { tracks, trash, exportedAt: Date.now(), version: 1 };
-    const blob = new Blob([JSON.stringify(payload,null,2)], { type:"application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "sml-library-backup.json";
-    a.click();
-    URL.revokeObjectURL(url);
-    toast("Exported","ok");
-  });
-
-  $("#btnImportLibraryJson").addEventListener("click",()=>{
-    $("#importJsonInput").click();
-  });
-
-  $("#importJsonInput").addEventListener("change",(e)=>{
-    const file = e.target.files?.[0];
-    if(!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      try{
-        const data = JSON.parse(String(reader.result||""));
-        if(Array.isArray(data.tracks)) tracks = data.tracks;
-        if(Array.isArray(data.trash)) trash = data.trash;
-        saveAll(); render(); renderTrash();
-        toast("Imported","ok");
-      }catch{
-        toast("Import failed","bad");
-      }
-    };
-    reader.readAsText(file);
-    e.target.value = "";
-  });
-
-  // ===== Seed demo =====
-  $("#btnSeedDemo").addEventListener("click",()=>{
-    if(tracks.length) return toast("Library already has tracks","warn");
+  // ===== Initial seed tracks (if empty) =====
+  function seedIfEmpty(){
+    if(tracks.length) return;
     tracks = [
       {
         id: uuid(),
@@ -2254,39 +1800,24 @@
         createdAt: Date.now() - 1000*60*30,
         lyrics:"Where you look\nI follow\nIn the dark\nWe glow",
         liked:false,
-        disliked:false,
-        generated:true,
-        audioHash: fakeWaveformHash("Where you look", "brooding slow rock, cinematic")
-      },
-      {
-        id: uuid(),
-        owner:"you",
-        owned:true,
-        visibility:"public",
-        allowCopy:false,
-        allowDownload:false,
-        title:"Couch Ate My Lighter",
-        style:"NYC punk, spoken yell, raw",
-        desc:"NYC punk, spoken yell, raw",
-        dur:"3:05",
-        v:"v5",
-        createdAt: Date.now() - 1000*60*8,
-        lyrics:"Ooooooo Ooooooo\nI think the couch ate my lighter.\n\nWhere the fuck's my lighter.\nI need some fucking fire.",
-        liked:true,
-        disliked:false,
-        generated:true,
-        audioHash: fakeWaveformHash("Couch Ate My Lighter", "NYC punk, spoken yell, raw")
+        disliked:false
       }
     ];
     saveAll();
-    render();
-    toast("Seeded","ok");
-  });
+  }
 
   // ===== Start =====
   load();
+  seedIfEmpty();
+
+  // Autosave on by default
+  $("#optDraftAutosave").classList.add("on");
+  startDraftAutosave();
+
+  // Load draft after UI is mounted
+  loadDraft();
+
   render();
-  showRoute("home");
 
   // Select first track but do NOT autoplay
   if(tracks[0]?.id){
