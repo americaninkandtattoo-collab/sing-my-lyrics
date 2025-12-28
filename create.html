@@ -1,1 +1,178 @@
 
+<!-- =========================
+FILE: create.html  (CREATE)
+========================= -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>SingMyLyrics — Create</title>
+
+  <!-- jsPDF for real downloads -->
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+  <link rel="stylesheet" href="app.css" />
+</head>
+<body>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-left">
+        <button class="brand-toggle" id="toggleSidebar" title="Collapse sidebar">◀</button>
+        <div class="brand-row">
+          <!-- NO GREEN S SQUARE (removed) -->
+          <div class="brand-text"><div class="t1">SML</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="user">
+      <div class="avatar"></div>
+      <div>
+        <div class="name" id="userName">YOU</div>
+        <div class="handle" id="userHandle">@owner</div>
+      </div>
+      <button class="profileLink" id="btnProfile" type="button">Profile</button>
+    </div>
+
+    <div class="nav">
+      <a href="index.html"><div class="icon">⌂</div><div class="nav-label">Home</div></a>
+      <a href="create.html" class="active"><div class="icon">♪</div><div class="nav-label">Create</div></a>
+      <a href="library.html"><div class="icon">🗂</div><div class="nav-label">Library</div></a>
+      <a href="trash.html"><div class="icon">🗑</div><div class="nav-label">Trash</div></a>
+    </div>
+
+    <div class="credits-big"><span id="credits">7,537</span> Credits</div>
+    <div class="account-pill">Ownership: 100% You</div>
+
+    <div class="side-footer">
+      <div class="row">🗑 <span>Trash (30 days)</span> <span class="badge" style="background:#ffffff18;color:#cfe1ff;border:1px solid #ffffff22" id="trashCount">0</span></div>
+      <div class="row">🧾 <span>User lyrics only.</span></div>
+    </div>
+  </aside>
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="pill"><span class="dot"></span><span><b>Credits</b></span></div>
+    <div class="pill">Create</div>
+    <div class="spacer"></div>
+    <div class="pill">Workspace ▸ <b>My Workspace</b></div>
+    <a class="btn-ghost" href="index.html" title="Back to Home">Home</a>
+  </header>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="main-wrap" id="createPage">
+
+      <!-- CREATE PANEL -->
+      <section class="panel">
+        <div class="panel-header">
+          <h3>Create</h3>
+          <div class="spacer"></div>
+          <div class="pill">No draft saving</div>
+        </div>
+
+        <div class="panel-body">
+          <div class="field-label">Song Title</div>
+          <input id="songTitle" placeholder="Name your song (optional)" />
+
+          <div class="field-label">Lyrics (User-only)</div>
+          <textarea id="lyrics" placeholder="Write or paste lyrics here..."></textarea>
+
+          <div class="field-label">Style (expands)</div>
+          <!-- STYLE IS A TEXTAREA so you can see everything you typed -->
+          <textarea id="styleText" style="min-height:90px" placeholder="Describe style here (e.g. industrial rock, cinematic, punchy drums)"></textarea>
+
+          <div class="field-label">Style Influence</div>
+          <div class="sliderRow">
+            <input id="styleInfluence" type="range" min="0" max="100" value="60" />
+            <div class="sliderVal" id="styleInfluenceVal">60%</div>
+          </div>
+
+          <div class="field-label">Audio Influence</div>
+          <div class="sliderRow">
+            <input id="audioInfluence" type="range" min="0" max="100" value="40" />
+            <div class="sliderVal" id="audioInfluenceVal">40%</div>
+          </div>
+
+          <div class="field-label">Style Presets (slot machine)</div>
+          <div class="slotbar">
+            <button class="slotbtn" id="presetLeft" type="button">◀</button>
+            <div class="slot" id="presetSlot"></div>
+            <button class="slotbtn" id="presetRight" type="button">▶</button>
+            <button class="slotbtn" id="diceStyle" type="button" title="Dice (ONE style)">🎲</button>
+          </div>
+
+          <div class="field-label">Inspiration (slot machine)</div>
+          <div class="slotbar">
+            <button class="slotbtn" id="inspoLeft" type="button">◀</button>
+            <div class="slot" id="inspoSlot"></div>
+            <button class="slotbtn" id="inspoRight" type="button">▶</button>
+            <button class="slotbtn" id="diceInspo" type="button" title="Dice (ONE chip)">🎲</button>
+          </div>
+
+          <div class="stack">
+            <button class="btn-wide btn-green" id="btnCreate" type="button">🎵 Create</button>
+            <div class="muted" style="font-size:12px">
+              Create generates a playable audio placeholder now. Real model audio plugs in later.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- WORKSPACE LIST (titles only + 3 dots) -->
+      <section class="panel" id="listPanel">
+        <div class="panel-header">
+          <h3>Workspace</h3>
+          <div class="spacer"></div>
+          <div class="pill">Titles only</div>
+        </div>
+        <div class="panel-body">
+          <div class="tracks" id="tracks"></div>
+        </div>
+      </section>
+
+      <!-- RIGHT DETAILS PANEL -->
+      <section class="panel" id="rightPanel">
+        <div class="panel-header">
+          <h3>Song Details</h3>
+          <div class="spacer"></div>
+          <div class="pill">Info</div>
+        </div>
+        <div class="panel-body" id="rightCard"></div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- PLAYER (CENTERED) -->
+  <footer class="player">
+    <div class="playerInner">
+      <button class="pbtn" id="btnPrev" title="Prev">⟲</button>
+      <button class="pbtn" id="btnPlay" title="Play/Pause">▶</button>
+      <button class="pbtn" id="btnNext" title="Next">⟳</button>
+
+      <div class="pNow">
+        <b id="playerTitle">No track selected</b>
+        <small id="playerSub">—</small>
+      </div>
+
+      <div class="pBar">
+        <div class="progress" id="progress"><div class="fill" id="fill"></div></div>
+        <div class="time" id="time">0:00</div>
+      </div>
+    </div>
+
+    <audio id="audio" class="hidden" autoplay></audio>
+  </footer>
+
+</div>
+
+<div class="toast" id="toast"><span class="dot" id="toastDot"></span><span id="toastText">Saved</span></div>
+
+<script src="app.js"></script>
+</body>
+</html>
