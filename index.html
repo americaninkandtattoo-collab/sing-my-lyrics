@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1328,7 +1327,7 @@
   function randomDur(){
     const m = 2 + Math.floor(Math.random()*2);
     const s = String(Math.floor(Math.random()*60)).padStart(2,"0");
-    return `${m}:${s}`;
+    return ${m}:${s};
   }
   function createTrack(){
     const lyrics = $("#lyrics").value.trim();
@@ -1531,8 +1530,8 @@
       const top = Math.min(r.bottom + 8, window.innerHeight - 240);
       const left = Math.min(r.right - 210, window.innerWidth - 220);
 
-      mm.style.top = `${Math.max(8, top)}px`;
-      mm.style.left = `${Math.max(8, left)}px`;
+      mm.style.top = ${Math.max(8, top)}px;
+      mm.style.left = ${Math.max(8, left)}px;
       mm.classList.add("open");
     });
 
@@ -1688,7 +1687,7 @@
     doc.setFont("helvetica","normal");
     doc.setFontSize(11);
     doc.setTextColor(120);
-    doc.text(`Style: ${style || "—"}`, margin, y);
+    doc.text(Style: ${style || "—"}, margin, y);
     y += 18;
 
     doc.setTextColor(30);
@@ -1706,7 +1705,7 @@
       y += 16;
     });
 
-    doc.save(`${safeName(title)}-lyrics.pdf`);
+    doc.save(${safeName(title)}-lyrics.pdf);
     toast("Lyrics PDF downloaded","ok");
   }
 
@@ -1716,11 +1715,11 @@
 
     doc.setFont("helvetica","bold");
     doc.setFontSize(16);
-    doc.text(`Sheet Music PDF (placeholder)`, 48, 64);
+    doc.text(Sheet Music PDF (placeholder), 48, 64);
 
     doc.setFont("helvetica","normal");
     doc.setFontSize(12);
-    doc.text(`Title: ${title || "Untitled"}`, 48, 92);
+    doc.text(Title: ${title || "Untitled"}, 48, 92);
 
     let y = 140;
     for(let staff=0; staff<6; staff++){
@@ -1735,7 +1734,7 @@
     doc.setTextColor(120);
     doc.text("Placeholder staff. Real notation will be wired later.", 48, 740);
 
-    doc.save(`${safeName(title)}-sheet.pdf`);
+    doc.save(${safeName(title)}-sheet.pdf);
     toast("Sheet PDF downloaded","ok");
   }
 
@@ -1832,6 +1831,299 @@
   }
 
 })();
+</script>
+</body>
+</html>
+cdn.jsdelivr.net
+You sent
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sing My Lyrics (SML)</title>
+
+<style>
+:root{
+  --bg:#0e1116;
+  --panel:#151a22;
+  --panel2:#1b2230;
+  --text:#e7eaf0;
+  --muted:#9aa3b2;
+  --accent:#3bff88;
+  --danger:#ff5c5c;
+  --border:#2a3242;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto;
+}
+.app{
+  display:grid;
+  grid-template-columns:240px 1fr 280px;
+  height:100vh;
+}
+
+/* LEFT NAV */
+.nav{
+  background:var(--panel);
+  border-right:1px solid var(--border);
+  padding:12px;
+}
+.logo{
+  font-weight:700;
+  font-size:18px;
+  margin-bottom:16px;
+}
+.nav button{
+  width:100%;
+  background:none;
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:10px;
+  margin-bottom:8px;
+  text-align:left;
+  cursor:pointer;
+}
+.nav button.active{border-color:var(--accent); color:var(--accent)}
+.nav small{color:var(--muted)}
+
+/* CENTER */
+.main{
+  background:var(--panel2);
+  padding:16px;
+  overflow:auto;
+}
+.view{display:none}
+.view.active{display:block}
+
+/* RIGHT PLAYER */
+.player{
+  background:var(--panel);
+  border-left:1px solid var(--border);
+  padding:12px;
+}
+.player h3{margin-top:0}
+audio{width:100%}
+
+/* CARDS */
+.card{
+  border:1px solid var(--border);
+  padding:12px;
+  margin-bottom:10px;
+  background:#0f141c;
+}
+
+/* MENU */
+.menu{
+  position:relative;
+  float:right;
+  cursor:pointer;
+}
+.menu-content{
+  display:none;
+  position:absolute;
+  right:0;
+  top:20px;
+  background:#0f141c;
+  border:1px solid var(--border);
+  z-index:10;
+}
+.menu-content button{
+  display:block;
+  width:100%;
+  border:none;
+  background:none;
+  color:var(--text);
+  padding:8px;
+  text-align:left;
+}
+.menu-content button:hover{background:#182030}
+.menu.open .menu-content{display:block}
+
+/* CREATE */
+textarea, select{
+  width:100%;
+  margin-bottom:8px;
+  padding:10px;
+  background:#0f141c;
+  border:1px solid var(--border);
+  color:var(--text);
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+  <!-- LEFT -->
+  <div class="nav">
+    <div class="logo">SML</div>
+    <button data-nav="#home">Home</button>
+    <button data-nav="#create">Create</button>
+    <button data-nav="#library">Library</button>
+    <button data-nav="#trash">Trash</button>
+    <small>You own your lyrics. Always.</small>
+  </div>
+
+  <!-- CENTER -->
+  <div class="main">
+    <div id="home" class="view">
+      <h2>Human words. Finally heard.</h2>
+      <p>We never write lyrics for you. You keep 100% ownership.</p>
+      <button onclick="go('#create')">Go to Create</button>
+    </div>
+
+    <div id="create" class="view">
+      <h2>Create</h2>
+      <textarea id="lyrics" placeholder="Paste your lyrics here"></textarea>
+      <select id="style">
+        <option>Rock</option>
+        <option>Punk</option>
+        <option>Hip Hop</option>
+        <option>Electronic</option>
+      </select>
+      <button onclick="generate()">Generate Song</button>
+    </div>
+
+    <div id="library" class="view">
+      <h2>Library</h2>
+      <div id="songs"></div>
+    </div>
+
+    <div id="trash" class="view">
+      <h2>Trash (30 days)</h2>
+      <div id="trashList"></div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="player">
+    <h3>Now Playing</h3>
+    <div id="nowPlaying">Nothing</div>
+    <audio id="audio" controls></audio>
+  </div>
+
+</div>
+
+<script>
+const views=[...document.querySelectorAll('.view')];
+const navBtns=[...document.querySelectorAll('[data-nav]')];
+const songsEl=document.getElementById('songs');
+const trashEl=document.getElementById('trashList');
+const audio=document.getElementById('audio');
+const nowPlaying=document.getElementById('nowPlaying');
+
+let songs=[];
+let trash=[];
+
+function go(hash){ location.hash=hash; }
+
+function show(){
+  const h=location.hash||'#home';
+  views.forEach(v=>v.classList.remove('active'));
+  navBtns.forEach(b=>b.classList.remove('active'));
+  document.querySelector(h)?.classList.add('active');
+  document.querySelector([data-nav="${h}"])?.classList.add('active');
+}
+window.addEventListener('hashchange',show);
+show();
+
+function fakeAudio(){
+  const ctx=new AudioContext();
+  const osc=ctx.createOscillator();
+  const dst=ctx.createMediaStreamDestination();
+  osc.type='sawtooth';
+  osc.frequency.value=220;
+  osc.connect(dst);
+  osc.start();
+  return dst.stream;
+}
+
+function generate(){
+  if(!lyrics.value.trim()) return;
+  const song={
+    id:Date.now(),
+    title:'Untitled Song',
+    lyrics:lyrics.value,
+    public:false,
+    created:Date.now()
+  };
+  songs.unshift(song);
+  render();
+  play(song);
+  lyrics.value='';
+}
+
+function play(song){
+  nowPlaying.textContent=song.title;
+  audio.srcObject=fakeAudio();
+}
+
+function toggleMenu(el){
+  el.classList.toggle('open');
+}
+
+function togglePub(id){
+  const s=songs.find(x=>x.id===id);
+  if(s){ s.public=!s.public; render(); }
+}
+
+function del(id){
+  const idx=songs.findIndex(x=>x.id===id);
+  if(idx>-1){
+    trash.unshift({...songs[idx], deleted:Date.now()});
+    songs.splice(idx,1);
+    render();
+  }
+}
+
+function restore(id){
+  const idx=trash.findIndex(x=>x.id===id);
+  if(idx>-1){
+    songs.unshift(trash[idx]);
+    trash.splice(idx,1);
+    render();
+  }
+}
+
+function render(){
+  songsEl.innerHTML='';
+  trashEl.innerHTML='';
+
+  songs.forEach(s=>{
+    const d=document.createElement('div');
+    d.className='card';
+    d.innerHTML=`
+      <strong>${s.title}</strong>
+      <div class="menu" onclick="toggleMenu(this)">
+        ⋮
+        <div class="menu-content">
+          <button onclick="togglePub(${s.id})">${s.public?'Make Private':'Make Public'}</button>
+          <button onclick="del(${s.id})">Delete</button>
+        </div>
+      </div>
+    `;
+    d.onclick=()=>play(s);
+    songsEl.appendChild(d);
+  });
+
+  const now=Date.now();
+  trash=trash.filter(t=>now-t.deleted<30*86400000);
+
+  trash.forEach(t=>{
+    const d=document.createElement('div');
+    d.className='card';
+    d.innerHTML=`
+      <strong>${t.title}</strong>
+      <button onclick="restore(${t.id})">Restore</button>
+    `;
+    trashEl.appendChild(d);
+  });
+}
 </script>
 </body>
 </html>
