@@ -821,3 +821,10 @@ FILE: app.js
     setPlaying(false);
   }
 })();
+// Sidebar navigation (always-on)
+document.querySelectorAll('.nav a').forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    window.location.href = link.getAttribute('href');
+  });
+});
