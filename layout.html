@@ -1,1 +1,435 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>SML — Layout</title>
+
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --panel:#121a24;
+      --panel2:#0f1620;
+      --stroke:#233041;
+      --text:#e8f0ff;
+      --muted:#8aa0c4;
+      --pill:#182233;
+      --pill2:#101827;
+      --green:#2bd576;
+      --danger:#ff5b6e;
+      --warn:#ffb020;
+      --shadow: 0 12px 40px rgba(0,0,0,.45);
+      --r:16px;
+      --r2:12px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      overflow:hidden;
+    }
+    a{color:inherit;text-decoration:none}
+    button,input,textarea,select{font:inherit}
+    .muted{color:var(--muted)}
+    .hidden{display:none!important}
+
+    /* ===== APP GRID ===== */
+    .app{
+      height:100vh;
+      display:grid;
+      grid-template-columns: 260px 1fr;
+      grid-template-rows: 56px 1fr 72px;
+      grid-template-areas:
+        "sidebar top"
+        "sidebar main"
+        "sidebar player";
+    }
+    .sidebar{grid-area:sidebar; background:linear-gradient(180deg,#0f1620,#0b0f14); border-right:1px solid var(--stroke); overflow:auto}
+    .topbar{grid-area:top; background:#0e1520; border-bottom:1px solid var(--stroke); display:flex; align-items:center; gap:10px; padding:0 12px;}
+    .main{grid-area:main; overflow:hidden;}
+    .player{grid-area:player; background:#0e1520; border-top:1px solid var(--stroke); display:flex; align-items:center; padding:10px 12px; gap:10px}
+
+    /* Collapsed sidebar */
+    body.collapsed .app{grid-template-columns: 76px 1fr;}
+    body.collapsed .nav-label{display:none}
+    body.collapsed .brand-text{display:none}
+    body.collapsed .account-pill{display:none}
+    body.collapsed .credits-big{display:none}
+    body.collapsed .logo{display:none}
+    body.collapsed .brand{justify-content:center; padding:10px 8px;}
+    body.collapsed .brand-toggle{
+      width:72px;
+      height:72px;
+      border-radius:16px;
+      display:grid;
+      place-items:center;
+      font-size:48px;
+      line-height:1;
+    }
+
+    /* ===== SIDEBAR ===== */
+    .brand{
+      display:flex; align-items:center; gap:10px;
+      padding:14px 12px 10px;
+      position:sticky; top:0;
+      background:linear-gradient(180deg,#0f1620,#0f1620cc);
+      backdrop-filter: blur(8px);
+      border-bottom:1px solid var(--stroke);
+      z-index:5;
+    }
+    .brand-left{display:flex; align-items:center; gap:12px; min-width:0;}
+    .brand-toggle{
+      align-self:center;
+      background:#ffffff10;
+      border:1px solid #ffffff14;
+      color:var(--text);
+      width:44px;
+      height:34px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:1000;
+      display:grid;
+      place-items:center;
+      user-select:none;
+    }
+    .brand-row{display:flex; align-items:center; justify-content:flex-start; gap:10px; min-width:0;}
+    /* IMPORTANT: logo is OFF (removes the green S square) */
+    .logo{display:none!important;}
+
+    .brand-text{display:flex; align-items:center; line-height:1; min-width:0;}
+    .brand-text .t1{
+      font-size:42px;
+      font-weight:900;
+      line-height:1;
+      display:block;
+      letter-spacing:.5px;
+    }
+    .brand-text .t2{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:2px;
+      display:block;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .user{display:flex; align-items:center; gap:10px; padding:10px 12px}
+    .avatar{
+      width:34px; height:34px; border-radius:50%;
+      background: radial-gradient(circle at 30% 30%, #fff4, #0000 55%), linear-gradient(135deg,#7c4dff,#00d4ff);
+      border:1px solid #ffffff22;
+    }
+    .user .name{font-weight:900; font-size:13px}
+    .user .handle{font-size:12px; color:var(--muted)}
+    .nav{padding:6px 8px 14px}
+    .nav a{
+      display:flex; align-items:center; gap:10px;
+      padding:10px 10px;
+      border-radius:12px;
+      text-decoration:none;
+      color:var(--text);
+      opacity:.92;
+    }
+    .nav a:hover{background:#ffffff08}
+    .nav a.active{background:#ffffff10; border:1px solid #ffffff12}
+    .icon{
+      width:28px; height:28px; border-radius:10px;
+      background:#ffffff08;
+      display:grid; place-items:center;
+      border:1px solid #ffffff10;
+      flex:0 0 auto;
+    }
+    .badge{
+      margin-left:auto;
+      background:var(--danger);
+      color:#fff;
+      font-weight:1000;
+      font-size:11px;
+      padding:2px 7px;
+      border-radius:999px;
+    }
+    .credits-big{padding:0 12px 10px; color:#cfe1ff; font-weight:900; font-size:13px; opacity:.9;}
+    .account-pill{
+      margin: 0 12px 10px;
+      background:#ffffff12;
+      border:1px solid #ffffff12;
+      border-radius:999px;
+      padding:10px 12px;
+      display:flex;
+      justify-content:center;
+      font-weight:1000;
+      cursor:pointer;
+      user-select:none;
+    }
+    .account-pill:hover{background:#ffffff18}
+    .side-footer{
+      padding:10px 12px 18px;
+      color:var(--muted);
+      font-size:12px;
+      border-top:1px solid var(--stroke);
+    }
+    .side-footer .row{display:flex; align-items:center; gap:8px; padding:8px 0}
+
+    /* ===== TOPBAR ===== */
+    .pill{
+      background:var(--pill);
+      border:1px solid #ffffff10;
+      color:var(--text);
+      padding:7px 10px;
+      border-radius:999px;
+      font-size:12px;
+      display:flex; align-items:center; gap:8px;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .pill .dot{width:8px;height:8px;border-radius:50%;background:var(--green); box-shadow:0 0 0 3px #2bd57622}
+    .spacer{flex:1}
+    .top-actions{display:flex; align-items:center; gap:8px}
+    .btn-ghost{
+      background:#ffffff10;
+      border:1px solid #ffffff14;
+      color:var(--text);
+      padding:8px 10px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:900;
+    }
+    .btn-ghost:hover{background:#ffffff14}
+
+    /* ===== MAIN ===== */
+    .main-wrap{
+      height:100%;
+      padding:12px;
+      overflow:auto;
+    }
+    .panel{
+      background:var(--panel2);
+      border:1px solid var(--stroke);
+      border-radius:var(--r);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      min-width:0;
+    }
+    .panel-header{
+      padding:12px 12px 10px;
+      border-bottom:1px solid var(--stroke);
+      display:flex; align-items:center; gap:10px;
+      background:linear-gradient(180deg,#101827,#0f1620);
+    }
+    .panel-header h3{margin:0; font-size:14px; letter-spacing:.2px}
+    .panel-body{padding:12px; overflow:auto; min-height:0}
+
+    /* ===== PLAYER (BOTTOM) ===== */
+    .pbtn{
+      width:44px; height:44px;
+      border-radius:16px;
+      border:1px solid #ffffff14;
+      background:#ffffff10;
+      color:var(--text);
+      cursor:pointer;
+      display:grid; place-items:center;
+      font-weight:1000;
+    }
+    .pbtn:hover{background:#ffffff14}
+    .now{
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+      flex:1;
+    }
+    .now b{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+    .now small{color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+    .bar{
+      flex:2;
+      display:flex; align-items:center; gap:10px;
+      min-width:0;
+      justify-content:center;
+    }
+    .progress{
+      height:10px;
+      background:#ffffff10;
+      border:1px solid #ffffff10;
+      border-radius:999px;
+      position:relative;
+      overflow:hidden;
+      cursor:pointer;
+      width:100%;
+      max-width:520px;
+    }
+    .fill{
+      position:absolute; left:0; top:0; bottom:0;
+      width:0%;
+      background:linear-gradient(90deg,#2bd576,#5fd3ff);
+    }
+    .time{color:var(--muted); font-size:12px; width:64px; text-align:right}
+  </style>
+</head>
+
+<body>
+<div class="app">
+
+  <!-- SIDEBAR (ALWAYS PRESENT) -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-left">
+        <button class="brand-toggle" id="toggleSidebar" title="Collapse sidebar">◀</button>
+        <div class="brand-row">
+          <div class="logo">S</div>
+          <div class="brand-text">
+            <span class="t1">SML</span>
+            <span class="t2">Making rock stars out of one human at a time</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="user">
+      <div class="avatar"></div>
+      <div>
+        <div class="name" id="userName">YOU</div>
+        <div class="handle" id="userHandle">@owner</div>
+      </div>
+    </div>
+
+    <div class="nav">
+      <a href="index.html" id="navHome"><div class="icon">⌂</div><div class="nav-label">Home</div></a>
+      <a href="create.html" id="navCreate"><div class="icon">♪</div><div class="nav-label">Create</div></a>
+      <a href="library.html" id="navLibrary"><div class="icon">☰</div><div class="nav-label">Library</div></a>
+      <a href="trash.html" id="navTrash"><div class="icon">🗑</div><div class="nav-label">Trash</div></a>
+    </div>
+
+    <div class="credits-big"><span id="credits">7,537</span> Credits</div>
+
+    <div class="account-pill" id="accountPill">YOU (Owner)</div>
+
+    <div class="side-footer">
+      <div class="row">🗑 <span>Trash (30 days)</span> <span class="badge" style="background:#ffffff18;color:#cfe1ff;border:1px solid #ffffff22" id="trashCount">0</span></div>
+      <div class="row">🧾 <span>Ownership: 100% You</span></div>
+    </div>
+  </aside>
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="pill"><span class="dot"></span><span><b id="creditsPill">7.8k</b> Credits</span></div>
+    <div class="pill" id="pagePill">Layout</div>
+    <div class="spacer"></div>
+    <div class="top-actions">
+      <button class="btn-ghost" id="btnProfile" title="Profile">Profile</button>
+    </div>
+  </header>
+
+  <!-- MAIN (PAGE CONTENT GOES HERE) -->
+  <main class="main">
+    <div class="main-wrap">
+      <section class="panel">
+        <div class="panel-header">
+          <h3 id="pageTitle">Layout Shell</h3>
+          <div class="spacer"></div>
+          <div class="pill">Shared Frame</div>
+        </div>
+        <div class="panel-body">
+          <div class="muted" style="line-height:1.5">
+            This is the shared layout frame.<br/>
+            Sidebar never disappears. Pages navigate via real links (index/create/library/trash).<br/>
+            Profile button and “YOU (Owner)” open profile.html.
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- PLAYER -->
+  <footer class="player">
+    <button class="pbtn" id="btnPrev" title="Prev">⟲</button>
+    <button class="pbtn" id="btnPlay" title="Play/Pause">▶</button>
+    <button class="pbtn" id="btnNext" title="Next">⟳</button>
+
+    <div class="bar" style="flex:3">
+      <div class="now" style="max-width:320px">
+        <b id="playerTitle">No track selected</b>
+        <small id="playerSub">—</small>
+      </div>
+
+      <div class="progress" id="progress">
+        <div class="fill" id="fill"></div>
+      </div>
+
+      <div class="time" id="time">0:00</div>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+(() => {
+  const $ = (s) => document.querySelector(s);
+  const clamp = (n,min,max)=>Math.max(min,Math.min(max,n));
+
+  // Sidebar collapse
+  function syncSidebarArrow(){
+    const collapsed = document.body.classList.contains("collapsed");
+    $("#toggleSidebar").textContent = collapsed ? "▶" : "◀";
+    $("#toggleSidebar").title = collapsed ? "Expand sidebar" : "Collapse sidebar";
+  }
+  $("#toggleSidebar").addEventListener("click",(e)=>{
+    e.stopPropagation();
+    document.body.classList.toggle("collapsed");
+    syncSidebarArrow();
+  });
+  syncSidebarArrow();
+
+  // Active nav highlight based on filename
+  const path = (location.pathname.split("/").pop() || "layout.html").toLowerCase();
+  const map = {
+    "index.html":"navHome",
+    "create.html":"navCreate",
+    "library.html":"navLibrary",
+    "trash.html":"navTrash",
+    "layout.html":null,
+    "profile.html":null
+  };
+  const activeId = map[path];
+  if(activeId){
+    $("#"+activeId).classList.add("active");
+    $("#pagePill").textContent = activeId === "navHome" ? "Home" :
+                                activeId === "navCreate" ? "Create" :
+                                activeId === "navLibrary" ? "Library" :
+                                "Trash";
+    $("#pageTitle").textContent = $("#pagePill").textContent;
+  } else {
+    $("#pagePill").textContent = path.replace(".html","").toUpperCase();
+    $("#pageTitle").textContent = $("#pagePill").textContent;
+  }
+
+  // Profile routing (button + owner pill)
+  function goProfile(){ location.href = "profile.html"; }
+  $("#btnProfile").addEventListener("click", goProfile);
+  $("#accountPill").addEventListener("click", goProfile);
+
+  // Player bar click seek (placeholder)
+  let sec = 0;
+  function fmtTime(x){ return ${Math.floor(x/60)}:${String(x%60).padStart(2,"0")}; }
+  function updateProgress(){
+    const dur = 180;
+    const pct = clamp((sec/dur)*100, 0, 100);
+    $("#fill").style.width = pct + "%";
+    $("#time").textContent = fmtTime(sec);
+  }
+  $("#progress").addEventListener("click",(e)=>{
+    const r = e.currentTarget.getBoundingClientRect();
+    const pct = clamp((e.clientX - r.left)/r.width, 0, 1);
+    sec = Math.floor(pct * 180);
+    updateProgress();
+  });
+  updateProgress();
+})();
+</script>
+</body>
+</html>
