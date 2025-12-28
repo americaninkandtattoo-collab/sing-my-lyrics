@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-  <title>SingMyLyrics — SML</title>
+  <title>SingMyLyrics (SML) — App</title>
 
   <!-- jsPDF (REAL downloads) -->
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
@@ -25,7 +25,9 @@
       --shadow: 0 12px 40px rgba(0,0,0,.45);
       --r:16px;
       --r2:12px;
+      --focus:#5fd3ff;
     }
+
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
@@ -62,18 +64,11 @@
     body.collapsed .brand-text{display:none}
     body.collapsed .credits-big{display:none}
     body.collapsed .logo{display:none}
-    body.collapsed .brand{
-      justify-content:center;
-      padding:10px 8px;
-    }
+    body.collapsed .side-footer .row span:not(.badge){display:none}
+    body.collapsed .brand{justify-content:center; padding:10px 8px;}
     body.collapsed .brand-toggle{
-      width:72px;
-      height:72px;
-      border-radius:16px;
-      display:grid;
-      place-items:center;
-      font-size:48px;
-      line-height:1;
+      width:72px; height:72px; border-radius:16px;
+      display:grid; place-items:center; font-size:48px; line-height:1;
     }
 
     /* Now Playing collapse */
@@ -98,13 +93,11 @@
       background:#ffffff10;
       border:1px solid #ffffff14;
       color:var(--text);
-      width:44px;
-      height:34px;
+      width:44px; height:34px;
       border-radius:12px;
       cursor:pointer;
       font-weight:1000;
-      display:grid;
-      place-items:center;
+      display:grid; place-items:center;
       user-select:none;
     }
     .brand-row{display:flex; align-items:center; justify-content:flex-start; gap:10px; min-width:0;}
@@ -113,14 +106,11 @@
       background:linear-gradient(135deg,#2bd576,#5fd3ff);
       box-shadow: var(--shadow);
       display:grid; place-items:center;
-      font-weight:1000;
-      color:#00150a;
+      font-weight:1000; color:#00150a;
       flex:0 0 auto;
     }
-    .brand-text{display:flex; flex-direction:column; line-height:1; min-width:0;}
-    .brand-text .t1{font-size:34px; font-weight:900; line-height:1;}
-    .brand-text .t2{font-size:11px; color:var(--muted); margin-top:2px}
-
+    .brand-text{display:flex; align-items:center; line-height:1; min-width:0;}
+    .brand-text .t1{font-size:72px; font-weight:900; line-height:1; display:block;}
     .user{display:flex; align-items:center; gap:10px; padding:10px 12px}
     .avatar{
       width:34px; height:34px; border-radius:50%;
@@ -134,7 +124,6 @@
       display:flex; align-items:center; gap:10px;
       padding:10px 10px;
       border-radius:12px;
-      text-decoration:none;
       color:var(--text);
       opacity:.92;
     }
@@ -200,6 +189,16 @@
       cursor:pointer;
     }
     .btn-green:hover{filter:brightness(1.05)}
+    .btn-red{
+      background:#ff5b6e22;
+      border:1px solid #ff5b6e66;
+      color:#ffd1d7;
+      padding:10px 12px;
+      border-radius:12px;
+      font-weight:1000;
+      cursor:pointer;
+    }
+    .btn-red:hover{background:#ff5b6e2a}
 
     /* ===== MAIN GRID ===== */
     .main-wrap{
@@ -228,9 +227,10 @@
     .panel-header h3{margin:0; font-size:14px; letter-spacing:.2px}
     .panel-body{padding:12px; overflow:auto; min-height:0}
 
-    /* Feed panel */
+    /* Feed panel: prevent 3-dot menu from clipping */
     #feedPanel .panel-body{overflow:visible}
     #feedPanel .tracks{max-height:calc(100vh - 56px - 72px - 24px - 56px - 24px); overflow:auto; padding-right:6px}
+    #trashPanel .tracks{max-height:calc(100vh - 56px - 72px - 24px - 56px - 24px); overflow:auto; padding-right:6px}
 
     .field-label{font-size:12px; color:var(--muted); margin:10px 0 6px}
     textarea, input, select{
@@ -242,6 +242,7 @@
       padding:12px;
       outline:none;
     }
+    textarea:focus, input:focus, select:focus{border-color:rgba(95,211,255,.6); box-shadow:0 0 0 3px rgba(95,211,255,.12)}
     textarea{min-height:160px; resize:vertical}
 
     .row{display:flex; align-items:center; gap:10px}
@@ -336,7 +337,7 @@
       background:#0e1520;
       border:1px solid #ffffff14;
       border-radius:14px;
-      min-width:240px;
+      min-width:220px;
       box-shadow: var(--shadow);
       padding:10px;
       display:none;
@@ -434,13 +435,13 @@
       font-weight:1000;
     }
     .iconbtn:hover{background:#ffffff14}
-
+    .more-wrap{position:relative}
     .more-menu{
       position:fixed;
       background:#0e1520;
       border:1px solid #ffffff14;
       border-radius:14px;
-      min-width:260px;
+      min-width:230px;
       padding:8px;
       box-shadow: var(--shadow);
       display:none;
@@ -457,17 +458,15 @@
       border-radius:12px;
       cursor:pointer;
       font-weight:1000;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
     }
     .more-menu button:hover{background:#ffffff10}
     .more-menu button.danger{color:#ffd1d7}
     .more-menu button.danger:hover{background:#ff5b6e22}
-    .more-menu hr{border:none; border-top:1px solid #ffffff10; margin:8px 0}
+    .more-menu .mini{
+      font-size:11px; color:var(--muted); padding:6px 10px 10px;
+    }
 
-    /* ===== NOW PLAYING (RIGHT PANEL) ===== */
+    /* ===== NOW PLAYING ===== */
     .npCard{
       background:linear-gradient(180deg,#101827,#0e1520);
       border:1px solid #ffffff14;
@@ -498,7 +497,6 @@
       background:var(--green);
       box-shadow:0 0 0 3px #2bd57622;
     }
-
     .npControls{display:flex; gap:8px; margin-top:10px}
     .npControls .btn{
       flex:1;
@@ -596,13 +594,14 @@
       align-items:center;
       gap:10px;
       z-index:999;
+      max-width:92vw;
     }
     .toast.show{display:flex}
     .toast .dot{width:10px;height:10px;border-radius:50%;background:var(--green); box-shadow:0 0 0 3px #2bd57622}
     .toast .dot.warn{background:var(--warn); box-shadow:0 0 0 3px #ffb02022}
     .toast .dot.bad{background:var(--danger); box-shadow:0 0 0 3px #ff5b6e22}
 
-    /* ===== PLAYER (BOTTOM) ===== */
+    /* ===== PLAYER ===== */
     .pbtn{
       width:44px; height:44px;
       border-radius:16px;
@@ -629,42 +628,6 @@
     }
     .time{color:var(--muted); font-size:12px; width:64px; text-align:right}
 
-    /* ===== TRASH VIEW ===== */
-    .trashHint{
-      background:#ffffff08;
-      border:1px solid #ffffff10;
-      border-radius:14px;
-      padding:10px 12px;
-      color:var(--muted);
-      font-size:12px;
-    }
-    .trashRow{
-      display:grid;
-      grid-template-columns: 1fr auto;
-      gap:10px;
-      align-items:center;
-      background:var(--panel);
-      border:1px solid var(--stroke);
-      border-radius:18px;
-      padding:10px;
-    }
-    .trashRow b{display:block}
-    .trashRow small{color:var(--muted); display:block; margin-top:2px}
-    .tBtns{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end}
-    .tBtns button{
-      background:#ffffff10;
-      border:1px solid #ffffff14;
-      color:var(--text);
-      padding:8px 10px;
-      border-radius:12px;
-      cursor:pointer;
-      font-weight:1000;
-      white-space:nowrap;
-    }
-    .tBtns button:hover{background:#ffffff14}
-    .tBtns .danger{color:#ffd1d7}
-    .tBtns .danger:hover{background:#ff5b6e22}
-
     /* Responsive */
     @media (max-width: 1200px){
       .main-wrap{grid-template-columns: 460px 1fr}
@@ -673,6 +636,7 @@
     @media (max-width: 920px){
       .main-wrap{grid-template-columns: 1fr}
       #feedPanel{display:none}
+      #trashPanel{display:none}
       #nowPlayingPanel{display:none}
     }
   </style>
@@ -682,15 +646,16 @@
 <div class="app">
 
   <!-- SIDEBAR -->
-  <aside class="sidebar">
+  <aside class="sidebar" data-state="open">
     <div class="brand">
       <div class="brand-left">
         <button class="brand-toggle" id="toggleSidebar" title="Collapse sidebar">◀</button>
+
         <div class="brand-row">
           <div class="logo">S</div>
           <div class="brand-text">
             <div class="t1">SML</div>
-            <div class="t2">making rock stars one human at a time</div>
+            <div class="t2"></div>
           </div>
         </div>
       </div>
@@ -704,7 +669,6 @@
       </div>
     </div>
 
-    <!-- Home / Create / Trash -->
     <div class="nav">
       <a href="#home" id="navHome">
         <div class="icon">⌂</div><div class="nav-label">Home</div>
@@ -714,15 +678,18 @@
       </a>
       <a href="#trash" id="navTrash">
         <div class="icon">🗑</div><div class="nav-label">Trash</div>
-        <span class="badge" id="trashBadge">0</span>
       </a>
     </div>
 
     <div class="credits-big"><span id="credits">7,537</span> Credits</div>
 
     <div class="side-footer">
-      <div class="row">🗑 <span id="trashLink">Trash (30 days)</span> <span class="badge" style="background:#ffffff18;color:#cfe1ff;border:1px solid #ffffff22" id="trashCount">0</span></div>
+      <div class="row">
+        🗑 <span id="trashLink" style="cursor:pointer">Trash (30 days)</span>
+        <span class="badge" style="background:#ffffff18;color:#cfe1ff;border:1px solid #ffffff22" id="trashCount">0</span>
+      </div>
       <div class="row">🧾 <span>Ownership: 100% You</span></div>
+      <div class="row">⚖️ <span class="muted">Lyrics are user-supplied only.</span></div>
     </div>
   </aside>
 
@@ -730,11 +697,14 @@
   <header class="topbar">
     <div class="pill"><span class="dot"></span><span><b id="creditsPill">7.8k</b> Credits</span></div>
     <div class="pill" id="pagePill">Home</div>
+
     <div class="spacer"></div>
-    <div class="pill">Workspace ▸ <b>My Workspace</b></div>
+
+    <div class="pill">Workspace ▸ <b id="workspaceName">My Workspace</b></div>
+
     <div class="top-actions">
-      <button class="btn-ghost" id="btnGoHome" title="Home">Home</button>
-      <button class="btn-ghost" id="btnGoCreate" title="Create">Create</button>
+      <button class="btn-ghost" id="btnGoHome" title="Go Home">Home</button>
+      <button class="btn-ghost" id="btnGoCreate" title="Go Create">Create</button>
       <button class="btn-ghost" id="btnOpenQueue" title="Jump to Now Playing">Now Playing</button>
       <button class="btn-green" id="btnQuickTest">Quick Test</button>
     </div>
@@ -744,31 +714,52 @@
   <main class="main">
     <div class="main-wrap">
 
-      <!-- LEFT PANEL (Home/Create/Trash content switches here) -->
+      <!-- LEFT PANEL (Create/Home/Trash switch here) -->
       <section class="panel" id="leftPanel">
         <div class="panel-header">
           <h3 id="leftTitle">Home</h3>
           <div class="spacer"></div>
-          <div class="pill" style="padding:6px 10px" id="draftPill">Draft: Saved</div>
+          <div class="pill" style="padding:6px 10px" id="draftPill">Draft: —</div>
         </div>
 
-        <div class="panel-body">
+        <div class="panel-body" id="leftBody">
 
           <!-- HOME VIEW -->
           <div id="viewHome">
-            <div class="trashHint">
-              <b>Welcome to SML</b><br>
-              Paste lyrics, choose style, generate a track, export PDFs, control visibility/permissions, and manage Trash with 30-day retention.
+            <div class="npCard" style="margin-bottom:12px">
+              <div class="npTop">
+                <div style="min-width:0">
+                  <p class="npTitle" style="margin:0">SingMyLyrics</p>
+                  <div class="npSub">Make rock stars one human at a time.</div>
+                </div>
+                <div class="playState" style="white-space:nowrap">
+                  <span class="pDot" style="background:var(--green); box-shadow:0 0 0 3px #2bd57622"></span>
+                  <span>Ready</span>
+                </div>
+              </div>
+
+              <div class="muted" style="margin-top:10px;font-size:12px">
+                User writes the lyrics. App generates audio. You keep ownership.
+              </div>
+
+              <div class="stack" style="margin-top:12px">
+                <button class="btn-wide" id="homeStartCreate" style="background:var(--green); color:#00150a;">🎵 Start Creating</button>
+                <button class="btn-wide export" id="homeViewTrash">🗑 View Trash</button>
+              </div>
             </div>
 
-            <div class="stack" style="margin-top:12px">
-              <button class="btn-wide btn-green" id="homeCreateBtn" type="button">🎵 Go to Create</button>
-              <button class="btn-wide export" id="homeLibraryBtn" type="button">📚 View Feed (center panel)</button>
-              <button class="btn-wide export" id="homeTrashBtn" type="button">🗑 Open Trash</button>
+            <div class="field-label">Recent</div>
+            <div class="muted" style="font-size:12px;margin-bottom:10px">
+              Your saved tracks live in the Feed. Click any track to load it in Now Playing.
+            </div>
+
+            <div class="stack">
+              <button class="btn-wide dice" id="homeSeedDemo">➕ Seed Demo Track</button>
+              <button class="btn-wide export" id="homeResetLocal">⚠️ Reset Local Data (This device)</button>
             </div>
 
             <div class="muted" style="margin-top:10px;font-size:12px">
-              Rule: user owns 100% of their words. Copying other people’s lyrics/styles requires permission.
+              Note: This is a working prototype in one file (no backend). “Generate song” produces an audio preview tone/noise.
             </div>
           </div>
 
@@ -850,7 +841,7 @@
                   <div class="toggle on" id="optDraftAutosave">Autosave Draft</div>
                 </div>
 
-                <div class="field-label">Edit Tools (buttons live later)</div>
+                <div class="field-label">Edit Tools</div>
                 <div class="chipbar">
                   <div class="chip" data-tool="crop">Crop</div>
                   <div class="chip" data-tool="replace">Replace Section</div>
@@ -861,41 +852,47 @@
                 </div>
 
                 <div class="muted" style="margin-top:10px">
-                  These tools are present (no missing buttons). They show “Soon” notices until backend exists.
+                  These tools are present. For now they show “Soon” notices until a backend exists.
                 </div>
               </div>
             </details>
 
             <div class="stack">
-              <button class="btn-wide btn-green" id="btnCreate" type="button">🎵 Create</button>
+              <button class="btn-wide" id="btnCreate" type="button" style="background:var(--green); color:#00150a;">🎵 Create (Save to Feed)</button>
+              <button class="btn-wide export" id="btnGenAudio" type="button">🔊 Generate Audio Preview</button>
               <button class="btn-wide export" id="btnLyricsPdf" type="button">Export Lyrics PDF</button>
               <button class="btn-wide export" id="btnSheetPdf" type="button">Export Sheet Music PDF</button>
             </div>
 
             <div style="margin-top:10px; font-size:12px; color:var(--muted)">
-              PDFs download directly. This build uses <b>jsPDF</b> and saves a real file.
+              PDFs download directly. Audio preview is generated locally (WebAudio) so it works without a backend.
             </div>
           </div>
 
           <!-- TRASH VIEW -->
           <div id="viewTrash" class="hidden">
-            <div class="trashHint">
-              <b>Trash</b><br>
-              Items stay for <b>30 days</b>. Each item shows <b>days left</b>. You can restore or delete forever.
+            <div class="field-label">Trash</div>
+            <div class="muted" style="font-size:12px;margin-bottom:10px">
+              Items stay for <b>30 days</b>. Each item shows <b>days left</b>. Restore puts it back in your Feed.
             </div>
-            <div class="stack" style="margin-top:12px">
-              <button class="btn-wide export" id="btnEmptyTrash" type="button">🗑 Empty Trash (Delete Forever)</button>
+
+            <div class="row" style="flex-wrap:wrap">
+              <button class="btn-ghost" id="trashPurgeNow" type="button">Purge Expired</button>
+              <button class="btn-red" id="trashEmptyAll" type="button">Empty Trash</button>
+              <div class="spacer"></div>
+              <div class="pill">Count: <b id="trashCountBig">0</b></div>
             </div>
-            <div class="tracks" id="trashList" style="margin-top:12px"></div>
+
+            <div class="tracks" id="trashTracks"></div>
           </div>
 
         </div>
       </section>
 
-      <!-- FEED PANEL (CENTER) -->
+      <!-- FEED PANEL -->
       <section class="panel" id="feedPanel">
         <div class="panel-header">
-          <h3>Workspace ▸ My Workspace</h3>
+          <h3>Workspace ▸ <span id="feedWorkspace">My Workspace</span></h3>
           <div class="spacer"></div>
           <div class="pill">Feed</div>
         </div>
@@ -931,7 +928,7 @@
         </div>
       </section>
 
-      <!-- NOW PLAYING (RIGHT) -->
+      <!-- NOW PLAYING -->
       <section class="panel" id="nowPlayingPanel">
         <div class="panel-header">
           <h3>Now Playing</h3>
@@ -1014,18 +1011,15 @@
 
 </div>
 
-<div class="toast" id="toast"><span class="dot" id="toastDot"></span><span id="toastText">Saved</span></div>
-
-<!-- Context menu container -->
-<div class="more-menu" id="moreMenu"></div>
+<div class="toast" id="toast">
+  <span class="dot" id="toastDot"></span>
+  <span id="toastText">Saved</span>
+</div>
 
 <script>
 (() => {
   const $ = (s) => document.querySelector(s);
   const $$ = (s) => document.querySelectorAll(s);
-
-  const DAY = 24*60*60*1000;
-  const TRASH_DAYS = 30;
   const clamp = (n,min,max)=>Math.max(min,Math.min(max,n));
   const fmtTime = (sec)=>`${Math.floor(sec/60)}:${String(sec%60).padStart(2,"0")}`;
   const uuid = () => (crypto?.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2));
@@ -1034,6 +1028,8 @@
   const KEY_TRACKS = "sml_tracks_v3";
   const KEY_TRASH  = "sml_trash_v3";
   const KEY_DRAFT  = "sml_draft_v3";
+  const KEY_RECENT_STYLES = "sml_recent_styles_v2";
+  const KEY_SETTINGS = "sml_settings_v1";
 
   // ===== State =====
   let tracks = [];
@@ -1043,81 +1039,43 @@
   let sec = 0;
   let timer = null;
   let sortMode = "new";
-  let currentView = "home";
 
-  // ===== Audio (frontend-only synth so Play works) =====
+  // Audio
   let audioCtx = null;
-  let master = null;
-  let osc = null;
-  let noiseNode = null;
-  let gainNode = null;
+  let masterGain = null;
+  let currentNodes = [];
+  let audioStopTimer = null;
 
-  function ensureAudio(){
-    if(!audioCtx){
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      master = audioCtx.createGain();
-      master.gain.value = 0.25;
-      master.connect(audioCtx.destination);
-    }
-  }
-  function stopSynth(){
-    try{ if(osc){ osc.stop(); osc.disconnect(); } }catch{}
-    try{ if(noiseNode){ noiseNode.stop(); noiseNode.disconnect(); } }catch{}
-    osc = null;
-    noiseNode = null;
-  }
-  function startSynth(track){
-    ensureAudio();
-    stopSynth();
-
-    // Cheap but real "generation": style->seeded pitch + noise layer
-    const seed = (track && track.seed) ? track.seed : Math.floor(Math.random()*999999);
-    const base = 110 + (seed % 220); // 110..329
-
-    gainNode = audioCtx.createGain();
-    gainNode.gain.value = 0.0;
-    gainNode.connect(master);
-
-    osc = audioCtx.createOscillator();
-    osc.type = "sawtooth";
-    osc.frequency.setValueAtTime(base, audioCtx.currentTime);
-
-    // filter-ish wobble via detune LFO
-    const lfo = audioCtx.createOscillator();
-    const lfoGain = audioCtx.createGain();
-    lfo.frequency.value = 0.25 + ((seed % 10) / 10);
-    lfoGain.gain.value = 20;
-    lfo.connect(lfoGain);
-    lfoGain.connect(osc.detune);
-
-    // noise
-    const bufferSize = 2 * audioCtx.sampleRate;
-    const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-    const output = noiseBuffer.getChannelData(0);
-    for (let i = 0; i < bufferSize; i++) output[i] = (Math.random() * 2 - 1) * 0.08;
-
-    noiseNode = audioCtx.createBufferSource();
-    noiseNode.buffer = noiseBuffer;
-    noiseNode.loop = true;
-
-    const noiseGain = audioCtx.createGain();
-    noiseGain.gain.value = 0.35;
-
-    osc.connect(gainNode);
-    noiseNode.connect(noiseGain);
-    noiseGain.connect(gainNode);
-
-    const t0 = audioCtx.currentTime;
-    gainNode.gain.setValueAtTime(0.0001, t0);
-    gainNode.gain.exponentialRampToValueAtTime(0.6, t0 + 0.25);
-
-    osc.start();
-    noiseNode.start();
-    lfo.start();
-
-    // keep references so stopSynth kills
-    // (lfo will stop when ctx stops; fine for demo)
-  }
+  // ===== Presets & Dice =====
+  const STYLE_PRESETS = [
+    "industrial rock, punchy drums, gritty bass",
+    "cinematic, massive chorus, dramatic build",
+    "ska-punk, bright horns, fast upbeat",
+    "electro-industrial, mechanical pulse, dark synth",
+    "alt rock, stadium anthem, hooky chorus",
+    "reggae-rock, laid back groove, warm guitar",
+    "metal, tight palm-mutes, big breakdown",
+    "synthwave, neon leads, nostalgic",
+    "trap-rock, heavy 808, distorted guitars",
+    "ambient cinematic, slow swell, haunting"
+  ];
+  const INSPO_CHIPS = [
+    "punchy drums","gritty bass","anthem hook","accelerating","dark synth",
+    "choir lift","industrial hits","cinematic drops","tight guitars","neon leads",
+    "broken beat","aggressive vocal","whisper verse","big chorus","bridge breakdown"
+  ];
+  const DICE_POOL = [
+    "industrial rock + cinematic chorus + punchy drums",
+    "electro-industrial + mechanical pulse + gritty bass",
+    "ska-punk + bright horns + fast upbeat",
+    "alt rock + stadium anthem + huge hook",
+    "reggae-rock + warm guitar + laid back groove",
+    "metal + tight riffs + crushing breakdown",
+    "synthwave + neon leads + nostalgic haze",
+    "trap-rock + heavy 808 + distorted guitars",
+    "dark pop + glossy synths + emotional vocal",
+    "cinematic + orchestral swells + drum impacts"
+  ];
 
   // ===== Toast =====
   let toastTimer = null;
@@ -1126,7 +1084,15 @@
     $("#toastDot").className = "dot" + (kind==="warn" ? " warn" : kind==="bad" ? " bad" : "");
     $("#toast").classList.add("show");
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(()=>$("#toast").classList.remove("show"), 1300);
+    toastTimer = setTimeout(()=>$("#toast").classList.remove("show"), 1400);
+  }
+
+  // ===== Settings =====
+  function loadSettings(){
+    try{ return JSON.parse(localStorage.getItem(KEY_SETTINGS) || "{}"); }catch{ return {}; }
+  }
+  function saveSettings(s){
+    localStorage.setItem(KEY_SETTINGS, JSON.stringify(s||{}));
   }
 
   // ===== Load/Save =====
@@ -1139,26 +1105,18 @@
   function saveAll(){
     localStorage.setItem(KEY_TRACKS, JSON.stringify(tracks));
     localStorage.setItem(KEY_TRASH, JSON.stringify(trash));
-    syncTrashCounts();
-  }
-  function syncTrashCounts(){
     $("#trashCount").textContent = String(trash.length);
-    $("#trashBadge").textContent = String(trash.length);
+    $("#trashCountBig").textContent = String(trash.length);
   }
   function purgeTrash(){
-    const cutoff = Date.now() - TRASH_DAYS*DAY;
+    const cutoff = Date.now() - 30*24*60*60*1000;
     trash = trash.filter(t => (t.deletedAt || 0) >= cutoff);
-  }
-  function daysLeft(item){
-    const ageDays = Math.floor((Date.now() - (item.deletedAt||Date.now())) / DAY);
-    return clamp(TRASH_DAYS - ageDays, 0, TRASH_DAYS);
   }
 
   // ===== Draft autosave =====
   let draftTimer = null;
-  function draftEnabled(){ return $("#optDraftAutosave")?.classList.contains("on"); }
+  function draftEnabled(){ return $("#optDraftAutosave").classList.contains("on"); }
   function saveDraft(){
-    if(currentView !== "create") return;
     if(!draftEnabled()) return;
     const draft = {
       lyrics: $("#lyrics").value,
@@ -1188,16 +1146,24 @@
     draftTimer = setInterval(saveDraft, 2200);
   }
 
-  // ===== Menus =====
+  // ===== UI helpers =====
   function closeMenus(){
     $$(".menu.open").forEach(m=>m.classList.remove("open"));
-    const mm = $("#moreMenu");
-    mm.classList.remove("open");
-    mm.style.top = "";
-    mm.style.left = "";
-    mm.innerHTML = "";
+    $$(".more-menu.open").forEach(m=>{
+      m.classList.remove("open");
+      m.style.top = "";
+      m.style.left = "";
+    });
   }
-  document.addEventListener("click", closeMenus);
+
+  // IMPORTANT: this click handler must NOT swallow button clicks.
+  document.addEventListener("click", (e) => {
+    // if click is on any interactive element, don't auto-close everything first
+    if (e.target.closest("button") || e.target.closest("a") || e.target.closest("input") || e.target.closest("textarea") || e.target.closest("select") || e.target.closest("summary") ) {
+      return;
+    }
+    closeMenus();
+  });
 
   function bindDropdown(dropId, menuId){
     const drop = $(dropId);
@@ -1232,7 +1198,7 @@
     e.stopPropagation();
   });
 
-  // ===== Sidebar collapse =====
+  // Sidebar collapse
   function syncSidebarArrow(){
     const collapsed = document.body.classList.contains("collapsed");
     $("#toggleSidebar").textContent = collapsed ? "▶" : "◀";
@@ -1245,7 +1211,7 @@
   });
   syncSidebarArrow();
 
-  // ===== Now Playing collapse =====
+  // Now Playing collapse
   function syncNpArrow(){
     const c = document.body.classList.contains("np-collapsed");
     $("#toggleNowPlaying").textContent = c ? "◀" : "▶";
@@ -1258,83 +1224,51 @@
   });
   syncNpArrow();
 
-  // ===== View switching =====
-  function setActiveNav(){
-    $("#navHome").classList.toggle("active", currentView==="home");
-    $("#navCreate").classList.toggle("active", currentView==="create");
-    $("#navTrash").classList.toggle("active", currentView==="trash");
+  // Page router (single-file app)
+  function setActiveNav(hash){
+    $("#navHome").classList.toggle("active", hash==="#home");
+    $("#navCreate").classList.toggle("active", hash==="#create");
+    $("#navTrash").classList.toggle("active", hash==="#trash");
   }
-  function showView(v){
-    currentView = v;
-    setActiveNav();
+  function showView(hash){
+    if(!hash) hash = "#home";
+    setActiveNav(hash);
 
-    $("#viewHome").classList.toggle("hidden", v!=="home");
-    $("#viewCreate").classList.toggle("hidden", v!=="create");
-    $("#viewTrash").classList.toggle("hidden", v!=="trash");
+    $("#viewHome").classList.toggle("hidden", hash !== "#home");
+    $("#viewCreate").classList.toggle("hidden", hash !== "#create");
+    $("#viewTrash").classList.toggle("hidden", hash !== "#trash");
 
-    $("#pagePill").textContent = v.charAt(0).toUpperCase() + v.slice(1);
-    $("#leftTitle").textContent = v.charAt(0).toUpperCase() + v.slice(1);
+    $("#leftTitle").textContent = hash==="#home" ? "Home" : hash==="#create" ? "Create" : "Trash";
+    $("#pagePill").textContent = $("#leftTitle").textContent;
 
-    if(v==="trash") renderTrash();
-    if(v==="create"){
-      // ensure autosave toggle is on by default
-      $("#optDraftAutosave").classList.add("on");
-      startDraftAutosave();
-      loadDraft();
+    if(hash==="#trash"){
+      renderTrash();
     }
-
-    closeMenus();
-    $("#draftPill").textContent = "Draft: Saved";
   }
-  function route(){
-    const h = (location.hash || "#home").replace("#","");
-    if(h==="create" || h==="trash" || h==="home") showView(h);
-    else showView("home");
-  }
-  window.addEventListener("hashchange", route);
+  function go(hash){ location.hash = hash; }
+  window.addEventListener("hashchange", ()=> showView(location.hash));
 
-  $("#btnGoHome").addEventListener("click",()=>location.hash="#home");
-  $("#btnGoCreate").addEventListener("click",()=>location.hash="#create");
-  $("#homeCreateBtn").addEventListener("click",()=>location.hash="#create");
-  $("#homeTrashBtn").addEventListener("click",()=>location.hash="#trash");
-  $("#homeLibraryBtn").addEventListener("click",()=>toast("Feed is center panel","ok"));
+  $("#btnGoHome").addEventListener("click",()=>go("#home"));
+  $("#btnGoCreate").addEventListener("click",()=>go("#create"));
+  $("#homeStartCreate").addEventListener("click",()=>go("#create"));
+  $("#homeViewTrash").addEventListener("click",()=>go("#trash"));
 
-  $("#trashLink").addEventListener("click",()=>{ location.hash="#trash"; });
-  $("#navHome").addEventListener("click",()=>location.hash="#home");
-  $("#navCreate").addEventListener("click",()=>location.hash="#create");
-  $("#navTrash").addEventListener("click",()=>location.hash="#trash");
+  // Toggles
+  function toggleOn(el){ el.classList.toggle("on"); saveDraft(); }
+  $("#togAudio").addEventListener("click",()=>toggleOn($("#togAudio")));
+  $("#togLyrics").addEventListener("click",()=>toggleOn($("#togLyrics")));
+  $("#togInst").addEventListener("click",()=>toggleOn($("#togInst")));
+  $("#optAllowCopy").addEventListener("click",()=>toggleOn($("#optAllowCopy")));
+  $("#optAllowDownload").addEventListener("click",()=>toggleOn($("#optAllowDownload")));
+  $("#optDraftAutosave").addEventListener("click",()=>{
+    toggleOn($("#optDraftAutosave"));
+    $("#draftPill").textContent = draftEnabled() ? "Draft: Saved" : "Draft: Off";
+  });
 
-  // ===== Presets & Dice =====
-  const STYLE_PRESETS = [
-    "industrial rock, punchy drums, gritty bass",
-    "cinematic, massive chorus, dramatic build",
-    "ska-punk, bright horns, fast upbeat",
-    "electro-industrial, mechanical pulse, dark synth",
-    "alt rock, stadium anthem, hooky chorus",
-    "reggae-rock, laid back groove, warm guitar",
-    "metal, tight palm-mutes, big breakdown",
-    "synthwave, neon leads, nostalgic",
-    "trap-rock, heavy 808, distorted guitars",
-    "ambient cinematic, slow swell, haunting"
-  ];
-  const INSPO_CHIPS = [
-    "punchy drums","gritty bass","anthem hook","accelerating","dark synth",
-    "choir lift","industrial hits","cinematic drops","tight guitars","neon leads",
-    "broken beat","aggressive vocal","whisper verse","big chorus","bridge breakdown"
-  ];
-  const DICE_POOL = [
-    "industrial rock + cinematic chorus + punchy drums",
-    "electro-industrial + mechanical pulse + gritty bass",
-    "ska-punk + bright horns + fast upbeat",
-    "alt rock + stadium anthem + huge hook",
-    "reggae-rock + warm guitar + laid back groove",
-    "metal + tight riffs + crushing breakdown",
-    "synthwave + neon leads + nostalgic haze",
-    "trap-rock + heavy 808 + distorted guitars",
-    "dark pop + glossy synths + emotional vocal",
-    "cinematic + orchestral swells + drum impacts"
-  ];
+  // Trash link (sidebar footer)
+  $("#trashLink").addEventListener("click",()=>{ toast("Trash is kept 30 days (auto purge)","warn"); go("#trash"); });
 
+  // Chips creation
   function mountChips(boxId, items){
     const box = $(boxId);
     box.innerHTML = "";
@@ -1345,6 +1279,52 @@
       box.appendChild(d);
     });
   }
+  mountChips("#presetChips", STYLE_PRESETS);
+  mountChips("#inspoChips", INSPO_CHIPS);
+
+  function chipClickHandler(boxId){
+    $(boxId).addEventListener("click",(e)=>{
+      const c = e.target.closest(".chip");
+      if(!c) return;
+
+      // Inspiration: one at a time (slot behavior)
+      if(boxId === "#inspoChips"){
+        $$("#inspoChips .chip.on").forEach(x=>{ if(x!==c) x.classList.remove("on"); });
+        c.classList.toggle("on");
+        syncStyleFromChips(true);
+        saveDraft();
+        return;
+      }
+      c.classList.toggle("on");
+      saveDraft();
+    });
+  }
+  chipClickHandler("#presetChips");
+  chipClickHandler("#inspoChips");
+
+  // Preset chips: click toggles + if on, append to style
+  $("#presetChips").addEventListener("click",(e)=>{
+    const c = e.target.closest(".chip");
+    if(!c) return;
+    if(c.classList.contains("on")){
+      const preset = c.textContent.trim();
+      if(preset){
+        const cur = $("#style").value.trim();
+        $("#style").value = cur ? (cur + " | " + preset) : preset;
+        rememberStyle($("#style").value.trim());
+        toast("Style added");
+      }
+    }
+    saveDraft();
+  });
+
+  $("#btnClearChips").addEventListener("click",()=>{
+    $$("#inspoChips .chip.on").forEach(x=>x.classList.remove("on"));
+    syncStyleFromChips(true);
+    toast("Chips cleared");
+    saveDraft();
+  });
+
   function getChipState(boxId){
     const out = {};
     $$(boxId + " .chip").forEach((c,i)=> out[i] = c.classList.contains("on"));
@@ -1367,45 +1347,53 @@
       return;
     }
     $("#style").value = (base ? base : "") + (base ? " • " : "") + on[0];
+    rememberStyle($("#style").value.trim());
   }
 
-  function chipClickHandler(boxId){
-    $(boxId).addEventListener("click",(e)=>{
-      const c = e.target.closest(".chip");
-      if(!c) return;
-
-      if(boxId === "#inspoChips"){
-        $$("#inspoChips .chip.on").forEach(x=>{ if(x!==c) x.classList.remove("on"); });
-        c.classList.toggle("on");
-        syncStyleFromChips(true);
-        saveDraft();
-        return;
-      }
-
-      c.classList.toggle("on");
-      saveDraft();
-    });
+  // Recent styles
+  function getRecentStyles(){
+    try{ return JSON.parse(localStorage.getItem(KEY_RECENT_STYLES) || "[]"); }catch{ return []; }
+  }
+  function setRecentStyles(arr){
+    localStorage.setItem(KEY_RECENT_STYLES, JSON.stringify(arr.slice(0,10)));
+  }
+  function rememberStyle(s){
+    if(!s) return;
+    const arr = getRecentStyles().filter(x=>x !== s);
+    arr.unshift(s);
+    setRecentStyles(arr);
   }
 
-  // Toggles
-  function toggleOn(el){ el.classList.toggle("on"); saveDraft(); }
-  $("#togAudio").addEventListener("click",()=>toggleOn($("#togAudio")));
-  $("#togLyrics").addEventListener("click",()=>toggleOn($("#togLyrics")));
-  $("#togInst").addEventListener("click",()=>toggleOn($("#togInst")));
-  $("#optAllowCopy").addEventListener("click",()=>toggleOn($("#optAllowCopy")));
-  $("#optAllowDownload").addEventListener("click",()=>toggleOn($("#optAllowDownload")));
-  $("#optDraftAutosave").addEventListener("click",()=>{
-    toggleOn($("#optDraftAutosave"));
-    $("#draftPill").textContent = draftEnabled() ? "Draft: Saved" : "Draft: Off";
+  // Dice (STYLE): pick ONE item only (replace)
+  $("#btnDice").addEventListener("click",()=>{
+    const pick = DICE_POOL[Math.floor(Math.random()*DICE_POOL.length)];
+    $("#style").value = pick;
+    rememberStyle($("#style").value.trim());
+    toast("Dice rolled 🎲");
+    saveDraft();
   });
 
-  // Advanced tool chips -> Soon
-  function bindSoonTools(){
-    $$("#advBox .chipbar .chip").forEach(ch=>{
-      ch.addEventListener("click",()=> toast("Soon","warn"));
-    });
-  }
+  // Dice (INSPIRATION): pick ONE chip only (replace selection)
+  $("#btnDiceInspo").addEventListener("click",()=>{
+    const pick = INSPO_CHIPS[Math.floor(Math.random()*INSPO_CHIPS.length)];
+    const chips = [...$$("#inspoChips .chip")];
+    chips.forEach(c=>c.classList.toggle("on", c.textContent.trim()===pick));
+    syncStyleFromChips(true);
+    toast("Inspiration rolled 🎲");
+    saveDraft();
+  });
 
+  // Advanced tool chips
+  $$("#advBox .chipbar .chip").forEach(ch=>{
+    ch.addEventListener("click",()=>{
+      const tool = ch.dataset.tool || "tool";
+      if(tool==="publish") return toast("Publish (Soon) — will post to feed for subscribers later","warn");
+      if(tool==="report") return toast("Report (Soon)","warn");
+      toast("Soon","warn");
+    });
+  });
+
+  // Options get/set
   function getOpts(){
     return {
       bpm: $("#optBpm").value,
@@ -1427,39 +1415,41 @@
     $("#optAllowDownload").classList.toggle("on", !!o.allowDownload);
   }
 
-  // Dice
-  $("#btnDice").addEventListener("click",()=>{
-    const pick = DICE_POOL[Math.floor(Math.random()*DICE_POOL.length)];
-    $("#style").value = pick;
-    toast("Dice rolled 🎲");
-    saveDraft();
-  });
-  $("#btnDiceInspo").addEventListener("click",()=>{
-    const pick = INSPO_CHIPS[Math.floor(Math.random()*INSPO_CHIPS.length)];
-    const chips = [...$$("#inspoChips .chip")];
-    chips.forEach(c=>c.classList.toggle("on", c.textContent.trim()===pick));
-    syncStyleFromChips(true);
-    toast("Inspiration rolled 🎲");
-    saveDraft();
-  });
-  $("#btnClearChips").addEventListener("click",()=>{
-    $$("#inspoChips .chip.on").forEach(x=>x.classList.remove("on"));
-    syncStyleFromChips(true);
-    toast("Chips cleared");
+  // Quick test
+  $("#btnQuickTest").addEventListener("click",()=>{
+    go("#create");
+    if(!$("#lyrics").value.trim()){
+      $("#lyrics").value = "Black hole hearts\nZip tied and caught\nAltercating gravity\nRipping it apart\n\nOh Demon Days…";
+    }
+    if(!$("#style").value.trim()){
+      $("#style").value = "industrial rock, cinematic, punchy drums";
+      rememberStyle($("#style").value.trim());
+    }
+    toast("Ready","ok");
     saveDraft();
   });
 
-  // Preset chips: click appends style
-  $("#presetChips").addEventListener("click",(e)=>{
-    const c = e.target.closest(".chip");
-    if(!c) return;
-    if(c.classList.contains("on")){
-      const preset = c.textContent.trim();
-      const cur = $("#style").value.trim();
-      $("#style").value = cur ? (cur + " | " + preset) : preset;
-      toast("Style added");
+  // Home actions
+  $("#homeSeedDemo").addEventListener("click",()=>{
+    seedOneDemo();
+    render();
+    toast("Demo added","ok");
+  });
+  $("#homeResetLocal").addEventListener("click",()=>{
+    if(confirm("Reset local tracks/drafts/trash for this device?")){
+      localStorage.removeItem(KEY_TRACKS);
+      localStorage.removeItem(KEY_TRASH);
+      localStorage.removeItem(KEY_DRAFT);
+      localStorage.removeItem(KEY_RECENT_STYLES);
+      localStorage.removeItem(KEY_SETTINGS);
+      tracks=[]; trash=[]; nowId=null;
+      stopAudio(true);
+      load();
+      seedIfEmpty();
+      render();
+      updateNowPlaying(null);
+      toast("Local reset","warn");
     }
-    saveDraft();
   });
 
   // ===== Create Track =====
@@ -1472,21 +1462,21 @@
     const s = String(Math.floor(Math.random()*60)).padStart(2,"0");
     return `${m}:${s}`;
   }
+
   function createTrack(){
-    const lyrics = $("#lyrics").value.trim();
+    const lyrics = ($("#lyrics").value || "").trim();
     if(!lyrics){
       toast("Lyrics required","bad");
       return;
     }
-    const style = $("#style").value.trim();
+    const style = ($("#style").value || "").trim();
     const opts = getOpts();
 
     const t = {
       id: uuid(),
-      seed: Math.floor(Math.random()*999999),
       owner: "you",
       owned: true,
-      visibility: opts.visibility || "private",
+      visibility: (opts.visibility || "private"),
       allowCopy: !!opts.allowCopy,
       allowDownload: !!opts.allowDownload,
       title: titleFromLyrics(lyrics),
@@ -1497,87 +1487,188 @@
       createdAt: Date.now(),
       lyrics,
       liked:false,
-      disliked:false
+      disliked:false,
+      reported:false,
+      published:false
     };
+
     tracks.unshift(t);
     saveAll();
     render();
-    selectTrack(t.id, true);
+    selectTrack(t.id, false);
     toast("Created","ok");
-
     $("#lyrics").value = "";
     $("#draftPill").textContent = "Draft: Saved";
     saveDraft();
   }
   $("#btnCreate").addEventListener("click", createTrack);
 
-  // ===== Trash (Soft delete + restore) =====
+  // ===== Trash (Soft Delete) =====
   function softDelete(id){
     const t = tracks.find(x=>x.id===id);
     if(!t) return;
     tracks = tracks.filter(x=>x.id!==id);
     trash.unshift({ ...t, deletedAt: Date.now() });
+
     if(nowId === id){
       nowId = null;
       setPlaying(false);
+      stopAudio(false);
       updateNowPlaying(null);
     }
     saveAll();
     render();
     toast("Moved to Trash (30 days)","warn");
   }
+
+  function daysLeft(deletedAt){
+    const msLeft = (deletedAt + 30*24*60*60*1000) - Date.now();
+    const d = Math.ceil(msLeft / (24*60*60*1000));
+    return clamp(d, 0, 30);
+  }
+
   function restoreFromTrash(id){
     const t = trash.find(x=>x.id===id);
     if(!t) return;
     trash = trash.filter(x=>x.id!==id);
-    const clean = { ...t };
-    delete clean.deletedAt;
-    tracks.unshift(clean);
+    const restored = { ...t };
+    delete restored.deletedAt;
+    // restored items become newest
+    restored.createdAt = Date.now();
+    tracks.unshift(restored);
     saveAll();
     render();
-    renderTrash();
     toast("Restored","ok");
   }
-  function deleteForever(id){
+
+  function hardDeleteFromTrash(id){
     trash = trash.filter(x=>x.id!==id);
     saveAll();
     renderTrash();
-    toast("Deleted forever","warn");
+    toast("Deleted forever","bad");
   }
-  $("#btnEmptyTrash").addEventListener("click",()=>{
-    if(!trash.length){ toast("Trash empty","warn"); return; }
-    if(!confirm("Delete ALL trash forever?")) return;
-    trash = [];
+
+  function renderTrash(){
+    purgeTrash();
+    saveAll();
+    const box = $("#trashTracks");
+    box.innerHTML = "";
+
+    if(!trash.length){
+      const empty = document.createElement("div");
+      empty.className = "muted";
+      empty.style.padding = "10px 2px";
+      empty.textContent = "Trash is empty.";
+      box.appendChild(empty);
+      return;
+    }
+
+    trash.forEach(t=>{
+      const card = document.createElement("div");
+      card.className = "track";
+      card.style.cursor = "default";
+
+      const cover = document.createElement("div");
+      cover.className = "cover";
+      const dur = document.createElement("div");
+      dur.className = "dur";
+      dur.textContent = `${daysLeft(t.deletedAt)}d left`;
+      cover.appendChild(dur);
+
+      const meta = document.createElement("div");
+      meta.className = "meta";
+
+      const title = document.createElement("div");
+      title.className = "title";
+      const b = document.createElement("span");
+      b.textContent = t.title || "Untitled";
+      const st = document.createElement("span");
+      st.className = "statusTag";
+      st.textContent = (t.visibility==="public" ? "Public" : "Private");
+      title.appendChild(b);
+      title.appendChild(st);
+
+      const desc = document.createElement("div");
+      desc.className = "desc";
+      desc.textContent = (t.style || t.desc || "—");
+
+      meta.appendChild(title);
+      meta.appendChild(desc);
+
+      const actions = document.createElement("div");
+      actions.className = "actions";
+
+      const btnRestore = document.createElement("button");
+      btnRestore.className = "iconbtn";
+      btnRestore.title = "Restore";
+      btnRestore.textContent = "↩";
+      btnRestore.addEventListener("click",()=> restoreFromTrash(t.id));
+
+      const btnDelete = document.createElement("button");
+      btnDelete.className = "iconbtn";
+      btnDelete.title = "Delete forever";
+      btnDelete.textContent = "✕";
+      btnDelete.addEventListener("click",()=>{
+        if(confirm("Delete forever?")){
+          hardDeleteFromTrash(t.id);
+        }
+      });
+
+      actions.appendChild(btnRestore);
+      actions.appendChild(btnDelete);
+
+      card.appendChild(cover);
+      card.appendChild(meta);
+      card.appendChild(actions);
+
+      box.appendChild(card);
+    });
+  }
+
+  $("#trashPurgeNow").addEventListener("click",()=>{
+    const before = trash.length;
+    purgeTrash();
     saveAll();
     renderTrash();
-    toast("Trash emptied","warn");
+    const removed = before - trash.length;
+    toast(removed ? `Purged ${removed}` : "Nothing expired","warn");
+  });
+
+  $("#trashEmptyAll").addEventListener("click",()=>{
+    if(confirm("Empty ALL trash forever?")){
+      trash = [];
+      saveAll();
+      renderTrash();
+      toast("Trash emptied","bad");
+    }
   });
 
   // ===== Render Feed =====
   $("#search").addEventListener("input", render);
 
   function passesFilter(t){
-    const liked = $("#filtersMenu [data-filter='liked'] input").checked;
-    const pub = $("#filtersMenu [data-filter='public'] input").checked;
-    const priv = $("#filtersMenu [data-filter='private'] input").checked;
-    const hideDis = $("#filtersMenu [data-filter='hideDisliked'] input").checked;
+    const fLiked = $("#filtersMenu [data-filter='liked'] input").checked;
+    const fPublic = $("#filtersMenu [data-filter='public'] input").checked;
+    const fPrivate = $("#filtersMenu [data-filter='private'] input").checked;
+    const hideDisliked = $("#filtersMenu [data-filter='hideDisliked'] input").checked;
 
-    if(liked && !t.liked) return false;
-    if(pub && t.visibility !== "public") return false;
-    if(priv && t.visibility !== "private") return false;
-    if(hideDis && t.disliked) return false;
+    if(hideDisliked && t.disliked) return false;
+    if(fLiked && !t.liked) return false;
+    if(fPublic && t.visibility !== "public") return false;
+    if(fPrivate && t.visibility !== "private") return false;
     return true;
   }
 
   function render(){
+    const box = $("#tracks");
+    box.innerHTML = "";
+
     purgeTrash();
     saveAll();
 
-    const box = $("#tracks");
-    box.innerHTML = "";
     let list = [...tracks];
 
-    const q = $("#search").value.trim().toLowerCase();
+    const q = ($("#search").value || "").trim().toLowerCase();
     if(q){
       list = list.filter(t =>
         (t.title||"").toLowerCase().includes(q) ||
@@ -1589,68 +1680,18 @@
     list = list.filter(passesFilter);
     list.sort((a,b)=> sortMode==="new" ? (b.createdAt-a.createdAt) : (a.createdAt-b.createdAt));
 
-    list.forEach(t => box.appendChild(trackCard(t)));
+    if(!list.length){
+      const empty = document.createElement("div");
+      empty.className = "muted";
+      empty.style.padding = "10px 2px";
+      empty.textContent = "No tracks yet. Go to Create and hit “Create (Save to Feed)”.";
+      box.appendChild(empty);
+    } else {
+      list.forEach(t => box.appendChild(trackCard(t)));
+    }
+
     renderQueue();
-    updateNowPlaying(nowId);
-  }
-
-  function menuItem(label, rightText, onClick, danger=false){
-    const b = document.createElement("button");
-    b.className = danger ? "danger" : "";
-    b.innerHTML = `<span>${label}</span><span class="muted" style="font-weight:900">${rightText||""}</span>`;
-    b.addEventListener("click",(e)=>{ e.stopPropagation(); closeMenus(); onClick(); });
-    return b;
-  }
-
-  function openMoreMenu(btnEl, t){
-    const mm = $("#moreMenu");
-    mm.innerHTML = "";
-
-    // Permission summary
-    const vis = (t.visibility==="public" ? "Public" : "Private");
-    const perm = `${t.allowCopy ? "Copy" : "No Copy"} / ${t.allowDownload ? "DL" : "No DL"}`;
-
-    mm.appendChild(menuItem("Lyrics PDF", "", ()=> downloadLyricsPDF(t.title, t.style, t.lyrics||"")));
-    mm.appendChild(menuItem("Sheet Music PDF", "", ()=> downloadSheetPDF(t.title)));
-    mm.appendChild(menuItem("Copy Title", "", ()=> { navigator.clipboard?.writeText(t.title||""); toast("Copied","ok"); }));
-    mm.appendChild(menuItem("Copy Lyrics", t.allowCopy || t.owned ? "" : "Locked", ()=> {
-      const allowed = t.owned || (t.visibility==="public" && t.allowCopy);
-      if(!allowed) return toast("Copy disabled","warn");
-      navigator.clipboard?.writeText(t.lyrics||"");
-      toast("Lyrics copied","ok");
-    }));
-    mm.appendChild(menuItem("Copy Style", t.allowCopy || t.owned ? "" : "Locked", ()=> {
-      const allowed = t.owned || (t.visibility==="public" && t.allowCopy);
-      if(!allowed) return toast("Copy disabled","warn");
-      navigator.clipboard?.writeText(t.style||"");
-      toast("Style copied","ok");
-    }));
-    mm.appendChild(document.createElement("hr"));
-
-    mm.appendChild(menuItem("Visibility", vis, ()=> {
-      t.visibility = (t.visibility==="public") ? "private" : "public";
-      saveAll(); render(); toast("Updated","ok");
-    }));
-    mm.appendChild(menuItem("Allow Copy", t.allowCopy ? "On" : "Off", ()=> {
-      t.allowCopy = !t.allowCopy;
-      saveAll(); render(); toast("Updated","ok");
-    }));
-    mm.appendChild(menuItem("Allow Download", t.allowDownload ? "On" : "Off", ()=> {
-      t.allowDownload = !t.allowDownload;
-      saveAll(); render(); toast("Updated","ok");
-    }));
-
-    mm.appendChild(document.createElement("hr"));
-    mm.appendChild(menuItem("Publish", "Soon", ()=> toast("Publish (Soon)","warn")));
-    mm.appendChild(menuItem("Report", "Soon", ()=> toast("Report (Soon)","warn")));
-    mm.appendChild(menuItem(`Delete (${TRASH_DAYS} days)`, "", ()=> softDelete(t.id), true));
-
-    const r = btnEl.getBoundingClientRect();
-    const top = Math.min(r.bottom + 8, window.innerHeight - 340);
-    const left = Math.min(r.right - 260, window.innerWidth - 280);
-    mm.style.top = `${Math.max(8, top)}px`;
-    mm.style.left = `${Math.max(8, left)}px`;
-    mm.classList.add("open");
+    if(location.hash==="#trash") renderTrash();
   }
 
   function trackCard(t){
@@ -1678,11 +1719,15 @@
     const st = document.createElement("span");
     st.className = "statusTag";
     st.textContent = (t.visibility==="public" ? "Public" : "Private");
-    title.appendChild(b); title.appendChild(v); title.appendChild(st);
+
+    title.appendChild(b);
+    title.appendChild(v);
+    title.appendChild(st);
 
     const desc = document.createElement("div");
     desc.className = "desc";
     desc.textContent = t.desc || "No style set";
+
     meta.appendChild(title);
     meta.appendChild(desc);
 
@@ -1704,6 +1749,7 @@
       t.liked = !t.liked;
       if(t.liked) t.disliked = false;
       saveAll(); render();
+      toast(t.liked ? "Liked" : "Unliked","ok");
     });
 
     const btnDis = document.createElement("button");
@@ -1715,21 +1761,122 @@
       t.disliked = !t.disliked;
       if(t.disliked) t.liked = false;
       saveAll(); render();
+      toast(t.disliked ? "Disliked" : "Undisliked","warn");
     });
 
+    const moreWrap = document.createElement("div");
+    moreWrap.className = "more-wrap";
     const btnMore = document.createElement("button");
     btnMore.className = "iconbtn";
     btnMore.textContent = "⋯";
     btnMore.title = "More";
+
+    const mm = document.createElement("div");
+    mm.className = "more-menu";
+
+    // Info (public/private + copy/download)
+    const info = document.createElement("div");
+    info.className = "mini";
+    info.textContent = `Visibility: ${t.visibility.toUpperCase()} • Copy: ${t.allowCopy ? "ON" : "OFF"} • Download: ${t.allowDownload ? "ON" : "OFF"}`;
+    mm.appendChild(info);
+
+    const mAudio = document.createElement("button");
+    mAudio.textContent = "Generate Audio Preview";
+    mAudio.addEventListener("click",(e)=>{ e.stopPropagation(); mm.classList.remove("open"); selectTrack(t.id,false); generateAudioForTrack(t); });
+
+    const m1 = document.createElement("button");
+    m1.textContent = "Lyrics PDF";
+    m1.addEventListener("click",(e)=>{ e.stopPropagation(); mm.classList.remove("open"); downloadLyricsPDF(t.title, t.style, t.lyrics||""); });
+
+    const m2 = document.createElement("button");
+    m2.textContent = "Sheet Music PDF";
+    m2.addEventListener("click",(e)=>{ e.stopPropagation(); mm.classList.remove("open"); downloadSheetPDF(t.title); });
+
+    const m3 = document.createElement("button");
+    m3.textContent = "Copy Title";
+    m3.addEventListener("click",(e)=>{ e.stopPropagation(); mm.classList.remove("open"); navigator.clipboard?.writeText(t.title||""); toast("Copied","ok"); });
+
+    const mVis = document.createElement("button");
+    mVis.textContent = (t.visibility==="public" ? "Set Private" : "Set Public");
+    mVis.addEventListener("click",(e)=>{
+      e.stopPropagation();
+      mm.classList.remove("open");
+      t.visibility = (t.visibility==="public" ? "private" : "public");
+      saveAll(); render();
+      toast(`Visibility: ${t.visibility}`,"ok");
+    });
+
+    const mCopy = document.createElement("button");
+    mCopy.textContent = (t.allowCopy ? "Disable Copy" : "Enable Copy");
+    mCopy.addEventListener("click",(e)=>{
+      e.stopPropagation();
+      mm.classList.remove("open");
+      t.allowCopy = !t.allowCopy;
+      saveAll(); render();
+      toast(`Copy: ${t.allowCopy ? "ON" : "OFF"}`,"ok");
+    });
+
+    const mDl = document.createElement("button");
+    mDl.textContent = (t.allowDownload ? "Disable Download" : "Enable Download");
+    mDl.addEventListener("click",(e)=>{
+      e.stopPropagation();
+      mm.classList.remove("open");
+      t.allowDownload = !t.allowDownload;
+      saveAll(); render();
+      toast(`Download: ${t.allowDownload ? "ON" : "OFF"}`,"ok");
+    });
+
+    const mPublish = document.createElement("button");
+    mPublish.textContent = "Publish (Soon)";
+    mPublish.addEventListener("click",(e)=>{ e.stopPropagation(); mm.classList.remove("open"); toast("Publish will post to subscriber feed later (backend)","warn"); });
+
+    const mReport = document.createElement("button");
+    mReport.textContent = "Report (Soon)";
+    mReport.addEventListener("click",(e)=>{ e.stopPropagation(); mm.classList.remove("open"); toast("Report queued (placeholder)","warn"); });
+
+    const m4 = document.createElement("button");
+    m4.textContent = "Delete (30 days)";
+    m4.className = "danger";
+    m4.addEventListener("click",(e)=>{ e.stopPropagation(); mm.classList.remove("open"); softDelete(t.id); });
+
+    mm.appendChild(mAudio);
+    mm.appendChild(m1);
+    mm.appendChild(m2);
+    mm.appendChild(m3);
+    mm.appendChild(mVis);
+    mm.appendChild(mCopy);
+    mm.appendChild(mDl);
+    mm.appendChild(mPublish);
+    mm.appendChild(mReport);
+    mm.appendChild(m4);
+
     btnMore.addEventListener("click",(e)=>{
       e.stopPropagation();
-      openMoreMenu(btnMore, t);
+      // close others
+      $$(".more-menu.open").forEach(x=>{ if(x!==mm) x.classList.remove("open"); });
+
+      const willOpen = !mm.classList.contains("open");
+      if(!willOpen){
+        mm.classList.remove("open");
+        return;
+      }
+
+      const r = btnMore.getBoundingClientRect();
+      const top = Math.min(r.bottom + 8, window.innerHeight - 280);
+      const left = Math.min(r.right - 230, window.innerWidth - 240);
+
+      mm.style.top = `${Math.max(8, top)}px`;
+      mm.style.left = `${Math.max(8, left)}px`;
+      mm.classList.add("open");
     });
+
+    moreWrap.appendChild(btnMore);
+    moreWrap.appendChild(mm);
 
     actions.appendChild(btnPlay);
     actions.appendChild(btnLike);
     actions.appendChild(btnDis);
-    actions.appendChild(btnMore);
+    actions.appendChild(moreWrap);
 
     card.appendChild(cover);
     card.appendChild(meta);
@@ -1737,56 +1884,6 @@
 
     card.addEventListener("click",()=> selectTrack(t.id, false));
     return card;
-  }
-
-  function renderTrash(){
-    purgeTrash();
-    saveAll();
-
-    const box = $("#trashList");
-    box.innerHTML = "";
-
-    if(!trash.length){
-      const empty = document.createElement("div");
-      empty.className = "trashHint";
-      empty.innerHTML = "<b>Trash is empty.</b><br>No deleted items right now.";
-      box.appendChild(empty);
-      return;
-    }
-
-    trash.forEach(t=>{
-      const row = document.createElement("div");
-      row.className = "trashRow";
-
-      const left = document.createElement("div");
-      const dl = daysLeft(t);
-      left.innerHTML = `<b>${t.title || "Untitled"}</b>
-        <small>${t.desc || "—"}</small>
-        <small><b>${dl}</b> day(s) left • Deleted ${new Date(t.deletedAt||Date.now()).toLocaleString()}</small>`;
-
-      const btns = document.createElement("div");
-      btns.className = "tBtns";
-
-      const b1 = document.createElement("button");
-      b1.textContent = "Restore";
-      b1.addEventListener("click",()=> restoreFromTrash(t.id));
-
-      const b2 = document.createElement("button");
-      b2.className = "danger";
-      b2.textContent = "Delete Forever";
-      b2.addEventListener("click",()=>{
-        if(!confirm("Delete forever?")) return;
-        deleteForever(t.id);
-      });
-
-      btns.appendChild(b1);
-      btns.appendChild(b2);
-
-      row.appendChild(left);
-      row.appendChild(btns);
-
-      box.appendChild(row);
-    });
   }
 
   // ===== Selection + Player =====
@@ -1816,21 +1913,6 @@
   }
 
   function setPlaying(on){
-    const t = tracks.find(x=>x.id===nowId) || null;
-
-    if(on){
-      if(!t){
-        if(tracks[0]?.id){ selectTrack(tracks[0].id, true); return; }
-        toast("No track","warn");
-        return;
-      }
-      ensureAudio();
-      if(audioCtx.state === "suspended") audioCtx.resume();
-      startSynth(t);
-    } else {
-      stopSynth();
-    }
-
     isPlaying = !!on;
     $("#btnPlay").textContent = isPlaying ? "❚❚" : "▶";
     $("#npPlay").textContent = isPlaying ? "❚❚ Pause" : "▶ Play";
@@ -1839,84 +1921,7 @@
     $("#npStatusPill").textContent = isPlaying ? "Playing" : "Ready";
 
     if(isPlaying){
-      if(!timer){
-        timer = setInterval(()=>{
-          if(!isPlaying) return;
-          sec += 1;
-          updateProgress();
-        }, 1000);
-      }
-    }
-  }
-
-  function updateProgress(){
-    const dur = 180;
-    const pct = clamp((sec/dur)*100, 0, 100);
-    $("#fill").style.width = pct + "%";
-    $("#npFill").style.width = pct + "%";
-    $("#time").textContent = fmtTime(sec);
-    $("#npTime").textContent = fmtTime(sec);
-    $("#npDur").textContent = fmtTime(dur);
-  }
-
-  function seekFromBar(barEl, clientX){
-    const r = barEl.getBoundingClientRect();
-    const pct = clamp((clientX - r.left)/r.width, 0, 1);
-    sec = Math.floor(pct * 180);
-    updateProgress();
-  }
-
-  $("#progress").addEventListener("click",(e)=> seekFromBar(e.currentTarget, e.clientX));
-  $("#npProgress").addEventListener("click",(e)=> seekFromBar(e.currentTarget, e.clientX));
-
-  $("#btnPlay").addEventListener("click",()=> setPlaying(!isPlaying));
-  $("#npPlay").addEventListener("click",()=> setPlaying(!isPlaying));
-
-  function nextTrack(dir){
-    if(!tracks.length){ toast("No tracks","warn"); return; }
-    const idx = tracks.findIndex(x=>x.id===nowId);
-    const next = (idx===-1) ? 0 : (idx + dir + tracks.length) % tracks.length;
-    selectTrack(tracks[next].id, true);
-  }
-  $("#btnPrev").addEventListener("click",()=> nextTrack(-1));
-  $("#btnNext").addEventListener("click",()=> nextTrack(1));
-  $("#npPrev").addEventListener("click",()=> nextTrack(-1));
-  $("#npNext").addEventListener("click",()=> nextTrack(1));
-
-  $("#btnLike").addEventListener("click",()=>{
-    const t = tracks.find(x=>x.id===nowId); if(!t) return toast("No track","warn");
-    t.liked = !t.liked; if(t.liked) t.disliked=false;
-    saveAll(); render(); toast(t.liked ? "Liked" : "Unliked");
-  });
-  $("#btnDislike").addEventListener("click",()=>{
-    const t = tracks.find(x=>x.id===nowId); if(!t) return toast("No track","warn");
-    t.disliked = !t.disliked; if(t.disliked) t.liked=false;
-    saveAll(); render(); toast(t.disliked ? "Disliked" : "Undisliked");
-  });
-  $("#btnShare").addEventListener("click",()=> toast("Share (Soon)","warn"));
-
-  $("#btnOpenQueue").addEventListener("click",()=> toast("Now Playing","ok"));
-
-  $("#btnCopyLyrics").addEventListener("click",()=>{
-    const t = tracks.find(x=>x.id===nowId); if(!t) return;
-    const allowed = t.owned || (t.visibility==="public" && t.allowCopy);
-    if(!allowed) return toast("Copy disabled","warn");
-    navigator.clipboard?.writeText(t.lyrics || "");
-    toast("Lyrics copied","ok");
-  });
-  $("#btnCopyStyle").addEventListener("click",()=>{
-    const t = tracks.find(x=>x.id===nowId); if(!t) return;
-    const allowed = t.owned || (t.visibility==="public" && t.allowCopy);
-    if(!allowed) return toast("Copy disabled","warn");
-    navigator.clipboard?.writeText(t.style || "");
-    toast("Style copied","ok");
-  });
-
-  // ===== PDF Downloads (REAL) =====
-  function safeName(name){
-    return (name||"file").replace(/[^a-z0-9\-_ ]/gi,"").trim().slice(0,40) || "file";
-  }
-
-  function downloadLyricsPDF(title, style, lyrics){
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ unit:"pt", format:"letter
+      if(!nowId){
+        if(tracks[0]?.id){ selectTrack(tracks[0].id, true); return; }
+        toast("No track","warn");
+        isPlaying = false;
