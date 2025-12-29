@@ -1,110 +1,132 @@
-<!-- =========================
-FILE: index.html
-========================= -->
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>SML Light — Home</title>
-  <link rel="stylesheet" href="./app.css" />
+<meta charset="UTF-8" />
+<title>SML – Home</title>
+
+<style>
+/* ===== HOME PAGE ONLY — SCOPED ===== */
+
+.home-layout {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  height: 100%;
+  gap: 12px;
+}
+
+.home-main {
+  background: #0f2f4a;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.home-main h2 {
+  margin: 0 0 8px 0;
+}
+
+.now-playing {
+  flex: 1;
+  background: #0b2438;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.transport-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 8px;
+}
+
+.transport-bar button {
+  background: #143d5c;
+  border: none;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.home-right {
+  background: #0f2f4a;
+  border-radius: 8px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.album-art {
+  height: 220px;
+  background: #0b2438;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6fa3c7;
+  font-size: 14px;
+}
+
+.song-meta {
+  background: #0b2438;
+  border-radius: 6px;
+  padding: 10px;
+  font-size: 14px;
+}
+
+.song-meta div {
+  margin-bottom: 6px;
+}
+</style>
 </head>
+
 <body>
-  <div class="app">
-    <aside class="sidebar" role="navigation" aria-label="SML sidebar">
-      <div class="brand">
-        <div class="logo">SML</div>
 
-        <!-- Profile MUST be under logo -->
-        <a class="profile-chip" href="./profile.html" title="Profile">
-          <span class="dot"></span>
-          <span class="profile-text">
-            <span class="profile-name" id="profileNameSidebar">YOU</span>
-            <span class="profile-sub">Owner</span>
-          </span>
-        </a>
+<!-- ASSUMES YOUR EXISTING SIDEBAR IS ALREADY RENDERED -->
+
+<div class="page-content">
+
+  <h1>Making rock stars — one human at a time.</h1>
+  <p>No AI lyrics. You write the words. You keep 100% ownership.</p>
+
+  <div class="home-layout">
+
+    <!-- CENTER -->
+    <div class="home-main">
+      <h2>Library / Now Playing</h2>
+
+      <div class="now-playing">
+        <p>No track selected</p>
       </div>
 
-      <nav class="nav">
-        <a class="nav-link active" href="./index.html">Home</a>
-        <a class="nav-link" href="./create.html">Create</a>
-        <a class="nav-link" href="./library.html">Library</a>
-        <a class="nav-link" href="./trash.html">Trash</a>
-      </nav>
-
-      <div class="sidebar-footer">
-        <div class="pill"><span class="muted">Credits</span> <span class="right" id="creditsSidebar">7,537</span></div>
-        <div class="pill"><span class="muted">Ownership</span> <span class="right">100% You</span></div>
-        <div class="pill"><span class="muted">Trash</span> <span class="right">30 days</span></div>
+      <div class="transport-bar">
+        <button>⏮</button>
+        <button>▶</button>
+        <button>⏸</button>
+        <button>⏭</button>
       </div>
-    </aside>
+    </div>
 
-    <main class="content">
-      <header class="topbar">
-        <button class="icon-btn" id="toggleSidebar" aria-label="Toggle sidebar">☰</button>
-        <div class="crumbs">
-          <span class="crumb">Workspace</span>
-          <span class="sep">›</span>
-          <span class="crumb strong">Home</span>
-        </div>
-        <div class="topbar-right">
-          <span class="badge">No AI Lyrics</span>
-        </div>
-      </header>
+    <!-- RIGHT -->
+    <div class="home-right">
 
-      <section class="page">
-        <h1>Making rock stars — one human at a time.</h1>
-        <p class="lead">
-          You bring the words. You keep <b>100% ownership</b>. This is <b>SML Light</b> — a stripped-down shell built to run on GitHub Pages.
-        </p>
+      <div class="album-art">
+        Generated Image
+      </div>
 
-        <div class="grid two">
-          <div class="card">
-            <h2>No AI lyrics</h2>
-            <p>We never write lyrics for you. Ever.</p>
-            <div class="card-actions">
-              <a class="btn primary" href="./create.html">Go to Create</a>
-              <a class="btn" href="./library.html">Open Library</a>
-              <a class="btn" href="./trash.html">Open Trash</a>
-            </div>
-          </div>
+      <div class="song-meta">
+        <div><strong>Song:</strong> —</div>
+        <div><strong>Lyrics:</strong> User owned</div>
+        <div><strong>Status:</strong> Draft</div>
+      </div>
 
-          <div class="card">
-            <h2>What SML Light does</h2>
-            <ul class="list">
-              <li>Create songs (title + lyrics + style)</li>
-              <li>Generate a <b>placeholder preview</b> (tone-based, not a real AI model)</li>
-              <li>Save to Library (local storage)</li>
-              <li>Trash + Restore + Delete</li>
-              <li>Profile page (owner + credits)</li>
-            </ul>
-            <p class="muted small">
-              When you connect a real backend later, the UI stays the same — you just swap the “Generate” logic.
-            </p>
-          </div>
-        </div>
+    </div>
 
-        <div class="card">
-          <h2>Status</h2>
-          <div class="kv">
-            <div class="k">Local Library Tracks</div>
-            <div class="v" id="homeTrackCount">0</div>
-          </div>
-          <div class="kv">
-            <div class="k">Trash Items</div>
-            <div class="v" id="homeTrashCount">0</div>
-          </div>
-        </div>
-      </section>
-    </main>
   </div>
+</div>
 
-  <script src="./app.js"></script>
-  <script>
-    SML.initBaseUI();
-    const stats = SML.getStats();
-    document.getElementById("homeTrackCount").textContent = String(stats.libraryCount);
-    document.getElementById("homeTrashCount").textContent = String(stats.trashCount);
-  </script>
 </body>
 </html>
