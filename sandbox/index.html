@@ -16,7 +16,7 @@ html, body {
   font-family: Arial, sans-serif;
 }
 
-/* APP GRID */
+/* APP GRID — UNCHANGED */
 .app {
   display: grid;
   grid-template-columns: 220px 1fr 220px;
@@ -26,7 +26,7 @@ html, body {
   transition: grid-template-columns 0.25s ease;
 }
 
-/* PANELS */
+/* PANELS — UNCHANGED */
 .left {
   grid-column: 1;
   grid-row: 1 / span 2;
@@ -53,7 +53,7 @@ html, body {
   padding: 10px;
 }
 
-/* BOTTOM PLAYER — CENTER ONLY */
+/* BOTTOM PLAYER — UNCHANGED */
 .player {
   grid-column: 2;
   grid-row: 2;
@@ -64,7 +64,7 @@ html, body {
   justify-content: center;
 }
 
-/* COLLAPSE STATES (UNCHANGED) */
+/* COLLAPSE STATES — UNCHANGED */
 .app.left-collapsed {
   grid-template-columns: 40px 1fr 220px;
 }
@@ -73,7 +73,7 @@ html, body {
   grid-template-columns: 220px 1fr 40px;
 }
 
-/* HIDE CONTENT WHEN COLLAPSED (OPTION B) */
+/* EXISTING BEHAVIOR — UNCHANGED */
 .app.left-collapsed .left .panel-content {
   display: none;
 }
@@ -82,7 +82,7 @@ html, body {
   display: none;
 }
 
-/* BUTTONS */
+/* BUTTON — UNCHANGED */
 .toggle-btn {
   background: #000;
   color: #fff;
@@ -93,11 +93,54 @@ html, body {
   font-size: 14px;
 }
 
-/* DEBUG CONTENT */
-.block {
-  height: 1200px;
-  border: 1px dashed #444;
+/* ========================= */
+/* 🔧 ADDITIONS — LEFT PANEL */
+/* ========================= */
+
+.left-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
 }
+
+.left-header .logo {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.left-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.left-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.left-item .icon {
+  width: 20px;
+  text-align: center;
+}
+
+.left-item .label {
+  white-space: nowrap;
+}
+
+/* HIDE LABELS WHEN COLLAPSED — ICONS ONLY */
+.app.left-collapsed .left-item .label {
+  display: none;
+}
+
+/* CENTER ICONS WHEN COLLAPSED */
+.app.left-collapsed .left {
+  padding: 10px 5px;
+}
+
 </style>
 </head>
 
@@ -105,19 +148,39 @@ html, body {
 
 <div class="app" id="app">
 
+  <!-- LEFT PANEL -->
   <div class="left">
     <button class="toggle-btn" onclick="toggleLeft()">❮</button>
+
+    <!-- ADDED HEADER -->
+    <div class="left-header">
+      <div class="logo">SML</div>
+    </div>
+
+    <!-- ADDED NAV -->
+    <div class="left-nav">
+      <div class="left-item"><span class="icon">👤</span><span class="label">User</span></div>
+      <div class="left-item"><span class="icon">🏠</span><span class="label">Home</span></div>
+      <div class="left-item"><span class="icon">✱</span><span class="label">Create</span></div>
+      <div class="left-item"><span class="icon">☰</span><span class="label">Library</span></div>
+      <div class="left-item"><span class="icon">🔍</span><span class="label">Search</span></div>
+      <div class="left-item"><span class="icon">🗑</span><span class="label">Trash</span></div>
+      <div class="left-item"><span class="icon">💳</span><span class="label">Credits</span></div>
+    </div>
+
+    <!-- EXISTING CONTENT — UNCHANGED -->
     <div class="panel-content">
-      LEFT PANEL
       <div class="block"></div>
     </div>
   </div>
 
+  <!-- CENTER PANEL — UNCHANGED -->
   <div class="center">
     CENTER PANEL
     <div class="block"></div>
   </div>
 
+  <!-- RIGHT PANEL — UNCHANGED -->
   <div class="right">
     <button class="toggle-btn" onclick="toggleRight()">❯</button>
     <div class="panel-content">
@@ -126,6 +189,7 @@ html, body {
     </div>
   </div>
 
+  <!-- PLAYER — UNCHANGED -->
   <div class="player">
     BOTTOM PLAYER BAR
   </div>
