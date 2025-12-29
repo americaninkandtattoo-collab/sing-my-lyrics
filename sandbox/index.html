@@ -13,7 +13,7 @@ html, body {
   overflow: hidden;
   background: #111;
   color: #fff;
-  font-family: Arial, sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
 }
 
 /* APP GRID — UNCHANGED */
@@ -26,39 +26,39 @@ html, body {
   transition: grid-template-columns 0.25s ease;
 }
 
-/* PANELS — UNCHANGED */
+/* PANELS — UNCHANGED (visual polish only) */
 .left {
   grid-column: 1;
   grid-row: 1 / span 2;
-  background: #1e1e1e;
-  border-right: 2px solid #555;
+  background: #181818;
+  border-right: 1px solid #2a2a2a;
   overflow-y: auto;
-  padding: 10px;
+  padding: 12px;
 }
 
 .center {
   grid-column: 2;
   grid-row: 1;
-  background: #222;
+  background: #202020;
   overflow-y: auto;
-  padding: 10px;
+  padding: 16px;
 }
 
 .right {
   grid-column: 3;
   grid-row: 1 / span 2;
-  background: #1e1e1e;
-  border-left: 2px solid #555;
+  background: #181818;
+  border-left: 1px solid #2a2a2a;
   overflow-y: auto;
-  padding: 10px;
+  padding: 12px;
 }
 
-/* BOTTOM PLAYER — UNCHANGED */
+/* BOTTOM PLAYER — UNCHANGED (visual polish only) */
 .player {
   grid-column: 2;
   grid-row: 2;
-  background: #000;
-  border-top: 2px solid #555;
+  background: linear-gradient(to top, #0d0d0d, #151515);
+  border-top: 1px solid #2a2a2a;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -82,37 +82,48 @@ html, body {
   display: none;
 }
 
-/* BUTTON — UNCHANGED */
+/* TOGGLE BUTTON — VISUAL POLISH ONLY */
 .toggle-btn {
-  background: #000;
-  color: #fff;
-  border: 1px solid #555;
+  background: #0f0f0f;
+  color: #aaa;
+  border: 1px solid #2a2a2a;
   cursor: pointer;
   padding: 4px 6px;
-  margin-bottom: 10px;
-  font-size: 14px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  border-radius: 4px;
+}
+
+.toggle-btn:hover {
+  color: #fff;
+  border-color: #444;
 }
 
 /* ========================= */
-/* 🔧 ADDITIONS — LEFT PANEL */
+/* LEFT PANEL — VISUAL POLISH */
 /* ========================= */
 
 .left-header {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #2a2a2a;
 }
 
 .left-header .logo {
-  font-weight: bold;
-  font-size: 14px;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  opacity: 0.9;
 }
 
 .left-nav {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 4px;
+  margin-top: 12px;
 }
 
 .left-item {
@@ -120,25 +131,35 @@ html, body {
   align-items: center;
   gap: 10px;
   cursor: pointer;
+  padding: 8px 10px;
+  border-radius: 6px;
+  color: #bdbdbd;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.left-item:hover {
+  background: #242424;
+  color: #fff;
 }
 
 .left-item .icon {
   width: 20px;
   text-align: center;
+  opacity: 0.85;
 }
 
 .left-item .label {
   white-space: nowrap;
+  font-size: 14px;
 }
 
-/* HIDE LABELS WHEN COLLAPSED — ICONS ONLY */
+/* COLLAPSED STATE — ICONS ONLY (UNCHANGED BEHAVIOR) */
 .app.left-collapsed .left-item .label {
   display: none;
 }
 
-/* CENTER ICONS WHEN COLLAPSED */
 .app.left-collapsed .left {
-  padding: 10px 5px;
+  padding: 12px 6px;
 }
 
 </style>
@@ -152,12 +173,10 @@ html, body {
   <div class="left">
     <button class="toggle-btn" onclick="toggleLeft()">❮</button>
 
-    <!-- ADDED HEADER -->
     <div class="left-header">
       <div class="logo">SML</div>
     </div>
 
-    <!-- ADDED NAV -->
     <div class="left-nav">
       <div class="left-item"><span class="icon">👤</span><span class="label">User</span></div>
       <div class="left-item"><span class="icon">🏠</span><span class="label">Home</span></div>
@@ -168,19 +187,18 @@ html, body {
       <div class="left-item"><span class="icon">💳</span><span class="label">Credits</span></div>
     </div>
 
-    <!-- EXISTING CONTENT — UNCHANGED -->
     <div class="panel-content">
       <div class="block"></div>
     </div>
   </div>
 
-  <!-- CENTER PANEL — UNCHANGED -->
+  <!-- CENTER PANEL -->
   <div class="center">
     CENTER PANEL
     <div class="block"></div>
   </div>
 
-  <!-- RIGHT PANEL — UNCHANGED -->
+  <!-- RIGHT PANEL -->
   <div class="right">
     <button class="toggle-btn" onclick="toggleRight()">❯</button>
     <div class="panel-content">
@@ -189,7 +207,7 @@ html, body {
     </div>
   </div>
 
-  <!-- PLAYER — UNCHANGED -->
+  <!-- PLAYER -->
   <div class="player">
     BOTTOM PLAYER BAR
   </div>
