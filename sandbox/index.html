@@ -80,8 +80,56 @@ html, body {
   border: 1px solid #555;
   cursor: pointer;
   padding: 4px 6px;
-  margin-bottom: 10px;
   font-size: 14px;
+}
+
+/* ===== LEFT PANEL STRUCTURE (ADDED) ===== */
+.left-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.logo {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.user-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #444;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.nav-item {
+  cursor: pointer;
+  color: #ddd;
+}
+
+.nav-item:hover {
+  color: #fff;
+}
+
+.credits {
+  margin-top: auto;
+  padding-top: 20px;
+  font-size: 13px;
+  color: #aaa;
 }
 
 /* DEBUG CONTENT */
@@ -97,8 +145,33 @@ html, body {
 <div class="app" id="app">
 
   <div class="left">
-    <button class="toggle-btn" onclick="toggleLeft()">❮</button>
-    LEFT PANEL
+    
+    <!-- HEADER -->
+    <div class="left-header">
+      <div class="logo">SML</div>
+      <button class="toggle-btn" onclick="toggleLeft()">❮</button>
+    </div>
+
+    <!-- USER -->
+    <div class="user-box">
+      <div class="avatar"></div>
+      <div>User</div>
+    </div>
+
+    <!-- NAV -->
+    <div class="nav">
+      <div class="nav-item">Home</div>
+      <div class="nav-item">Create</div>
+      <div class="nav-item">Library</div>
+      <div class="nav-item">Search</div>
+      <div class="nav-item">Trash</div>
+    </div>
+
+    <!-- CREDITS -->
+    <div class="credits">
+      Credits: 12
+    </div>
+
     <div class="block"></div>
   </div>
 
