@@ -53,15 +53,16 @@ html, body {
   padding: 10px;
 }
 
-/* BOTTOM PLAYER — UNCHANGED */
+/* BOTTOM PLAYER — UNCHANGED CONTAINER */
 .player {
   grid-column: 2;
   grid-row: 2;
-  background: #000;
+  background: #0d0d0d;
   border-top: 2px solid #555;
   display: flex;
   align-items: center;
-  justify-content: center;
+  padding: 0 12px;
+  gap: 12px;
 }
 
 /* COLLAPSE STATES — UNCHANGED */
@@ -73,7 +74,6 @@ html, body {
   grid-template-columns: 220px 1fr 40px;
 }
 
-/* EXISTING BEHAVIOR — UNCHANGED */
 .app.left-collapsed .left .panel-content {
   display: none;
 }
@@ -94,7 +94,7 @@ html, body {
 }
 
 /* ========================= */
-/* 🔧 ADDITIONS — LEFT PANEL */
+/* 🔧 LEFT PANEL ADDITIONS   */
 /* ========================= */
 
 .left-header {
@@ -131,53 +131,61 @@ html, body {
   white-space: nowrap;
 }
 
-/* HIDE LABELS WHEN COLLAPSED — ICONS ONLY */
 .app.left-collapsed .left-item .label {
   display: none;
 }
 
-/* CENTER ICONS WHEN COLLAPSED */
 .app.left-collapsed .left {
   padding: 10px 5px;
 }
 
 /* ========================= */
-/* ✅ SCROLLBARS — ADDED ONLY */
+/* 🔊 PLAYER ADDITIONS ONLY  */
 /* ========================= */
 
-.left::-webkit-scrollbar,
-.center::-webkit-scrollbar,
-.right::-webkit-scrollbar {
-  width: 8px;
+.player-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.left::-webkit-scrollbar-track,
-.center::-webkit-scrollbar-track,
-.right::-webkit-scrollbar-track {
-  background: transparent;
+.player-btn {
+  cursor: pointer;
+  opacity: 0.85;
 }
 
-.left::-webkit-scrollbar-thumb,
-.center::-webkit-scrollbar-thumb,
-.right::-webkit-scrollbar-thumb {
-  background-color: #444;
-  border-radius: 6px;
+.player-btn:hover {
+  opacity: 1;
 }
 
-.left::-webkit-scrollbar-thumb:hover,
-.center::-webkit-scrollbar-thumb:hover,
-.right::-webkit-scrollbar-thumb:hover {
-  background-color: #666;
+.player-timeline {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-/* Firefox */
-.left,
-.center,
-.right {
-  scrollbar-width: thin;
-  scrollbar-color: #444 transparent;
+.player-time {
+  font-size: 12px;
+  color: #aaa;
+  min-width: 40px;
+  text-align: center;
 }
 
+.player-bar {
+  flex: 1;
+  height: 4px;
+  background: #333;
+  border-radius: 2px;
+  position: relative;
+}
+
+.player-bar-fill {
+  width: 25%;
+  height: 100%;
+  background: #fff;
+  border-radius: 2px;
+}
 </style>
 </head>
 
@@ -203,29 +211,37 @@ html, body {
       <div class="left-item"><span class="icon">💳</span><span class="label">Credits</span></div>
     </div>
 
-    <div class="panel-content">
-      <div class="block"></div>
-    </div>
+    <div class="panel-content"></div>
   </div>
 
   <!-- CENTER PANEL -->
-  <div class="center">
-    CENTER PANEL
-    <div class="block"></div>
-  </div>
+  <div class="center">CENTER PANEL</div>
 
   <!-- RIGHT PANEL -->
   <div class="right">
     <button class="toggle-btn" onclick="toggleRight()">❯</button>
-    <div class="panel-content">
-      RIGHT PANEL
-      <div class="block"></div>
-    </div>
+    <div class="panel-content">RIGHT PANEL</div>
   </div>
 
-  <!-- PLAYER -->
+  <!-- 🔊 PLAYER — SURGICAL CONTENT -->
   <div class="player">
-    BOTTOM PLAYER BAR
+
+    <div class="player-controls">
+      <span class="player-btn">🔀</span>
+      <span class="player-btn">⏮</span>
+      <span class="player-btn">▶️</span>
+      <span class="player-btn">⏭</span>
+      <span class="player-btn">🔁</span>
+    </div>
+
+    <div class="player-timeline">
+      <div class="player-time">0:00</div>
+      <div class="player-bar">
+        <div class="player-bar-fill"></div>
+      </div>
+      <div class="player-time">3:30</div>
+    </div>
+
   </div>
 
 </div>
