@@ -490,3 +490,59 @@ textarea{min-height:160px; resize:vertical}
   #rightPanel{display:none}
   .pBar{width:50vw}
 }
+/* === PHASE 8.2 — HARD LAYOUT LOCK === */
+
+/* Never allow sidebar to disappear */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 240px;
+  height: 100vh;
+  background: #0e1116;
+  border-right: 1px solid #2a3242;
+  z-index: 1000;
+}
+
+/* Push all pages to the right of sidebar */
+.page,
+.main,
+.content,
+#app {
+  margin-left: 240px;
+  min-height: 100vh;
+  background: #151a22;
+}
+
+/* Sidebar nav links */
+.sidebar a {
+  display: block;
+  padding: 12px 16px;
+  color: #e7eaf0;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.sidebar a:hover {
+  background: #1b2230;
+}
+
+/* Active page indicator */
+.sidebar a.active {
+  background: #1f2937;
+  color: #3bff88;
+  border-left: 4px solid #3bff88;
+}
+
+/* Prevent content overlap on small screens */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 200px;
+  }
+  .page,
+  .main,
+  .content,
+  #app {
+    margin-left: 200px;
+  }
+}
