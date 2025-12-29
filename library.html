@@ -1,36 +1,123 @@
-<!DOCTYPE html>
+<!-- =========================
+FILE: library.html
+========================= -->
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>SML — Library</title>
-  <link rel="stylesheet" href="app.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SML Light — Library</title>
+  <link rel="stylesheet" href="./app.css" />
 </head>
 <body>
-<div class="app">
+  <div class="app">
+    <aside class="sidebar" role="navigation" aria-label="SML sidebar">
+      <div class="brand">
+        <div class="logo">SML</div>
 
-  <aside class="sidebar">
-    <div class="logo">SML</div>
+        <!-- Profile MUST be under logo -->
+        <a class="profile-chip" href="./profile.html" title="Profile">
+          <span class="dot"></span>
+          <span class="profile-text">
+            <span class="profile-name" id="profileNameSidebar">YOU</span>
+            <span class="profile-sub">Owner</span>
+          </span>
+        </a>
+      </div>
 
-    <nav class="nav">
-      <a href="index.html">Home</a>
-      <a href="create.html">Create</a>
-      <a href="library.html" class="active">Library</a>
-      <a href="trash.html">Trash</a>
-      <a href="profile.html">Profile</a>
-    </nav>
+      <nav class="nav">
+        <a class="nav-link" href="./index.html">Home</a>
+        <a class="nav-link" href="./create.html">Create</a>
+        <a class="nav-link active" href="./library.html">Library</a>
+        <a class="nav-link" href="./trash.html">Trash</a>
+      </nav>
 
-    <div class="credits">
-      <div><strong>7,537 Credits</strong></div>
-      <div>Ownership: 100% You</div>
-    </div>
-  </aside>
+      <div class="sidebar-footer">
+        <div class="pill"><span class="muted">Credits</span> <span class="right" id="creditsSidebar">7,537</span></div>
+        <div class="pill"><span class="muted">Ownership</span> <span class="right">100% You</span></div>
+        <div class="pill"><span class="muted">Trash</span> <span class="right">30 days</span></div>
+      </div>
+    </aside>
 
-  <main class="content">
-    <h1>Library</h1>
-    <p>No tracks yet.</p>
-  </main>
+    <main class="content">
+      <header class="topbar">
+        <button class="icon-btn" id="toggleSidebar" aria-label="Toggle sidebar">☰</button>
+        <div class="crumbs">
+          <span class="crumb">Workspace</span>
+          <span class="sep">›</span>
+          <span class="crumb strong">Library</span>
+        </div>
+        <div class="topbar-right">
+          <a class="btn" href="./create.html">+ New</a>
+        </div>
+      </header>
 
-</div>
-<script src="app.js"></script>
+      <section class="page">
+        <h1>Library</h1>
+        <p class="muted">Your saved tracks (stored locally in this browser).</p>
+
+        <div class="grid two">
+          <div class="card">
+            <div class="row">
+              <input class="input" id="search" placeholder="Search title / style..." />
+              <button class="btn" id="btnRefresh">Refresh</button>
+            </div>
+
+            <div class="listbox" id="trackList"></div>
+
+            <p class="muted small" id="emptyNote" style="display:none;">
+              No tracks yet. Go to Create and save one.
+            </p>
+          </div>
+
+          <div class="card">
+            <h2>Song Details</h2>
+            <div id="detailsEmpty" class="muted">Select a track to view details.</div>
+
+            <div id="details" style="display:none;">
+              <div class="kv">
+                <div class="k">Title</div>
+                <div class="v" id="dTitle"></div>
+              </div>
+              <div class="kv">
+                <div class="k">Style</div>
+                <div class="v" id="dStyle"></div>
+              </div>
+              <div class="kv">
+                <div class="k">Created</div>
+                <div class="v" id="dDate"></div>
+              </div>
+              <div class="kv">
+                <div class="k">Ownership</div>
+                <div class="v"><b>100% You</b></div>
+              </div>
+
+              <div class="divider"></div>
+
+              <label class="label">Lyrics</label>
+              <textarea class="textarea" id="dLyrics" readonly></textarea>
+
+              <div class="card-actions">
+                <button class="btn" id="btnPlay">▶ Play Preview</button>
+                <button class="btn" id="btnStop">■ Stop</button>
+                <button class="btn" id="btnExport">Export Lyrics (.txt)</button>
+                <button class="btn danger" id="btnTrash">Move to Trash</button>
+              </div>
+
+              <p class="muted small">
+                Preview is tone-based placeholder (GitHub Pages safe).
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="./app.js"></script>
+  <script>
+    SML.initBaseUI();
+    SML.libraryPageInit();
+  </script>
 </body>
 </html>
