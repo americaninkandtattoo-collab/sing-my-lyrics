@@ -6,32 +6,26 @@
 <title>SML – Sandbox Shell</title>
 
 <style>
-/* ===== RESET ===== */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-/* ===== THEME ===== */
 :root {
   --bg: #0f1115;
   --panel: #161a20;
   --panel-soft: #1b2028;
-  --border-soft: #242a34;
-  --accent: #2a7cff;
-  --text-dim: #9aa3b2;
+  --border: #242a34;
 }
 
 html, body {
   height: 100%;
   background: var(--bg);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  color: white;
+  font-family: system-ui, sans-serif;
   overflow: hidden;
 }
 
-/* ===== APP GRID ===== */
 .app {
   display: grid;
   grid-template-columns: 240px 1fr 260px;
@@ -40,87 +34,48 @@ html, body {
   width: 100vw;
 }
 
-/* ===== LEFT PANEL ===== */
+/* LEFT */
 .left-panel {
   grid-row: 1 / span 2;
   background: var(--panel);
-  border-right: 1px solid var(--border-soft);
+  border-right: 1px solid var(--border);
   overflow-y: auto;
 }
 
-/* ===== CENTER PANEL ===== */
+/* CENTER */
 .center-panel {
+  grid-column: 2;
+  grid-row: 1;
   background: var(--panel-soft);
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
   overflow-y: auto;
 }
 
-/* ===== RIGHT PANEL ===== */
+/* RIGHT */
 .right-panel {
   grid-row: 1 / span 2;
   background: var(--panel);
-  border-left: 1px solid var(--border-soft);
+  border-left: 1px solid var(--border);
   overflow-y: auto;
 }
 
-/* ===== BOTTOM PLAYER ===== */
+/* BOTTOM PLAYER — CENTER ONLY */
 .bottom-bar {
-  background: linear-gradient(
-    to top,
-    #141820,
-    #1a1f28
-  );
-  border-top: 1px solid var(--border-soft);
-}
-
-/* ===== SCROLLBARS (SUBTLE) ===== */
-.left-panel::-webkit-scrollbar,
-.center-panel::-webkit-scrollbar,
-.right-panel::-webkit-scrollbar {
-  width: 8px;
-}
-
-.left-panel::-webkit-scrollbar-thumb,
-.center-panel::-webkit-scrollbar-thumb,
-.right-panel::-webkit-scrollbar-thumb {
-  background: #2a2f3a;
-  border-radius: 8px;
-}
-
-.left-panel::-webkit-scrollbar-track,
-.center-panel::-webkit-scrollbar-track,
-.right-panel::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-/* ===== VISUAL SPACING HELPERS (TEMPORARY) ===== */
-.left-panel::before,
-.center-panel::before,
-.right-panel::before,
-.bottom-bar::before {
-  content: "";
-  display: block;
-  height: 100%;
+  grid-column: 2;
+  grid-row: 2;
+  background: #141820;
+  border-top: 1px solid var(--border);
 }
 </style>
 </head>
 
 <body>
-
 <div class="app">
-
-  <!-- LEFT NAV / USER PANEL -->
   <aside class="left-panel"></aside>
-
-  <!-- CENTER MAIN CONTENT -->
   <main class="center-panel"></main>
-
-  <!-- RIGHT CONTROL PANEL -->
   <aside class="right-panel"></aside>
-
-  <!-- BOTTOM PLAYER BAR -->
   <footer class="bottom-bar"></footer>
-
 </div>
-
 </body>
 </html>
