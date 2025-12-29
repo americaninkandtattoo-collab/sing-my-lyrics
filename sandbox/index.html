@@ -6,7 +6,6 @@
 <title>SML Sandbox Layout</title>
 
 <style>
-/* ===== LOCK PAGE ===== */
 html, body {
   margin: 0;
   padding: 0;
@@ -17,14 +16,14 @@ html, body {
   font-family: Arial, sans-serif;
 }
 
-/* ===== APP ===== */
+/* APP */
 .app {
   display: flex;
   flex-direction: column;
   height: 100vh;
 }
 
-/* ===== MAIN GRID ===== */
+/* MAIN AREA */
 .main {
   flex: 1;
   display: grid;
@@ -33,63 +32,75 @@ html, body {
   transition: grid-template-columns 0.25s ease;
 }
 
-/* ===== PANELS ===== */
+/* COLLAPSED STATES */
+.main.left-collapsed {
+  grid-template-columns: 0 1fr 220px;
+}
+
+.main.right-collapsed {
+  grid-template-columns: 220px 1fr 0;
+}
+
+.main.both-collapsed {
+  grid-template-columns: 0 1fr 0;
+}
+
+/* PANELS */
 .left,
 .center,
 .right {
   overflow-y: auto;
-  border: 2px solid #666;
   padding: 10px;
 }
 
-.left   { background: #1e1e1e; }
-.center { background: #222; }
-.right  { background: #1e1e1e; }
-
-/* ===== COLLAPSED STATES ===== */
-.main.left-collapsed {
-  grid-template-columns: 32px 1fr 220px;
+.left,
+.right {
+  background: #1e1e1e;
 }
 
-.main.right-collapsed {
-  grid-template-columns: 220px 1fr 32px;
+.center {
+  background: #222;
 }
 
-.main.left-collapsed.right-collapsed {
-  grid-template-columns: 32px 1fr 32px;
+/* HIDE CONTENT WHEN COLLAPSED */
+.left.collapsed,
+.right.collapsed {
+  padding: 0;
+  overflow: hidden;
 }
 
-/* ===== COLLAPSE BUTTONS ===== */
-.collapse-btn {
+/* TOGGLE BUTTONS */
+.toggle {
   position: sticky;
-  top: 0;
-  background: #000;
-  color: #aaa;
-  border: none;
-  width: 100%;
+  top: 10px;
+  width: 28px;
   height: 28px;
-  cursor: pointer;
-  font-size: 12px;
-}
-
-.collapse-btn:hover {
+  background: #2a2a2a;
+  border: 1px solid #555;
   color: #fff;
-}
-
-/* ===== BOTTOM PLAYER ===== */
-.player {
-  height: 80px;
-  background: #000;
-  border-top: 2px solid #666;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 14px;
 }
 
-/* ===== SCROLL FORCE ===== */
-.block {
-  height: 1200px;
-  border: 1px dashed #444;
+.left .toggle {
+  float: right;
+}
+
+.right .toggle {
+  float: left;
+}
+
+/* BOTTOM PLAYER */
+.player {
+  height: 80px;
+  background: #000;
+  border-top: 2px solid #444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>
 </head>
@@ -98,23 +109,18 @@ html, body {
 
 <div class="app">
 
-  <div class="main" id="mainLayout">
+  <div class="main" id="layout">
 
-    <div class="left">
-      <button class="collapse-btn" onclick="toggleLeft()">◀</button>
-      LEFT PANEL
-      <div class="block"></div>
+    <div class="left" id="leftPanel">
+      <div class="toggle" onclick="toggleLeft()">⟨</div>
     </div>
 
     <div class="center">
-      CENTER PANEL
-      <div class="block"></div>
+      <!-- CENTER PANEL (UNCHANGED) -->
     </div>
 
-    <div class="right">
-      <button class="collapse-btn" onclick="toggleRight()">▶</button>
-      RIGHT PANEL
-      <div class="block"></div>
+    <div class="right" id="rightPanel">
+      <div class="toggle" onclick="toggleRight()">⟩</div>
     </div>
 
   </div>
@@ -126,14 +132,18 @@ html, body {
 </div>
 
 <script>
-const main = document.getElementById("mainLayout");
+const layout = document.getElementById("layout");
+const left = document.getElementById("leftPanel");
+const right = document.getElementById("rightPanel");
 
 function toggleLeft() {
-  main.classList.toggle("left-collapsed");
+  left.classList.toggle("collapsed");
+  layout.classList.toggle("left-collapsed");
 }
 
 function toggleRight() {
-  main.classList.toggle("right-collapsed");
+  right.classList.toggle("collapsed");
+  layout.classList.toggle("right-collapsed");
 }
 </script>
 
