@@ -16,33 +16,19 @@ html, body {
   font-family: Arial, sans-serif;
 }
 
-/* APP */
 .app {
   display: flex;
   flex-direction: column;
   height: 100vh;
 }
 
-/* MAIN AREA */
+/* MAIN GRID */
 .main {
   flex: 1;
   display: grid;
   grid-template-columns: 220px 1fr 220px;
   overflow: hidden;
   transition: grid-template-columns 0.25s ease;
-}
-
-/* COLLAPSED STATES */
-.main.left-collapsed {
-  grid-template-columns: 0 1fr 220px;
-}
-
-.main.right-collapsed {
-  grid-template-columns: 220px 1fr 0;
-}
-
-.main.both-collapsed {
-  grid-template-columns: 0 1fr 0;
 }
 
 /* PANELS */
@@ -53,54 +39,49 @@ html, body {
   padding: 10px;
 }
 
-.left,
-.right {
-  background: #1e1e1e;
-}
+/* COLORS */
+.left   { background: #1e1e1e; }
+.center { background: #222; }
+.right  { background: #1e1e1e; }
 
-.center {
-  background: #222;
-}
-
-/* HIDE CONTENT WHEN COLLAPSED */
-.left.collapsed,
-.right.collapsed {
-  padding: 0;
-  overflow: hidden;
-}
-
-/* TOGGLE BUTTONS */
-.toggle {
-  position: sticky;
-  top: 10px;
-  width: 28px;
-  height: 28px;
-  background: #2a2a2a;
-  border: 1px solid #555;
-  color: #fff;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-}
-
-.left .toggle {
-  float: right;
-}
-
-.right .toggle {
-  float: left;
-}
-
-/* BOTTOM PLAYER */
+/* PLAYER BAR */
 .player {
   height: 80px;
   background: #000;
-  border-top: 2px solid #444;
+  border-top: 1px solid #333;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* COLLAPSED STATES */
+.main.left-collapsed {
+  grid-template-columns: 40px 1fr 220px;
+}
+
+.main.right-collapsed {
+  grid-template-columns: 220px 1fr 40px;
+}
+
+.main.both-collapsed {
+  grid-template-columns: 40px 1fr 40px;
+}
+
+/* COLLAPSE BUTTONS */
+.collapse-btn {
+  position: sticky;
+  top: 0;
+  background: #111;
+  border: none;
+  color: #aaa;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 6px;
+  width: 100%;
+}
+
+.collapse-btn:hover {
+  color: #fff;
 }
 </style>
 </head>
@@ -109,22 +90,28 @@ html, body {
 
 <div class="app">
 
-  <div class="main" id="layout">
+  <div class="main" id="mainLayout">
 
-    <div class="left" id="leftPanel">
-      <div class="toggle" onclick="toggleLeft()">⟨</div>
+    <!-- LEFT PANEL -->
+    <div class="left">
+      <button class="collapse-btn" onclick="toggleLeft()">⮜</button>
+      LEFT PANEL
     </div>
 
+    <!-- CENTER PANEL -->
     <div class="center">
-      <!-- CENTER PANEL (UNCHANGED) -->
+      CENTER PANEL
     </div>
 
-    <div class="right" id="rightPanel">
-      <div class="toggle" onclick="toggleRight()">⟩</div>
+    <!-- RIGHT PANEL -->
+    <div class="right">
+      <button class="collapse-btn" onclick="toggleRight()">⮞</button>
+      RIGHT PANEL
     </div>
 
   </div>
 
+  <!-- BOTTOM PLAYER (STAYS BETWEEN PANELS) -->
   <div class="player">
     BOTTOM PLAYER BAR
   </div>
@@ -132,18 +119,36 @@ html, body {
 </div>
 
 <script>
-const layout = document.getElementById("layout");
-const left = document.getElementById("leftPanel");
-const right = document.getElementById("rightPanel");
+const main = document.getElementById("mainLayout");
 
 function toggleLeft() {
-  left.classList.toggle("collapsed");
-  layout.classList.toggle("left-collapsed");
+  if (main.classList.contains("left-collapsed")) {
+    main.classList.remove("left-collapsed");
+  } else {
+    main.classList.remove("both-collapsed");
+    main.classList.add("left-collapsed");
+  }
+  syncBoth();
 }
 
 function toggleRight() {
-  right.classList.toggle("collapsed");
-  layout.classList.toggle("right-collapsed");
+  if (main.classList.contains("right-collapsed")) {
+    main.classList.remove("right-collapsed");
+  } else {
+    main.classList.remove("both-collapsed");
+    main.classList.add("right-collapsed");
+  }
+  syncBoth();
+}
+
+function syncBoth() {
+  if (
+    main.classList.contains("left-collapsed") &&
+    main.classList.contains("right-collapsed")
+  ) {
+    main.classList.remove("left-collapsed", "right-collapsed");
+    main.classList.add("both-collapsed");
+  }
 }
 </script>
 
