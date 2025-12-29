@@ -141,6 +141,43 @@ html, body {
   padding: 10px 5px;
 }
 
+/* ========================= */
+/* ✅ SCROLLBARS — ADDED ONLY */
+/* ========================= */
+
+.left::-webkit-scrollbar,
+.center::-webkit-scrollbar,
+.right::-webkit-scrollbar {
+  width: 8px;
+}
+
+.left::-webkit-scrollbar-track,
+.center::-webkit-scrollbar-track,
+.right::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.left::-webkit-scrollbar-thumb,
+.center::-webkit-scrollbar-thumb,
+.right::-webkit-scrollbar-thumb {
+  background-color: #444;
+  border-radius: 6px;
+}
+
+.left::-webkit-scrollbar-thumb:hover,
+.center::-webkit-scrollbar-thumb:hover,
+.right::-webkit-scrollbar-thumb:hover {
+  background-color: #666;
+}
+
+/* Firefox */
+.left,
+.center,
+.right {
+  scrollbar-width: thin;
+  scrollbar-color: #444 transparent;
+}
+
 </style>
 </head>
 
@@ -152,12 +189,10 @@ html, body {
   <div class="left">
     <button class="toggle-btn" onclick="toggleLeft()">❮</button>
 
-    <!-- ADDED HEADER -->
     <div class="left-header">
       <div class="logo">SML</div>
     </div>
 
-    <!-- ADDED NAV -->
     <div class="left-nav">
       <div class="left-item"><span class="icon">👤</span><span class="label">User</span></div>
       <div class="left-item"><span class="icon">🏠</span><span class="label">Home</span></div>
@@ -168,19 +203,18 @@ html, body {
       <div class="left-item"><span class="icon">💳</span><span class="label">Credits</span></div>
     </div>
 
-    <!-- EXISTING CONTENT — UNCHANGED -->
     <div class="panel-content">
       <div class="block"></div>
     </div>
   </div>
 
-  <!-- CENTER PANEL — UNCHANGED -->
+  <!-- CENTER PANEL -->
   <div class="center">
     CENTER PANEL
     <div class="block"></div>
   </div>
 
-  <!-- RIGHT PANEL — UNCHANGED -->
+  <!-- RIGHT PANEL -->
   <div class="right">
     <button class="toggle-btn" onclick="toggleRight()">❯</button>
     <div class="panel-content">
@@ -189,7 +223,7 @@ html, body {
     </div>
   </div>
 
-  <!-- PLAYER — UNCHANGED -->
+  <!-- PLAYER -->
   <div class="player">
     BOTTOM PLAYER BAR
   </div>
