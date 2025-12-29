@@ -1,45 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SML Sandbox Layout</title>
+
 <style>
   * {
     box-sizing: border-box;
-    margin: 0;
-    padding: 0;
   }
 
   body {
+    margin: 0;
     height: 100vh;
-    background: #000;
+    background: #0b0b0b;
+    color: #fff;
     font-family: Arial, sans-serif;
     overflow: hidden;
   }
 
+  /* MAIN FRAME */
   .app {
     display: grid;
-    grid-template-columns: 220px 1fr 260px;
-    grid-template-rows: 1fr 80px;
+    grid-template-columns: 220px 1fr 220px;
+    grid-template-rows: 1fr 120px;
     height: 100vh;
-    width: 100vw;
   }
 
-  .left-panel {
-    grid-row: 1 / 3;
+  /* LEFT PANEL */
+  .left {
+    grid-row: 1 / span 2;
+    border-right: 2px solid #444;
+    overflow-y: auto;
     background: #111;
-    border: 3px solid red;
   }
 
-  .main {
-    background: #000;
-    border: 3px solid lime;
-  }
-
-  .right-panel {
-    grid-row: 1 / 3;
+  /* RIGHT PANEL */
+  .right {
+    grid-row: 1 / span 2;
+    border-left: 2px solid #444;
+    overflow-y: auto;
     background: #111;
-    border: 3px solid blue;
   }
 
-  .player {
-    grid-column: 2 / 3;
-    background: #222;
-    border: 3px solid yellow;
+  /* CENTER PANEL */
+  .center {
+    border-bottom: 2px solid #444;
+    overflow: auto;
+    background: #151515;
+  }
+
+  /* BOTTOM BAR (CENTER ONLY) */
+  .bottom {
+    overflow-x: auto;
+    overflow-y: hidden;
+    background: #1b1b1b;
+    border-top: 2px solid #444;
+  }
+
+  /* DEBUG CONTENT (VISUAL ONLY) */
+  .debug {
+    min-height: 150%;
+    min-width: 150%;
+    padding: 10px;
+    color: #888;
+    font-size: 14px;
+  }
+
+  .bottom .debug {
+    min-width: 200%;
   }
 </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <!-- LEFT PANEL -->
+    <div class="left">
+      <div class="debug">
+        LEFT PANEL<br><br>
+        (Scroll test)<br><br>
+        ████████████████████
+      </div>
+    </div>
+
+    <!-- CENTER PANEL -->
+    <div class="center">
+      <div class="debug">
+        CENTER PANEL<br><br>
+        (Main content area)<br><br>
+        ████████████████████
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right">
+      <div class="debug">
+        RIGHT PANEL<br><br>
+        (Controls)<br><br>
+        ████████████████████
+      </div>
+    </div>
+
+    <!-- BOTTOM BAR (CENTER ONLY) -->
+    <div class="bottom">
+      <div class="debug">
+        BOTTOM BAR (PLAYER / TIMELINE)<br>
+        █████████████████████████████████████████████████
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
