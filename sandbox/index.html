@@ -53,7 +53,7 @@ html, body {
   padding: 10px;
 }
 
-/* BOTTOM PLAYER — UNCHANGED CONTAINER */
+/* BOTTOM PLAYER — UNCHANGED */
 .player {
   grid-column: 2;
   grid-row: 2;
@@ -65,20 +65,12 @@ html, body {
   gap: 12px;
 }
 
-/* COLLAPSE STATES — UNCHANGED */
+/* LEFT COLLAPSE ONLY — UNCHANGED */
 .app.left-collapsed {
   grid-template-columns: 40px 1fr 220px;
 }
 
-.app.right-collapsed {
-  grid-template-columns: 220px 1fr 40px;
-}
-
 .app.left-collapsed .left .panel-content {
-  display: none;
-}
-
-.app.right-collapsed .right .panel-content {
   display: none;
 }
 
@@ -93,10 +85,7 @@ html, body {
   font-size: 14px;
 }
 
-/* ========================= */
-/* 🔧 LEFT PANEL ADDITIONS   */
-/* ========================= */
-
+/* LEFT PANEL ADDITIONS — UNCHANGED */
 .left-header {
   display: flex;
   align-items: center;
@@ -139,10 +128,7 @@ html, body {
   padding: 10px 5px;
 }
 
-/* ========================= */
-/* 🔊 PLAYER ADDITIONS ONLY  */
-/* ========================= */
-
+/* PLAYER ADDITIONS — UNCHANGED */
 .player-controls {
   display: flex;
   align-items: center;
@@ -217,15 +203,13 @@ html, body {
   <!-- CENTER PANEL -->
   <div class="center">CENTER PANEL</div>
 
-  <!-- RIGHT PANEL -->
+  <!-- RIGHT PANEL — STATIC -->
   <div class="right">
-    <button class="toggle-btn" onclick="toggleRight()">❯</button>
     <div class="panel-content">RIGHT PANEL</div>
   </div>
 
-  <!-- 🔊 PLAYER — SURGICAL CONTENT -->
+  <!-- PLAYER -->
   <div class="player">
-
     <div class="player-controls">
       <span class="player-btn">🔀</span>
       <span class="player-btn">⏮</span>
@@ -241,7 +225,6 @@ html, body {
       </div>
       <div class="player-time">3:30</div>
     </div>
-
   </div>
 
 </div>
@@ -249,10 +232,6 @@ html, body {
 <script>
 function toggleLeft() {
   document.getElementById('app').classList.toggle('left-collapsed');
-}
-
-function toggleRight() {
-  document.getElementById('app').classList.toggle('right-collapsed');
 }
 </script>
 
