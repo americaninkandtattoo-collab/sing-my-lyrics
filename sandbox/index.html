@@ -3,63 +3,103 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>SML Sandbox Layout</title>
+<title>SML – Sandbox Shell</title>
 
 <style>
-/* LOCK THE PAGE */
-html, body {
+/* ===== RESET ===== */
+* {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+/* ===== THEME ===== */
+:root {
+  --bg: #0f1115;
+  --panel: #161a20;
+  --panel-soft: #1b2028;
+  --border-soft: #242a34;
+  --accent: #2a7cff;
+  --text-dim: #9aa3b2;
+}
+
+html, body {
   height: 100%;
+  background: var(--bg);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  color: white;
   overflow: hidden;
-  background: #111;
-  color: #fff;
-  font-family: Arial, sans-serif;
 }
 
-/* WHOLE APP */
+/* ===== APP GRID ===== */
 .app {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
-
-/* TOP AREA (LEFT / CENTER / RIGHT) */
-.main {
-  flex: 1;
   display: grid;
-  grid-template-columns: 220px 1fr 220px;
-  overflow: hidden;
+  grid-template-columns: 240px 1fr 260px;
+  grid-template-rows: 1fr 72px;
+  height: 100vh;
+  width: 100vw;
 }
 
-/* PANELS */
-.left,
-.center,
-.right {
+/* ===== LEFT PANEL ===== */
+.left-panel {
+  grid-row: 1 / span 2;
+  background: var(--panel);
+  border-right: 1px solid var(--border-soft);
   overflow-y: auto;
-  border: 2px solid #666;
-  padding: 10px;
 }
 
-/* COLORS SO YOU CAN SEE THEM */
-.left   { background: #1e1e1e; }
-.center { background: #222; }
-.right  { background: #1e1e1e; }
-
-/* BOTTOM PLAYER BAR */
-.player {
-  height: 80px;
-  background: #000;
-  border-top: 2px solid #666;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* ===== CENTER PANEL ===== */
+.center-panel {
+  background: var(--panel-soft);
+  overflow-y: auto;
 }
 
-/* FAKE CONTENT TO FORCE SCROLLBARS */
-.block {
-  height: 1200px;
-  border: 1px dashed #444;
+/* ===== RIGHT PANEL ===== */
+.right-panel {
+  grid-row: 1 / span 2;
+  background: var(--panel);
+  border-left: 1px solid var(--border-soft);
+  overflow-y: auto;
+}
+
+/* ===== BOTTOM PLAYER ===== */
+.bottom-bar {
+  background: linear-gradient(
+    to top,
+    #141820,
+    #1a1f28
+  );
+  border-top: 1px solid var(--border-soft);
+}
+
+/* ===== SCROLLBARS (SUBTLE) ===== */
+.left-panel::-webkit-scrollbar,
+.center-panel::-webkit-scrollbar,
+.right-panel::-webkit-scrollbar {
+  width: 8px;
+}
+
+.left-panel::-webkit-scrollbar-thumb,
+.center-panel::-webkit-scrollbar-thumb,
+.right-panel::-webkit-scrollbar-thumb {
+  background: #2a2f3a;
+  border-radius: 8px;
+}
+
+.left-panel::-webkit-scrollbar-track,
+.center-panel::-webkit-scrollbar-track,
+.right-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ===== VISUAL SPACING HELPERS (TEMPORARY) ===== */
+.left-panel::before,
+.center-panel::before,
+.right-panel::before,
+.bottom-bar::before {
+  content: "";
+  display: block;
+  height: 100%;
 }
 </style>
 </head>
@@ -68,26 +108,17 @@ html, body {
 
 <div class="app">
 
-  <div class="main">
-    <div class="left">
-      LEFT PANEL
-      <div class="block"></div>
-    </div>
+  <!-- LEFT NAV / USER PANEL -->
+  <aside class="left-panel"></aside>
 
-    <div class="center">
-      CENTER PANEL
-      <div class="block"></div>
-    </div>
+  <!-- CENTER MAIN CONTENT -->
+  <main class="center-panel"></main>
 
-    <div class="right">
-      RIGHT PANEL
-      <div class="block"></div>
-    </div>
-  </div>
+  <!-- RIGHT CONTROL PANEL -->
+  <aside class="right-panel"></aside>
 
-  <div class="player">
-    BOTTOM PLAYER BAR
-  </div>
+  <!-- BOTTOM PLAYER BAR -->
+  <footer class="bottom-bar"></footer>
 
 </div>
 
