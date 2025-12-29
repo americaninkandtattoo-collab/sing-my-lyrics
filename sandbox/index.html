@@ -6,37 +6,42 @@
 <title>SML – Sandbox Shell</title>
 
 <style>
+/* ===== RESET ===== */
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
+/* ===== THEME ===== */
 :root {
   --bg: #0f1115;
   --panel: #161a20;
   --panel-soft: #1b2028;
   --border-soft: #242a34;
+  --accent: #2a7cff;
+  --text-dim: #9aa3b2;
 }
 
 html, body {
   height: 100%;
   background: var(--bg);
-  font-family: system-ui, sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  color: white;
   overflow: hidden;
 }
 
-/* ===== GRID LAYOUT ===== */
+/* ===== APP GRID ===== */
 .app {
   display: grid;
   grid-template-columns: 240px 1fr 260px;
   grid-template-rows: 1fr 72px;
   height: 100vh;
+  width: 100vw;
 }
 
 /* ===== LEFT PANEL ===== */
 .left-panel {
-  grid-column: 1;
   grid-row: 1 / span 2;
   background: var(--panel);
   border-right: 1px solid var(--border-soft);
@@ -45,30 +50,29 @@ html, body {
 
 /* ===== CENTER PANEL ===== */
 .center-panel {
-  grid-column: 2;
-  grid-row: 1;
   background: var(--panel-soft);
   overflow-y: auto;
 }
 
 /* ===== RIGHT PANEL ===== */
 .right-panel {
-  grid-column: 3;
   grid-row: 1 / span 2;
   background: var(--panel);
   border-left: 1px solid var(--border-soft);
   overflow-y: auto;
 }
 
-/* ===== BOTTOM PLAYER (CENTER ONLY) ===== */
+/* ===== BOTTOM PLAYER ===== */
 .bottom-bar {
-  grid-column: 2;
-  grid-row: 2;
-  background: linear-gradient(to top, #141820, #1a1f28);
+  background: linear-gradient(
+    to top,
+    #141820,
+    #1a1f28
+  );
   border-top: 1px solid var(--border-soft);
 }
 
-/* ===== SCROLLBARS ===== */
+/* ===== SCROLLBARS (SUBTLE) ===== */
 .left-panel::-webkit-scrollbar,
 .center-panel::-webkit-scrollbar,
 .right-panel::-webkit-scrollbar {
@@ -87,6 +91,16 @@ html, body {
 .right-panel::-webkit-scrollbar-track {
   background: transparent;
 }
+
+/* ===== VISUAL SPACING HELPERS (TEMPORARY) ===== */
+.left-panel::before,
+.center-panel::before,
+.right-panel::before,
+.bottom-bar::before {
+  content: "";
+  display: block;
+  height: 100%;
+}
 </style>
 </head>
 
@@ -94,12 +108,16 @@ html, body {
 
 <div class="app">
 
+  <!-- LEFT NAV / USER PANEL -->
   <aside class="left-panel"></aside>
 
+  <!-- CENTER MAIN CONTENT -->
   <main class="center-panel"></main>
 
+  <!-- RIGHT CONTROL PANEL -->
   <aside class="right-panel"></aside>
 
+  <!-- BOTTOM PLAYER BAR -->
   <footer class="bottom-bar"></footer>
 
 </div>
