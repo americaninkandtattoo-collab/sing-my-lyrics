@@ -1,46 +1,140 @@
-<!DOCTYPE html>
+<!-- =========================
+FILE: create.html
+========================= -->
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>SML — Create</title>
-  <link rel="stylesheet" href="app.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SML Light — Create</title>
+  <link rel="stylesheet" href="./app.css" />
 </head>
 <body>
-<div class="app">
+  <div class="app">
+    <aside class="sidebar" role="navigation" aria-label="SML sidebar">
+      <div class="brand">
+        <div class="logo">SML</div>
 
-  <aside class="sidebar">
-    <div class="logo">SML</div>
+        <!-- Profile MUST be under logo -->
+        <a class="profile-chip" href="./profile.html" title="Profile">
+          <span class="dot"></span>
+          <span class="profile-text">
+            <span class="profile-name" id="profileNameSidebar">YOU</span>
+            <span class="profile-sub">Owner</span>
+          </span>
+        </a>
+      </div>
 
-    <nav class="nav">
-      <a href="index.html">Home</a>
-      <a href="create.html" class="active">Create</a>
-      <a href="library.html">Library</a>
-      <a href="trash.html">Trash</a>
-      <a href="profile.html">Profile</a>
-    </nav>
+      <nav class="nav">
+        <a class="nav-link" href="./index.html">Home</a>
+        <a class="nav-link active" href="./create.html">Create</a>
+        <a class="nav-link" href="./library.html">Library</a>
+        <a class="nav-link" href="./trash.html">Trash</a>
+      </nav>
 
-    <div class="credits">
-      <div><strong>7,537 Credits</strong></div>
-      <div>Ownership: 100% You</div>
-    </div>
-  </aside>
+      <div class="sidebar-footer">
+        <div class="pill"><span class="muted">Credits</span> <span class="right" id="creditsSidebar">7,537</span></div>
+        <div class="pill"><span class="muted">Ownership</span> <span class="right">100% You</span></div>
+        <div class="pill"><span class="muted">Trash</span> <span class="right">30 days</span></div>
+      </div>
+    </aside>
 
-  <main class="content">
-    <h1>Create</h1>
+    <main class="content">
+      <header class="topbar">
+        <button class="icon-btn" id="toggleSidebar" aria-label="Toggle sidebar">☰</button>
+        <div class="crumbs">
+          <span class="crumb">Workspace</span>
+          <span class="sep">›</span>
+          <span class="crumb strong">Create</span>
+        </div>
+        <div class="topbar-right">
+          <span class="badge">No AI Lyrics</span>
+        </div>
+      </header>
 
-    <label>Song title (optional)</label>
-    <input type="text" />
+      <section class="page">
+        <h1>Create</h1>
+        <p class="muted">Paste your lyrics. Describe your style. Generate a preview. Save to Library.</p>
 
-    <label>Lyrics</label>
-    <textarea rows="6" placeholder="Write or paste lyrics here..."></textarea>
+        <div class="grid two">
+          <div class="card">
+            <label class="label">Song title (optional)</label>
+            <input class="input" id="songTitle" placeholder="Name your song..." />
 
-    <label>Describe style</label>
-    <textarea rows="3" placeholder="Genre, mood, tempo..."></textarea>
+            <label class="label">Lyrics (required)</label>
+            <textarea class="textarea" id="lyrics" placeholder="Write or paste lyrics here..."></textarea>
 
-    <button class="primary">Generate</button>
-  </main>
+            <label class="label">Describe style (required)</label>
+            <textarea class="textarea" id="style" placeholder="genre, mood, tempo... (example: industrial rock, cinematic, punchy drums)"></textarea>
 
-</div>
-<script src="app.js"></script>
+            <div class="grid two tight">
+              <div>
+                <label class="label">Audio Influence</label>
+                <div class="range-row">
+                  <input type="range" min="0" max="100" value="60" id="audioInfluence" />
+                  <span class="range-val" id="audioInfluenceVal">60%</span>
+                </div>
+              </div>
+              <div>
+                <label class="label">Art Seed (visual vibe)</label>
+                <div class="range-row">
+                  <input type="range" min="0" max="100" value="40" id="artSeed" />
+                  <span class="range-val" id="artSeedVal">40%</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-actions">
+              <button class="btn primary" id="btnGenerate">Generate Preview</button>
+              <button class="btn" id="btnSave" disabled>Save to Library</button>
+              <button class="btn danger" id="btnClear">Clear</button>
+            </div>
+
+            <p class="muted small">
+              Preview is a placeholder tone (GitHub Pages safe). Real model comes later.
+            </p>
+          </div>
+
+          <div class="card">
+            <h2>Preview</h2>
+
+            <div class="preview">
+              <div class="preview-title" id="previewTitle">No preview yet</div>
+              <div class="preview-meta" id="previewMeta">Fill in lyrics + style, then Generate.</div>
+
+              <div class="player">
+                <button class="icon-btn big" id="btnPlay" disabled title="Play">▶</button>
+                <button class="icon-btn big" id="btnStop" disabled title="Stop">■</button>
+                <div class="timeline">
+                  <div class="timeline-bar" id="timelineBar"></div>
+                </div>
+                <div class="time" id="timeText">0:00</div>
+              </div>
+
+              <div class="mini-actions">
+                <button class="btn" id="btnExportLyrics" disabled>Export Lyrics (.txt)</button>
+                <button class="btn" id="btnGoLibrary">Go to Library</button>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <h3>Rules</h3>
+            <ul class="list">
+              <li><b>Lyrics are yours.</b> 100% ownership.</li>
+              <li><b>No AI lyric writing.</b> You bring the words.</li>
+              <li>Saving stores locally in your browser.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="./app.js"></script>
+  <script>
+    SML.initBaseUI();
+    SML.createPageInit();
+  </script>
 </body>
 </html>
