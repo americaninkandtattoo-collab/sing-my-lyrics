@@ -3,72 +3,173 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>SML Sandbox Layout</title>
-
+<title>SML Sandbox Shell</title>
 <style>
-  * {
-    box-sizing: border-box;
+  :root{
+    --bg: #0f1115;
+    --left: #141824;
+    --center: #111827;
+    --right: #141824;
+    --bottom: #0f172a;
+
+    --border: #7a7a7a;
+    --border2:#bdbdbd;
+
+    --rail: #0b0b0b;
+    --railBorder: #d6d6d6;
+    --thumb: #2e2e2e;
+    --arrowBg: #e6e6e6;
+    --arrow: #111;
   }
 
-  body {
-    margin: 0;
-    height: 100vh;
-    background: #0b0b0b;
-    color: #fff;
+  * { box-sizing: border-box; }
+
+  html, body{
+    height:100%;
+    margin:0;
+    background: var(--bg);
     font-family: Arial, sans-serif;
-    overflow: hidden;
+    overflow:hidden;
   }
 
-  /* MAIN FRAME */
-  .app {
-    display: grid;
-    grid-template-columns: 220px 1fr 220px;
-    grid-template-rows: 1fr 120px;
-    height: 100vh;
+  /* 3 columns, 2 rows:
+     Left spans both rows, Right spans both rows.
+     Center has top (main) and bottom (bar). */
+  .app{
+    height:100vh;
+    display:grid;
+    grid-template-columns: 240px 1fr 240px;
+    grid-template-rows: 1fr 110px;
   }
 
-  /* LEFT PANEL */
-  .left {
-    grid-row: 1 / span 2;
-    border-right: 2px solid #444;
-    overflow-y: auto;
-    background: #111;
+  .panel{
+    border: 3px solid var(--border);
+    min-width:0;
+    min-height:0;
   }
 
-  /* RIGHT PANEL */
-  .right {
-    grid-row: 1 / span 2;
-    border-left: 2px solid #444;
-    overflow-y: auto;
-    background: #111;
+  .left{
+    grid-column:1;
+    grid-row:1 / span 2;
+    background: var(--left);
+    border-right: 4px solid var(--border2);
   }
 
-  /* CENTER PANEL */
-  .center {
-    border-bottom: 2px solid #444;
-    overflow: auto;
-    background: #151515;
+  .right{
+    grid-column:3;
+    grid-row:1 / span 2;
+    background: var(--right);
+    border-left: 4px solid var(--border2);
+    position:relative;
   }
 
-  /* BOTTOM BAR (CENTER ONLY) */
-  .bottom {
-    overflow-x: auto;
-    overflow-y: hidden;
-    background: #1b1b1b;
-    border-top: 2px solid #444;
+  .centerWrap{
+    grid-column:2;
+    grid-row:1;
+    background: var(--center);
+    position:relative;
   }
 
-  /* DEBUG CONTENT (VISUAL ONLY) */
-  .debug {
-    min-height: 150%;
-    min-width: 150%;
-    padding: 10px;
-    color: #888;
-    font-size: 14px;
+  .bottom{
+    grid-column:2;
+    grid-row:2;
+    background: var(--bottom);
+    border-top: 4px solid var(--border2);
+    position:relative;
   }
 
-  .bottom .debug {
-    min-width: 200%;
+  /* Make the CENTER be a “big empty space” but still show it */
+  .centerEmpty{
+    position:absolute;
+    inset:0;
+    border: 3px solid rgba(255,255,255,0.08);
+  }
+
+  /* FAKE scrollbar (drawn, always visible) */
+  .fakeScroll{
+    position:absolute;
+    top:10px;
+    bottom:10px;
+    width:34px;
+    border: 3px solid var(--railBorder);
+    background: var(--rail);
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    padding:4px;
+    z-index:5;
+  }
+
+  .fakeScroll .arrowBox{
+    height:26px;
+    border: 2px solid #000;
+    background: var(--arrowBg);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:bold;
+    color: var(--arrow);
+    line-height:1;
+    user-select:none;
+  }
+
+  .fakeScroll .thumb{
+    flex:1;
+    margin:6px 0;
+    border: 2px solid #000;
+    background: var(--thumb);
+  }
+
+  /* Put fake scroll bars where your drawing shows them */
+  .centerLeftRail{ left:10px; }
+  .centerRightRail{ right:10px; }
+  .rightRail{ right:10px; }
+
+  /* Bottom bar: horizontal “track” look */
+  .bottomTrack{
+    position:absolute;
+    left:12px;
+    right:12px;
+    top:18px;
+    height:74px;
+    border: 3px solid var(--railBorder);
+    background: #0b0b0b;
+  }
+  .bottomThumb{
+    position:absolute;
+    left:18px;
+    top:24px;
+    height:62px;
+    width:40%;
+    border: 2px solid #000;
+    background: var(--thumb);
+  }
+  .bottomArrowLeft, .bottomArrowRight{
+    position:absolute;
+    top:24px;
+    width:34px;
+    height:62px;
+    border: 2px solid #000;
+    background: var(--arrowBg);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:bold;
+    color: var(--arrow);
+    user-select:none;
+  }
+  .bottomArrowLeft{ left:12px; }
+  .bottomArrowRight{ right:12px; }
+
+  /* Optional faint section labels (can remove if you want 100% blank) */
+  .label{
+    position:absolute;
+    top:10px;
+    left:10px;
+    font-size:12px;
+    color: rgba(255,255,255,0.35);
+    letter-spacing:0.5px;
+    user-select:none;
   }
 </style>
 </head>
@@ -77,38 +178,50 @@
   <div class="app">
 
     <!-- LEFT PANEL -->
-    <div class="left">
-      <div class="debug">
-        LEFT PANEL<br><br>
-        (Scroll test)<br><br>
-        ████████████████████
-      </div>
+    <div class="panel left">
+      <div class="label">LEFT PANEL</div>
     </div>
 
-    <!-- CENTER PANEL -->
-    <div class="center">
-      <div class="debug">
-        CENTER PANEL<br><br>
-        (Main content area)<br><br>
-        ████████████████████
+    <!-- CENTER MAIN -->
+    <div class="panel centerWrap">
+      <div class="label">CENTER</div>
+
+      <!-- Empty center area border so you can SEE it -->
+      <div class="centerEmpty"></div>
+
+      <!-- Fake scroll bars like your drawing -->
+      <div class="fakeScroll centerLeftRail">
+        <div class="arrowBox">▲</div>
+        <div class="thumb"></div>
+        <div class="arrowBox">▼</div>
+      </div>
+
+      <div class="fakeScroll centerRightRail">
+        <div class="arrowBox">▲</div>
+        <div class="thumb"></div>
+        <div class="arrowBox">▼</div>
       </div>
     </div>
 
     <!-- RIGHT PANEL -->
-    <div class="right">
-      <div class="debug">
-        RIGHT PANEL<br><br>
-        (Controls)<br><br>
-        ████████████████████
+    <div class="panel right">
+      <div class="label">RIGHT PANEL</div>
+
+      <div class="fakeScroll rightRail">
+        <div class="arrowBox">▲</div>
+        <div class="thumb"></div>
+        <div class="arrowBox">▼</div>
       </div>
     </div>
 
     <!-- BOTTOM BAR (CENTER ONLY) -->
-    <div class="bottom">
-      <div class="debug">
-        BOTTOM BAR (PLAYER / TIMELINE)<br>
-        █████████████████████████████████████████████████
-      </div>
+    <div class="panel bottom">
+      <div class="label">BOTTOM BAR</div>
+
+      <div class="bottomTrack"></div>
+      <div class="bottomArrowLeft">◀</div>
+      <div class="bottomArrowRight">▶</div>
+      <div class="bottomThumb"></div>
     </div>
 
   </div>
