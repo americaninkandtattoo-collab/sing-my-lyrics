@@ -1,135 +1,45 @@
-<!-- =========================
-FILE: index.html   (HOME)
-========================= -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SML — Home</title>
+  <link rel="stylesheet" href="app.css" />
+</head>
+<body>
+<div class="app">
 
-<div class="app" id="homePage">
-
-  <!-- SIDEBAR -->
   <aside class="sidebar">
-    <div class="brand">
-      <div class="brand-left">
-        <button class="brand-toggle" id="toggleSidebar" title="Collapse sidebar">◀</button>
-        <div class="brand-row">
-          <!-- NO GREEN S SQUARE (removed) -->
-          <div class="brand-text">
-            <div class="t1">SML</div>
-          </div>
-        </div>
-      </div>
-    </div>
+    <div class="logo">SML</div>
 
-    <div class="user">
-      <div class="avatar"></div>
-      <div>
-        <div class="name" id="userName">YOU</div>
-        <div class="handle" id="userHandle">@owner</div>
-      </div>
-      <button class="profileLink" id="btnProfile" type="button">Profile</button>
-    </div>
+    <nav class="nav">
+      <a href="index.html" class="active">Home</a>
+      <a href="create.html">Create</a>
+      <a href="library.html">Library</a>
+      <a href="trash.html">Trash</a>
+      <a href="profile.html">Profile</a>
+    </nav>
 
-    <div class="nav">
-      <a href="index.html" class="active"><div class="icon">⌂</div><div class="nav-label">Home</div></a>
-      <a href="create.html"><div class="icon">♪</div><div class="nav-label">Create</div></a>
-      <a href="library.html"><div class="icon">🗂</div><div class="nav-label">Library</div></a>
-      <a href="trash.html"><div class="icon">🗑</div><div class="nav-label">Trash</div></a>
-    </div>
-
-    <div class="credits-big"><span id="credits">7,537</span> Credits</div>
-    <div class="account-pill">Ownership: 100% You</div>
-
-    <div class="side-footer">
-      <div class="row">🗑 <span>Trash (30 days)</span> <span class="badge" style="background:#ffffff18;color:#cfe1ff;border:1px solid #ffffff22" id="trashCount">0</span></div>
-      <div class="row">🧾 <span>We never write lyrics for you.</span></div>
+    <div class="credits">
+      <div><strong>7,537 Credits</strong></div>
+      <div>Ownership: 100% You</div>
     </div>
   </aside>
-<main id="content"></main>
-  <!-- TOPBAR -->
-  <header class="topbar">
-    <div class="pill"><span class="dot"></span><span><b>Credits</b></span></div>
-    <div class="pill">Home</div>
-    <div class="spacer"></div>
-    <div class="pill">Workspace ▸ <b>My Workspace</b></div>
-  </header>
 
-  <!-- MAIN -->
-  <main class="main">
-    <div class="main-wrap" id="homePage">
+  <main class="content">
+    <h1>Making rock stars — one human at a time.</h1>
 
-      <section class="panel">
-        <div class="panel-header">
-          <h3><Making rock stars — one Human at a time.</h3>
-          <div class="spacer"></div>
-          <div class="pill">No AI lyrics</div>
-        </div>
-        <div class="panel-body">
-          <div style="font-size:14px; line-height:1.45; color:#cfe1ff; font-weight:900;">
-            SingMyLyrics Making rock stars — one Human at a time.
-          </div>
-          <div class="muted" style="margin-top:10px">
-            You bring the words. You keep 100% ownership. We generate audio from your input and settings.
-          </div>
+    <p class="subtitle">
+      You bring the words. You keep 100% ownership.<br>
+      We generate audio from your input and settings.
+    </p>
 
-          <div class="stack" style="margin-top:16px">
-            <button class="btn-wide btn-green" id="goCreate" type="button">Go to Create</button>
-            <button class="btn-wide export" id="goLibrary" type="button">Open Library</button>
-            <button class="btn-wide export" id="goTrash" type="button">Open Trash (30 days)</button>
-          </div>
-
-          <div class="muted" style="margin-top:14px; font-size:12px">
-            This is the front-end build: “Generate” produces playable audio (placeholder stream) until a real backend model is connected.
-          </div>
-        </div>
-      </section>
-
-      <section class="panel" id="listPanel">
-        <div class="panel-header">
-          <h3>Workspace</h3>
-          <div class="spacer"></div>
-          <div class="pill">Titles only</div>
-        </div>
-        <div class="panel-body">
-          <div class="tracks" id="tracks"></div>
-        </div>
-      </section>
-
-      <section class="panel" id="rightPanel">
-        <div class="panel-header">
-          <h3>Song Details</h3>
-          <div class="spacer"></div>
-          <div class="pill">Info</div>
-        </div>
-        <div class="panel-body" id="rightCard"></div>
-      </section>
-
+    <div class="panel">
+      <h2>No AI lyrics</h2>
+      <p>We never write lyrics for you. Ever.</p>
     </div>
   </main>
 
-  <!-- PLAYER (CENTERED) -->
-  <footer class="player">
-    <div class="playerInner">
-      <button class="pbtn" id="btnPrev" title="Prev">⟲</button>
-      <button class="pbtn" id="btnPlay" title="Play/Pause">▶</button>
-      <button class="pbtn" id="btnNext" title="Next">⟳</button>
-
-      <div class="pNow">
-        <b id="playerTitle">No track selected</b>
-        <small id="playerSub">—</small>
-      </div>
-
-      <div class="pBar">
-        <div class="progress" id="progress"><div class="fill" id="fill"></div></div>
-        <div class="time" id="time">0:00</div>
-      </div>
-    </div>
-
-    <!-- hidden audio element that plays the placeholder stream -->
-    <audio id="audio" class="hidden" autoplay></audio>
-  </footer>
-
 </div>
-
-<div class="toast" id="toast"><span class="dot" id="toastDot"></span><span id="toastText">Saved</span></div>
-
 <script src="app.js"></script>
 </body>
 </html>
