@@ -2,9 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-<title>SML Light – Sandbox Shell</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SML Sandbox Layout</title>
 
 <style>
   * {
@@ -15,59 +14,54 @@
 
   body {
     height: 100vh;
-    background: #0f172a;
-    color: #e5e7eb;
-    font-family: system-ui, sans-serif;
+    background: #0e0e11;
+    color: #fff;
+    font-family: Arial, sans-serif;
     overflow: hidden;
   }
 
-  /* MAIN GRID */
   .app {
     display: grid;
-    grid-template-columns: 220px 1fr 220px;
-    grid-template-rows: 1fr 90px;
+    grid-template-columns: 220px 1fr 260px;
+    grid-template-rows: 1fr 80px;
     height: 100vh;
+    width: 100vw;
   }
 
   /* LEFT PANEL */
   .left-panel {
     grid-row: 1 / 3;
-    background: #020617;
-    border-right: 1px solid #1e293b;
+    background: #14141a;
+    border-right: 1px solid #222;
+  }
+
+  /* CENTER MAIN */
+  .main {
+    background: #0e0e11;
   }
 
   /* RIGHT PANEL */
   .right-panel {
     grid-row: 1 / 3;
-    background: #020617;
-    border-left: 1px solid #1e293b;
+    background: #14141a;
+    border-left: 1px solid #222;
   }
 
-  /* CENTER EMPTY SPACE */
-  .center {
-    background: #0b1220;
-  }
-
-  /* PLAYER BAR */
+  /* BOTTOM PLAYER */
   .player {
     grid-column: 2 / 3;
-    background: #020617;
-    border-top: 1px solid #1e293b;
+    background: #1a1a22;
+    border-top: 1px solid #222;
   }
 </style>
 </head>
 
 <body>
   <div class="app">
-
     <div class="left-panel"></div>
-
-    <div class="center"></div>
-
+    <div class="main"></div>
     <div class="right-panel"></div>
-
     <div class="player"></div>
-
   </div>
 </body>
 </html>
