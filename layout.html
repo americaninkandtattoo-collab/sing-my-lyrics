@@ -1,4 +1,32 @@
+/* === GLOBAL PAGE NORMALIZER (Phase A.2) === */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #0e1116;
+  color: #e7eaf0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
 
+.app {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.sidebar {
+  width: 240px;
+  background: #151a22;
+  border-right: 1px solid #2a3242;
+  flex-shrink: 0;
+}
+
+.main {
+  flex: 1;
+  background: #1b2230;
+  padding: 16px;
+  overflow-y: auto;
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
