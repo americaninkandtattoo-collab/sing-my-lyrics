@@ -156,7 +156,7 @@ textarea {
     </div>
 
     <div class="create-section">
-      <button class="toggle-btn">Spell + Punctuation Check</button>
+      <button id="spellBtn" class="toggle-btn">Spell + Punctuation Check</button>
     </div>
 
     <div class="create-section">
@@ -227,6 +227,12 @@ textarea {
 <script>
 window.addEventListener('DOMContentLoaded', () => {
 
+  /* ===== AUTO-EXPAND ===== */
+  function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
+  }
+
   /* STYLE PRESET → INPUT (UNCHANGED) */
   const styleInput = document.getElementById('styleInput');
   document.getElementById('stylePresets').addEventListener('click', e => {
@@ -240,13 +246,14 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  /* ===== CADENCE LOGIC (UNCHANGED) ===== */
   const lyricsBox = document.getElementById('lyricsBox');
   const cadenceBtn = document.getElementById('cadenceBtn');
   const resetCadenceBtn = document.getElementById('resetCadenceBtn');
+  const spellBtn = document.getElementById('spellBtn');
 
   let cadenceIndex = 0;
   let originalLyrics = "";
+  let spelledLyrics = "";
 
   function cadence1(text) { return text.split(/\s+/).filter(Boolean).join(" / "); }
   function cadence2(text) { return text.split(/\s+/).filter(Boolean).join("\n"); }
@@ -260,33 +267,38 @@ window.addEventListener('DOMContentLoaded', () => {
   const cadenceFns = [cadence1, cadence2, cadence3, cadence4];
   const cadenceNames = ["Chop", "Staccato", "Double Space", "Trailing Echo"];
 
-  function ensureOriginalCaptured() {
-    if (originalLyrics === "") {
-      originalLyrics = lyricsBox.value || "";
+  function captureOriginalIfNeeded() {
+    if (!originalLyrics) {
+      originalLyrics = lyricsBox.value;
     }
   }
 
-  cadenceBtn.addEventListener("click", () => {
-    ensureOriginalCaptured();
+  cadenceBtn.addEventListener('click', () => {
+    captureOriginalIfNeeded();
     cadenceIndex = (cadenceIndex % 4) + 1;
-    lyricsBox.value = cadenceFns[cadenceIndex - 1](originalLyrics);
+    const base = spelledLyrics || originalLyrics;
+    lyricsBox.value = cadenceFns[cadenceIndex - 1](base);
     cadenceBtn.textContent = "Cadence: " + cadenceNames[cadenceIndex - 1];
     autoResize(lyricsBox);
   });
 
-  resetCadenceBtn.addEventListener("click", () => {
-    if (originalLyrics === "") return;
-    lyricsBox.value = originalLyrics;
+  resetCadenceBtn.addEventListener('click', () => {
+    lyricsBox.value = spelledLyrics || originalLyrics;
     cadenceIndex = 0;
     cadenceBtn.textContent = "Cadence: Original";
     autoResize(lyricsBox);
   });
 
-  /* ===== AUTO-EXPAND (SURGICAL ADD ONLY) ===== */
-  function autoResize(el) {
-    el.style.height = 'auto';
-    el.style.height = el.scrollHeight + 'px';
-  }
+  spellBtn.addEventListener('click', () => {
+    captureOriginalIfNeeded();
+    spelledLyrics = originalLyrics
+      .replace(/\s+/g, ' ')
+      .replace(/([.!?])\s*(\w)/g, '$1 $2')
+      .replace(/(^\w|\.\s+\w)/g, c => c.toUpperCase());
+
+    lyricsBox.value = spelledLyrics;
+    autoResize(lyricsBox);
+  });
 
   [lyricsBox, styleInput].forEach(el => {
     autoResize(el);
