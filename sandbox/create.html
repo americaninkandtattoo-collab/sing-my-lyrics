@@ -271,7 +271,7 @@ window.addEventListener('DOMContentLoaded', () => {
     cadenceIndex = (cadenceIndex % 4) + 1; // 1..4
     const fn = cadenceFns[cadenceIndex - 1];
     lyricsBox.value = fn(originalLyrics);
-    cadenceBtn.textContent = Cadence: ${cadenceIndex};
+   cadenceBtn.textContent = "Cadence: " + cadenceIndex;
   });
 
   resetCadenceBtn.addEventListener("click", () => {
