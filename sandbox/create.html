@@ -234,18 +234,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const lyricsBox = document.getElementById('lyricsBox');
   const spellBtn = document.getElementById('spellBtn');
 
-  spellBtn.addEventListener('click', () => {
-    let text = lyricsBox.value;
-
-    text = text
-      .replace(/\s+([,.!?])/g, '$1')
-      .replace(/([.!?])([A-Za-z])/g, '$1 $2')
-      .replace(/(^|\n)([a-z])/g, (m, p1, p2) => p1 + p2.toUpperCase());
-
-    lyricsBox.value = text;
-    autoResize(lyricsBox);
-  });
-
+  
   autoResize(lyricsBox);
   lyricsBox.addEventListener('input', () => autoResize(lyricsBox));
 });
