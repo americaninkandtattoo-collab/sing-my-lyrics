@@ -171,15 +171,29 @@ textarea {
 
     <div class="create-section">
       <div class="label">Styles</div>
-      <textarea class="style-input" placeholder="Type custom styles…"></textarea>
+      <textarea id="styleInput" class="style-input" placeholder="Type custom styles…"></textarea>
 
-      <div class="style-presets">
+      <div class="style-presets" id="stylePresets">
         <div>Hardcore Punk</div>
         <div>Industrial</div>
         <div>Lo-Fi</div>
         <div>Hip-Hop</div>
         <div>Electronic</div>
         <div>Experimental</div>
+        <div>Post-Punk</div>
+        <div>Noise Rock</div>
+        <div>Synthwave</div>
+        <div>Darkwave</div>
+        <div>Grunge</div>
+        <div>Alt-Rock</div>
+        <div>Trap</div>
+        <div>Boom Bap</div>
+        <div>Ambient</div>
+        <div>Drone</div>
+        <div>Industrial Metal</div>
+        <div>Hard Techno</div>
+        <div>Minimal</div>
+        <div>Spoken Word</div>
       </div>
     </div>
 
@@ -188,17 +202,17 @@ textarea {
 
       <div class="adv-row">
         <span>Craziness</span>
-        <input value="0" />
+        <input type="number" min="0" max="100" value="0" />
       </div>
 
       <div class="adv-row">
         <span>Style Influence</span>
-        <input value="0" />
+        <input type="number" min="0" max="100" value="0" />
       </div>
 
       <div class="adv-row">
         <span>Audio Influence</span>
-        <input value="0" />
+        <input type="number" min="0" max="100" value="0" />
       </div>
     </div>
 
@@ -211,6 +225,25 @@ textarea {
   <div class="sandbox-side"></div>
 
 </div>
+
+<script>
+/* SURGICAL: preset → style input */
+const styleInput = document.getElementById('styleInput');
+document.getElementById('stylePresets').addEventListener('click', e => {
+  if (!e.target || !e.target.textContent) return;
+
+  const style = e.target.textContent;
+  const existing = styleInput.value
+    .split(',')
+    .map(s => s.trim())
+    .filter(Boolean);
+
+  if (!existing.includes(style)) {
+    existing.push(style);
+    styleInput.value = existing.join(', ');
+  }
+});
+</script>
 
 </body>
 </html>
