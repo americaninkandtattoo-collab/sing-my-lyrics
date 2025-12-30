@@ -83,7 +83,7 @@ textarea {
   font-size: 13px;
 }
 
-/* Keep base sizes — JS will override height dynamically */
+/* Auto-expand base */
 textarea {
   resize: none;
   overflow: hidden;
@@ -155,13 +155,18 @@ textarea {
       </div>
     </div>
 
+    <!-- SPELL CHECK (NATIVE) -->
     <div class="create-section">
-      <button class="toggle-btn">Spell + Punctuation Check</button>
+      <button type="button" id="spellBtn" class="toggle-btn">Spell + Punctuation Check</button>
     </div>
 
     <div class="create-section">
       <div class="label">Lyrics</div>
-      <textarea id="lyricsBox" placeholder="Enter lyrics here..."></textarea>
+      <textarea
+        id="lyricsBox"
+        placeholder="Enter lyrics here..."
+        spellcheck="true"
+      ></textarea>
     </div>
 
     <div class="create-section">
@@ -170,7 +175,12 @@ textarea {
 
     <div class="create-section">
       <div class="label">Styles</div>
-      <textarea id="styleInput" class="style-input" placeholder="Type custom styles…"></textarea>
+      <textarea
+        id="styleInput"
+        class="style-input"
+        placeholder="Type custom styles…"
+        spellcheck="true"
+      ></textarea>
 
       <div class="style-presets" id="stylePresets">
         <div>Hardcore Punk</div>
@@ -227,8 +237,21 @@ textarea {
 <script>
 window.addEventListener('DOMContentLoaded', () => {
 
-  /* STYLE PRESET → INPUT (UNCHANGED) */
+  /* ===== AUTO-EXPAND ===== */
+  function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
+  }
+
+  const lyricsBox = document.getElementById('lyricsBox');
   const styleInput = document.getElementById('styleInput');
+
+  [lyricsBox, styleInput].forEach(el => {
+    autoResize(el);
+    el.addEventListener('input', () => autoResize(el));
+  });
+
+  /* STYLE PRESET → INPUT (UNCHANGED) */
   document.getElementById('stylePresets').addEventListener('click', e => {
     if (!e.target || !e.target.textContent) return;
     const style = e.target.textContent;
@@ -240,57 +263,43 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  /* ===== CADENCE LOGIC (UNCHANGED) ===== */
-  const lyricsBox = document.getElementById('lyricsBox');
+  /* CADENCE LOGIC (UNCHANGED) */
   const cadenceBtn = document.getElementById('cadenceBtn');
   const resetCadenceBtn = document.getElementById('resetCadenceBtn');
 
   let cadenceIndex = 0;
   let originalLyrics = "";
 
-  function cadence1(text) { return text.split(/\s+/).filter(Boolean).join(" / "); }
-  function cadence2(text) { return text.split(/\s+/).filter(Boolean).join("\n"); }
-  function cadence3(text) {
-    return text.split("\n").map(l => l.split(/\s+/).filter(Boolean).join("  ")).join("\n");
-  }
-  function cadence4(text) {
-    return text.split(/\s+/).filter(Boolean).map(w => w + "…").join(" ");
-  }
+  function cadence1(t){return t.split(/\s+/).filter(Boolean).join(" / ");}
+  function cadence2(t){return t.split(/\s+/).filter(Boolean).join("\n");}
+  function cadence3(t){return t.split("\n").map(l=>l.split(/\s+/).filter(Boolean).join("  ")).join("\n");}
+  function cadence4(t){return t.split(/\s+/).filter(Boolean).map(w=>w+"…").join(" ");}
 
-  const cadenceFns = [cadence1, cadence2, cadence3, cadence4];
-  const cadenceNames = ["Chop", "Staccato", "Double Space", "Trailing Echo"];
+  const cadenceFns = [cadence1,cadence2,cadence3,cadence4];
+  const cadenceNames = ["Chop","Staccato","Double Space","Trailing Echo"];
 
-  function ensureOriginalCaptured() {
-    if (originalLyrics === "") {
-      originalLyrics = lyricsBox.value || "";
-    }
+  function captureOriginal() {
+    if (!originalLyrics) originalLyrics = lyricsBox.value;
   }
 
-  cadenceBtn.addEventListener("click", () => {
-    ensureOriginalCaptured();
+  cadenceBtn.addEventListener('click', () => {
+    captureOriginal();
     cadenceIndex = (cadenceIndex % 4) + 1;
     lyricsBox.value = cadenceFns[cadenceIndex - 1](originalLyrics);
     cadenceBtn.textContent = "Cadence: " + cadenceNames[cadenceIndex - 1];
     autoResize(lyricsBox);
   });
 
-  resetCadenceBtn.addEventListener("click", () => {
-    if (originalLyrics === "") return;
-    lyricsBox.value = originalLyrics;
+  resetCadenceBtn.addEventListener('click', () => {
+    lyricsBox.value = originalLyrics || "";
     cadenceIndex = 0;
     cadenceBtn.textContent = "Cadence: Original";
     autoResize(lyricsBox);
   });
 
-  /* ===== AUTO-EXPAND (SURGICAL ADD ONLY) ===== */
-  function autoResize(el) {
-    el.style.height = 'auto';
-    el.style.height = el.scrollHeight + 'px';
-  }
-
-  [lyricsBox, styleInput].forEach(el => {
-    autoResize(el);
-    el.addEventListener('input', () => autoResize(el));
+  /* SPELL BUTTON — FOCUS ONLY (REAL SPELLCHECK) */
+  document.getElementById('spellBtn').addEventListener('click', () => {
+    lyricsBox.focus();
   });
 
 });
