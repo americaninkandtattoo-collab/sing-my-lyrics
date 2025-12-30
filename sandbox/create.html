@@ -151,7 +151,7 @@ textarea {
       <button class="create-btn">Record Audio</button>
     </div>
 
-    <!-- CADENCE CONTROLS (SURGICAL ADD) -->
+    <!-- CADENCE CONTROLS -->
     <div class="create-section">
       <div class="create-row">
         <button type="button" id="cadenceBtn" class="toggle-btn">Cadence: Original</button>
@@ -230,6 +230,7 @@ textarea {
 
 <script>
 window.addEventListener('DOMContentLoaded', () => {
+
   /* STYLE PRESET → INPUT (UNCHANGED) */
   const styleInput = document.getElementById('styleInput');
   document.getElementById('stylePresets').addEventListener('click', e => {
@@ -242,7 +243,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  /* ===== CADENCE LOGIC (SURGICAL ADD) ===== */
+  /* ===== CADENCE LOGIC (SURGICAL RENAME ONLY) ===== */
   const lyricsBox = document.getElementById('lyricsBox');
   const cadenceBtn = document.getElementById('cadenceBtn');
   const resetCadenceBtn = document.getElementById('resetCadenceBtn');
@@ -253,25 +254,33 @@ window.addEventListener('DOMContentLoaded', () => {
   function cadence1(text) { return text.split(/\s+/).filter(Boolean).join(" / "); }
   function cadence2(text) { return text.split(/\s+/).filter(Boolean).join("\n"); }
   function cadence3(text) {
-    return text
-      .split("\n")
-      .map(line => line.split(/\s+/).filter(Boolean).join("  "))
-      .join("\n");
+    return text.split("\n").map(l => l.split(/\s+/).filter(Boolean).join("  ")).join("\n");
   }
-  function cadence4(text) { return text.split(/\s+/).filter(Boolean).map(w => w + "…").join(" "); }
+  function cadence4(text) {
+    return text.split(/\s+/).filter(Boolean).map(w => w + "…").join(" ");
+  }
 
   const cadenceFns = [cadence1, cadence2, cadence3, cadence4];
 
+  /* NEW: cadence display names */
+  const cadenceNames = [
+    "Chop",
+    "Staccato",
+    "Double Space",
+    "Trailing Echo"
+  ];
+
   function ensureOriginalCaptured() {
-    if (originalLyrics === "") originalLyrics = lyricsBox.value || "";
+    if (originalLyrics === "") {
+      originalLyrics = lyricsBox.value || "";
+    }
   }
 
   cadenceBtn.addEventListener("click", () => {
     ensureOriginalCaptured();
-    cadenceIndex = (cadenceIndex % 4) + 1; // 1..4
-    const fn = cadenceFns[cadenceIndex - 1];
-    lyricsBox.value = fn(originalLyrics);
-   cadenceBtn.textContent = "Cadence: " + cadenceIndex;
+    cadenceIndex = (cadenceIndex % 4) + 1;
+    lyricsBox.value = cadenceFns[cadenceIndex - 1](originalLyrics);
+    cadenceBtn.textContent = "Cadence: " + cadenceNames[cadenceIndex - 1];
   });
 
   resetCadenceBtn.addEventListener("click", () => {
@@ -280,6 +289,7 @@ window.addEventListener('DOMContentLoaded', () => {
     cadenceIndex = 0;
     cadenceBtn.textContent = "Cadence: Original";
   });
+
 });
 </script>
 
