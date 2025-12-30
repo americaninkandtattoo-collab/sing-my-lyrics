@@ -110,18 +110,6 @@ textarea {
 .style-presets div:hover {
   background: #2a2a2a;
 }
-
-.advanced {
-  background: #151515;
-  border: 1px solid #333;
-  padding: 8px;
-}
-
-.adv-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
 </style>
 </head>
 
@@ -142,13 +130,13 @@ textarea {
 
     <div class="create-section">
       <div class="create-row">
-        <button id="cadenceBtn" class="toggle-btn">Cadence: Original</button>
-        <button id="resetCadenceBtn" class="toggle-btn">Reset Cadence</button>
+        <button type="button" id="cadenceBtn" class="toggle-btn">Cadence: Original</button>
+        <button type="button" id="resetCadenceBtn" class="toggle-btn">Reset Cadence</button>
       </div>
     </div>
 
     <div class="create-section">
-      <button id="spellBtn" class="toggle-btn">Spell + Punctuation Check</button>
+      <button id="spellBtn" type="button" class="toggle-btn">Spell + Punctuation Check</button>
     </div>
 
     <div class="create-section">
@@ -162,8 +150,7 @@ textarea {
 
     <div class="create-section">
       <div class="label">Styles</div>
-      <textarea id="styleInput" class="style-input"></textarea>
-
+      <textarea id="styleInput" class="style-input" placeholder="Type custom styles…"></textarea>
       <div class="style-presets" id="stylePresets">
         <div>Hardcore Punk</div>
         <div>Industrial</div>
@@ -171,32 +158,7 @@ textarea {
         <div>Hip-Hop</div>
         <div>Electronic</div>
         <div>Experimental</div>
-        <div>Post-Punk</div>
-        <div>Noise Rock</div>
-        <div>Synthwave</div>
-        <div>Darkwave</div>
-        <div>Grunge</div>
-        <div>Alt-Rock</div>
-        <div>Trap</div>
-        <div>Boom Bap</div>
-        <div>Ambient</div>
-        <div>Drone</div>
-        <div>Industrial Metal</div>
-        <div>Hard Techno</div>
-        <div>Minimal</div>
-        <div>Spoken Word</div>
       </div>
-    </div>
-
-    <div class="create-section advanced">
-      <div class="label">Advanced Options</div>
-      <div class="adv-row"><span>Craziness</span><input type="number" min="0" max="99" value="0"></div>
-      <div class="adv-row"><span>Style Influence</span><input type="number" min="0" max="99" value="0"></div>
-      <div class="adv-row"><span>Audio Influence</span><input type="number" min="0" max="99" value="0"></div>
-    </div>
-
-    <div class="create-section">
-      <button class="create-btn">Create Song</button>
     </div>
 
   </div>
@@ -211,30 +173,10 @@ window.addEventListener('DOMContentLoaded', () => {
   const cadenceBtn = document.getElementById('cadenceBtn');
   const resetCadenceBtn = document.getElementById('resetCadenceBtn');
   const spellBtn = document.getElementById('spellBtn');
+  const styleInput = document.getElementById('styleInput');
 
-  let permanentText = "";
   let cadenceIndex = 0;
-
-  function autoResize(el) {
-    el.style.height = 'auto';
-    el.style.height = el.scrollHeight + 'px';
-  }
-
-  function clearStateIfEmpty() {
-    if (!lyricsBox.value.trim()) {
-      permanentText = "";
-      cadenceIndex = 0;
-      cadenceBtn.textContent = "Cadence: Original";
-    }
-  }
-
-  lyricsBox.addEventListener('input', () => {
-    permanentText = lyricsBox.value;
-    cadenceIndex = 0;
-    cadenceBtn.textContent = "Cadence: Original";
-    clearStateIfEmpty();
-    autoResize(lyricsBox);
-  });
+  let baseText = "";
 
   const cadenceFns = [
     t => t.split(/\s+/).join(" / "),
@@ -245,29 +187,46 @@ window.addEventListener('DOMContentLoaded', () => {
 
   const cadenceNames = ["Chop", "Staccato", "Double Space", "Trailing Echo"];
 
-  cadenceBtn.addEventListener('click', () => {
-    if (!permanentText.trim()) return;
-    cadenceIndex = (cadenceIndex + 1) % cadenceFns.length;
-    lyricsBox.value = cadenceFns[cadenceIndex](permanentText);
-    cadenceBtn.textContent = "Cadence: " + cadenceNames[cadenceIndex];
-    autoResize(lyricsBox);
-  });
+  function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
+  }
 
-  resetCadenceBtn.addEventListener('click', () => {
-    if (!permanentText.trim()) return;
-    lyricsBox.value = permanentText;
+  lyricsBox.addEventListener('input', () => {
+    baseText = lyricsBox.value;
     cadenceIndex = 0;
     cadenceBtn.textContent = "Cadence: Original";
     autoResize(lyricsBox);
   });
 
-  spellBtn.addEventListener('click', () => {
+  cadenceBtn.addEventListener('click', () => {
+    if (!baseText) return;
+    cadenceIndex = (cadenceIndex % 4) + 1;
+    lyricsBox.value = cadenceFns[cadenceIndex - 1](baseText);
+    cadenceBtn.textContent = "Cadence: " + cadenceNames[cadenceIndex - 1];
+    autoResize(lyricsBox);
+  });
+
+  resetCadenceBtn.addEventListener('click', () => {
+    lyricsBox.value = baseText;
+    cadenceIndex = 0;
+    cadenceBtn.textContent = "Cadence: Original";
+    autoResize(lyricsBox);
+  });
+
+  /* REAL spell + punctuation — backend required */
+  spellBtn.addEventListener('click', async () => {
     if (!lyricsBox.value.trim()) return;
-    permanentText = lyricsBox.value
-      .replace(/\s+/g, ' ')
-      .replace(/([.!?])(\w)/g, '$1 $2')
-      .replace(/(^\w|\.\s+\w)/g, c => c.toUpperCase());
-    lyricsBox.value = permanentText;
+
+    const response = await fetch('/api/spellcheck', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: lyricsBox.value })
+    });
+
+    const data = await response.json();
+    baseText = data.correctedText;
+    lyricsBox.value = baseText;
     cadenceIndex = 0;
     cadenceBtn.textContent = "Cadence: Original";
     autoResize(lyricsBox);
