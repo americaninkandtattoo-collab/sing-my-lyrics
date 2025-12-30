@@ -1,87 +1,216 @@
-<!-- CREATE SONG (TOP) -->
-<div class="create-section">
-  <button class="create-btn">Create Song</button>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sandbox – Create</title>
 
-<!-- RECORD AUDIO -->
-<div class="create-section">
-  <button class="create-btn">Record Audio</button>
-</div>
+<style>
+/* ===== SANDBOX FRAME ===== */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #000;
+  font-family: Arial, sans-serif;
+  color: #fff;
+}
 
-<!-- CADENCE TOGGLE -->
-<div class="create-section">
-  <button class="toggle-btn">Cadence</button>
-</div>
+.sandbox-frame {
+  display: flex;
+  height: 100vh;
+}
 
-<!-- SPELL CHECK TOGGLE -->
-<div class="create-section">
-  <button class="toggle-btn">Spell + Punctuation Check</button>
-</div>
+/* Fake side panels */
+.sandbox-side {
+  flex: 1;
+  background: #000;
+}
 
-<!-- LYRICS -->
-<div class="create-section">
-  <div class="create-title">Lyrics</div>
-  <textarea
-    rows="8"
-    wrap="soft"
-    placeholder="Enter lyrics here..."
-    style="width:100%; max-height:160px; overflow-y:auto; overflow-x:hidden;"
-  ></textarea>
-</div>
+/* Center column (matches app create width) */
+.sandbox-center {
+  width: 340px;
+  background: #1a1a1a;
+  padding: 12px;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
 
-<!-- SONG TITLE -->
-<div class="create-section">
-  <input
-    type="text"
-    placeholder="Add Song Title"
-    style="width:100%; box-sizing:border-box;"
-  />
-</div>
+/* ===== CREATE COLUMN ===== */
+.create-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+}
 
-<!-- STYLES -->
-<div class="create-section">
-  <div class="create-title">Styles</div>
+.create-btn {
+  width: 100%;
+  padding: 8px;
+  background: #000;
+  border: 1px solid #555;
+  color: #fff;
+  cursor: pointer;
+}
 
-  <!-- CUSTOM STYLE INPUT -->
-  <textarea
-    rows="2"
-    wrap="soft"
-    placeholder="Type custom styles…"
-    style="width:100%; max-height:60px; overflow-y:auto; overflow-x:hidden;"
-  ></textarea>
+.toggle-btn {
+  width: 100%;
+  padding: 6px;
+  background: #111;
+  border: 1px solid #444;
+  color: #fff;
+  text-align: left;
+  cursor: pointer;
+}
 
-  <!-- PRESET STYLES -->
-  <div class="style-presets">
-    <div>Hardcore Punk</div>
-    <div>Industrial</div>
-    <div>Lo-Fi</div>
-    <div>Hip-Hop</div>
-    <div>Electronic</div>
-    <div>Experimental</div>
+.label {
+  font-size: 13px;
+  font-weight: bold;
+}
+
+/* Inputs */
+input,
+textarea {
+  width: 100%;
+  box-sizing: border-box;
+  background: #181818;
+  border: 1px solid #333;
+  color: #fff;
+  padding: 6px;
+  font-size: 13px;
+}
+
+/* Lyrics — FIXED HEIGHT, VERTICAL SCROLL ONLY */
+textarea {
+  height: 160px;
+  resize: none;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Style input — FIXED HEIGHT, VERTICAL SCROLL */
+.style-input {
+  height: 48px;
+  resize: none;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Style presets */
+.style-presets {
+  max-height: 90px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #181818;
+  border: 1px solid #333;
+  font-size: 12px;
+}
+
+.style-presets div {
+  padding: 4px;
+  cursor: pointer;
+}
+
+.style-presets div:hover {
+  background: #2a2a2a;
+}
+
+/* Advanced options */
+.advanced {
+  background: #151515;
+  border: 1px solid #333;
+  padding: 8px;
+}
+
+.adv-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.adv-row input {
+  width: 60px;
+  text-align: right;
+}
+</style>
+</head>
+
+<body>
+
+<div class="sandbox-frame">
+
+  <div class="sandbox-side"></div>
+
+  <div class="sandbox-center">
+
+    <div class="create-section">
+      <button class="create-btn">Create Song</button>
+    </div>
+
+    <div class="create-section">
+      <button class="create-btn">Record Audio</button>
+    </div>
+
+    <div class="create-section">
+      <button class="toggle-btn">Cadence</button>
+    </div>
+
+    <div class="create-section">
+      <button class="toggle-btn">Spell + Punctuation Check</button>
+    </div>
+
+    <div class="create-section">
+      <div class="label">Lyrics</div>
+      <textarea placeholder="Enter lyrics here..."></textarea>
+    </div>
+
+    <div class="create-section">
+      <input placeholder="Add Song Title" />
+    </div>
+
+    <div class="create-section">
+      <div class="label">Styles</div>
+      <textarea class="style-input" placeholder="Type custom styles…"></textarea>
+
+      <div class="style-presets">
+        <div>Hardcore Punk</div>
+        <div>Industrial</div>
+        <div>Lo-Fi</div>
+        <div>Hip-Hop</div>
+        <div>Electronic</div>
+        <div>Experimental</div>
+      </div>
+    </div>
+
+    <div class="create-section advanced">
+      <div class="label">Advanced Options</div>
+
+      <div class="adv-row">
+        <span>Craziness</span>
+        <input value="0" />
+      </div>
+
+      <div class="adv-row">
+        <span>Style Influence</span>
+        <input value="0" />
+      </div>
+
+      <div class="adv-row">
+        <span>Audio Influence</span>
+        <input value="0" />
+      </div>
+    </div>
+
+    <div class="create-section">
+      <button class="create-btn">Create Song</button>
+    </div>
+
   </div>
+
+  <div class="sandbox-side"></div>
+
 </div>
 
-<!-- ADVANCED OPTIONS -->
-<div class="create-section advanced">
-  <div class="create-title">Advanced Options</div>
-
-  <div class="adv-row">
-    <span>Craziness</span>
-    <input type="number" value="0" />
-  </div>
-
-  <div class="adv-row">
-    <span>Style Influence</span>
-    <input type="number" value="0" />
-  </div>
-
-  <div class="adv-row">
-    <span>Audio Influence</span>
-    <input type="number" value="0" />
-  </div>
-</div>
-
-<!-- CREATE SONG (BOTTOM) -->
-<div class="create-section">
-  <button class="create-btn">Create Song</button>
-</div>
+</body>
+</html>
