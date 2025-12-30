@@ -81,23 +81,22 @@ textarea {
   color: #fff;
   padding: 6px;
   font-size: 13px;
+  resize: none;
 }
 
-/* Lyrics */
+/* 🔧 SURGICAL CHANGE:
+   Lyrics + Style now EXPAND — no internal scroll */
 textarea {
-  height: 160px;
-  resize: none;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
+  min-height: 48px;
 }
 
 .style-input {
-  height: 48px;
-  resize: none;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
+  min-height: 48px;
 }
 
+/* Style presets (unchanged) */
 .style-presets {
   max-height: 90px;
   overflow-y: auto;
@@ -116,6 +115,7 @@ textarea {
   background: #2a2a2a;
 }
 
+/* Advanced options (unchanged) */
 .advanced {
   background: #151515;
   border: 1px solid #333;
@@ -240,55 +240,22 @@ window.addEventListener('DOMContentLoaded', () => {
     if (!existing.includes(style)) {
       existing.push(style);
       styleInput.value = existing.join(', ');
+      autoResize(styleInput);
     }
   });
 
-  /* ===== CADENCE LOGIC (SURGICAL RENAME ONLY) ===== */
+  /* 🔧 SURGICAL: auto-expand textareas */
+  function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
+  }
+
   const lyricsBox = document.getElementById('lyricsBox');
-  const cadenceBtn = document.getElementById('cadenceBtn');
-  const resetCadenceBtn = document.getElementById('resetCadenceBtn');
+  lyricsBox.addEventListener('input', () => autoResize(lyricsBox));
+  autoResize(lyricsBox);
 
-  let cadenceIndex = 0;
-  let originalLyrics = "";
-
-  function cadence1(text) { return text.split(/\s+/).filter(Boolean).join(" / "); }
-  function cadence2(text) { return text.split(/\s+/).filter(Boolean).join("\n"); }
-  function cadence3(text) {
-    return text.split("\n").map(l => l.split(/\s+/).filter(Boolean).join("  ")).join("\n");
-  }
-  function cadence4(text) {
-    return text.split(/\s+/).filter(Boolean).map(w => w + "…").join(" ");
-  }
-
-  const cadenceFns = [cadence1, cadence2, cadence3, cadence4];
-
-  /* NEW: cadence display names */
-  const cadenceNames = [
-    "Chop",
-    "Staccato",
-    "Double Space",
-    "Trailing Echo"
-  ];
-
-  function ensureOriginalCaptured() {
-    if (originalLyrics === "") {
-      originalLyrics = lyricsBox.value || "";
-    }
-  }
-
-  cadenceBtn.addEventListener("click", () => {
-    ensureOriginalCaptured();
-    cadenceIndex = (cadenceIndex % 4) + 1;
-    lyricsBox.value = cadenceFns[cadenceIndex - 1](originalLyrics);
-    cadenceBtn.textContent = "Cadence: " + cadenceNames[cadenceIndex - 1];
-  });
-
-  resetCadenceBtn.addEventListener("click", () => {
-    if (originalLyrics === "") return;
-    lyricsBox.value = originalLyrics;
-    cadenceIndex = 0;
-    cadenceBtn.textContent = "Cadence: Original";
-  });
+  styleInput.addEventListener('input', () => autoResize(styleInput));
+  autoResize(styleInput);
 
 });
 </script>
