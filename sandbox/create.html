@@ -23,6 +23,7 @@ html, body {
   grid-template-rows: 1fr 80px;
   height: 100vh;
   width: 100vw;
+  transition: grid-template-columns 0.25s ease;
 }
 
 /* PANELS — UNCHANGED */
@@ -39,8 +40,8 @@ html, body {
   grid-column: 2;
   grid-row: 1;
   background: #222;
+  overflow-y: hidden;
   padding: 10px;
-  overflow: hidden;
 }
 
 .right {
@@ -90,7 +91,7 @@ html, body {
   gap: 12px;
 }
 
-/* CREATE COLUMN — SURGICALLY FIXED */
+/* CREATE COLUMN */
 .center-create {
   width: 340px;
   background: #1a1a1a;
@@ -106,87 +107,84 @@ html, body {
 .create-title {
   font-weight: bold;
   margin-bottom: 6px;
-  font-size: 13px;
 }
 
-/* PRIMARY BUTTON */
 .create-btn {
   width: 100%;
-  padding: 9px;
-  background: #000;
-  border: 1px solid #666;
-  color: #fff;
-  cursor: pointer;
-}
-
-/* TOGGLE BUTTONS (VISIBLE FIX) */
-.toggle-btn {
-  width: 100%;
   padding: 8px;
-  background: #202020;
+  background: #000;
   border: 1px solid #555;
   color: #fff;
   cursor: pointer;
-  text-align: left;
 }
 
-/* TEXT INPUTS */
-input {
+.toggle-btn {
   width: 100%;
-  padding: 7px;
-  background: #181818;
+  padding: 6px;
+  background: #111;
   border: 1px solid #444;
-  color: #fff;
+  text-align: left;
+  cursor: pointer;
 }
 
-/* LYRICS */
 textarea {
   width: 100%;
   height: 140px;
   background: #181818;
-  border: 1px solid #444;
+  border: 1px solid #333;
   color: #fff;
   padding: 8px;
   resize: none;
 }
 
-/* STYLES LIST — EDITABLE */
-.scroll-box {
+input {
+  width: 100%;
+  padding: 6px;
+  background: #181818;
+  border: 1px solid #333;
+  color: #fff;
+}
+
+/* STYLE PRESETS */
+.style-presets {
   height: 90px;
   background: #181818;
-  border: 1px solid #444;
+  border: 1px solid #333;
   overflow-y: auto;
   padding: 6px;
   font-size: 12px;
 }
-.scroll-box[contenteditable="true"] {
-  outline: none;
+
+.style-presets div {
+  padding: 4px;
+  cursor: pointer;
 }
 
-/* ADVANCED OPTIONS */
+.style-presets div:hover {
+  background: #2a2a2a;
+}
+
+/* ADVANCED */
 .advanced {
-  border: 1px solid #444;
+  border: 1px solid #333;
   padding: 8px;
   background: #151515;
 }
 
-.advanced-row {
+.adv-row {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  margin-top: 6px;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
 }
 
-.percent {
-  width: 50px;
+.adv-row input {
+  width: 60px;
   text-align: right;
-  background: #181818;
-  border: 1px solid #444;
-  padding: 4px;
 }
 
-/* WORKSPACE — UNCHANGED */
+/* WORKSPACE */
 .center-workspace {
   flex: 1;
   background: #202020;
@@ -248,29 +246,30 @@ textarea {
 
         <div class="create-section">
           <div class="create-title">Styles</div>
-          <div class="scroll-box" contenteditable="true">
-            Rock<br/>Hip-Hop<br/>Electronic<br/>Industrial
+          <input placeholder="Type custom styles…" />
+          <div class="style-presets">
+            <div>Hardcore Punk</div>
+            <div>Industrial</div>
+            <div>Lo-Fi</div>
+            <div>Hip-Hop</div>
+            <div>Electronic</div>
+            <div>Experimental</div>
           </div>
         </div>
 
         <div class="create-section advanced">
           <div class="create-title">Advanced Options</div>
-
-          <input placeholder="Enter styles to exclude" />
-
-          <div class="advanced-row">
+          <div class="adv-row">
             <span>Craziness</span>
-            <input class="percent" value="0">
+            <input value="0" />
           </div>
-
-          <div class="advanced-row">
+          <div class="adv-row">
             <span>Style Influence</span>
-            <input class="percent" value="0">
+            <input value="0" />
           </div>
-
-          <div class="advanced-row">
+          <div class="adv-row">
             <span>Audio Influence</span>
-            <input class="percent" value="0">
+            <input value="0" />
           </div>
         </div>
 
@@ -301,7 +300,7 @@ textarea {
 
   <!-- PLAYER -->
   <div class="player">
-    <div class="player-controls">▶️ ⏮ ⏭</div>
+    <div class="player-controls">▶️ ⏭ ⏮</div>
     <div class="player-timeline">
       <div>0:00</div>
       <div class="player-bar"></div>
