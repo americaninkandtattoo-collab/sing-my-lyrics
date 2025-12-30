@@ -21,13 +21,11 @@ html, body {
   height: 100vh;
 }
 
-/* Fake side panels */
 .sandbox-side {
   flex: 1;
   background: #000;
 }
 
-/* Center column (matches app create width) */
 .sandbox-center {
   width: 340px;
   background: #1a1a1a;
@@ -44,6 +42,11 @@ html, body {
   margin-bottom: 14px;
 }
 
+.create-row {
+  display: flex;
+  gap: 6px;
+}
+
 .create-btn {
   width: 100%;
   padding: 8px;
@@ -54,12 +57,12 @@ html, body {
 }
 
 .toggle-btn {
-  width: 100%;
+  flex: 1;
   padding: 6px;
   background: #111;
   border: 1px solid #444;
   color: #fff;
-  text-align: left;
+  text-align: center;
   cursor: pointer;
 }
 
@@ -80,7 +83,7 @@ textarea {
   font-size: 13px;
 }
 
-/* Lyrics — FIXED HEIGHT, VERTICAL SCROLL ONLY */
+/* Lyrics */
 textarea {
   height: 160px;
   resize: none;
@@ -88,7 +91,6 @@ textarea {
   overflow-x: hidden;
 }
 
-/* Style input — FIXED HEIGHT, VERTICAL SCROLL */
 .style-input {
   height: 48px;
   resize: none;
@@ -96,7 +98,6 @@ textarea {
   overflow-x: hidden;
 }
 
-/* Style presets */
 .style-presets {
   max-height: 90px;
   overflow-y: auto;
@@ -115,7 +116,6 @@ textarea {
   background: #2a2a2a;
 }
 
-/* Advanced options */
 .advanced {
   background: #151515;
   border: 1px solid #333;
@@ -139,7 +139,6 @@ textarea {
 <body>
 
 <div class="sandbox-frame">
-
   <div class="sandbox-side"></div>
 
   <div class="sandbox-center">
@@ -152,8 +151,12 @@ textarea {
       <button class="create-btn">Record Audio</button>
     </div>
 
+    <!-- CADENCE CONTROLS (SURGICAL ADD) -->
     <div class="create-section">
-      <button class="toggle-btn">Cadence</button>
+      <div class="create-row">
+        <button id="cadenceBtn" class="toggle-btn">Cadence: Original</button>
+        <button id="resetCadenceBtn" class="toggle-btn">Reset Cadence</button>
+      </div>
     </div>
 
     <div class="create-section">
@@ -162,7 +165,7 @@ textarea {
 
     <div class="create-section">
       <div class="label">Lyrics</div>
-      <textarea placeholder="Enter lyrics here..."></textarea>
+      <textarea id="lyricsBox" placeholder="Enter lyrics here..."></textarea>
     </div>
 
     <div class="create-section">
@@ -223,26 +226,57 @@ textarea {
   </div>
 
   <div class="sandbox-side"></div>
-
 </div>
 
 <script>
-/* SURGICAL: preset → style input */
+/* STYLE PRESET → INPUT (UNCHANGED) */
 const styleInput = document.getElementById('styleInput');
 document.getElementById('stylePresets').addEventListener('click', e => {
   if (!e.target || !e.target.textContent) return;
-
   const style = e.target.textContent;
-  const existing = styleInput.value
-    .split(',')
-    .map(s => s.trim())
-    .filter(Boolean);
-
+  const existing = styleInput.value.split(',').map(s => s.trim()).filter(Boolean);
   if (!existing.includes(style)) {
     existing.push(style);
     styleInput.value = existing.join(', ');
   }
 });
+
+/* ===== CADENCE LOGIC (SURGICAL ADD) ===== */
+const lyricsBox = document.getElementById('lyricsBox');
+const cadenceBtn = document.getElementById('cadenceBtn');
+const resetBtn = document.getElementById('resetCadenceBtn');
+
+let originalLyrics = '';
+let cadenceIndex = 0;
+
+const cadences = [
+  text => text, // Original
+  text => text.split('\n').map(l => l.trim()).join('\n'), // Tight
+  text => text.split(' ').join(' / '), // Chopped
+  text => text.split('\n').join('\n\n'), // Spaced
+  text => text.split('').join(' ') // Staccato
+];
+
+const cadenceLabels = [
+  'Original',
+  'Cadence 1',
+  'Cadence 2',
+  'Cadence 3',
+  'Cadence 4'
+];
+
+cadenceBtn.onclick = () => {
+  if (!originalLyrics) originalLyrics = lyricsBox.value;
+  cadenceIndex = (cadenceIndex + 1) % cadences.length;
+  lyricsBox.value = cadences[cadenceIndex](originalLyrics);
+  cadenceBtn.textContent = Cadence: ${cadenceLabels[cadenceIndex]};
+};
+
+resetBtn.onclick = () => {
+  lyricsBox.value = originalLyrics;
+  cadenceIndex = 0;
+  cadenceBtn.textContent = 'Cadence: Original';
+};
 </script>
 
 </body>
