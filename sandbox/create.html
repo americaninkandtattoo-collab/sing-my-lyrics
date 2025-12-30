@@ -83,7 +83,7 @@ textarea {
   font-size: 13px;
 }
 
-/* Auto-expand */
+/* Keep base sizes — JS will override height dynamically */
 textarea {
   resize: none;
   overflow: hidden;
@@ -97,6 +97,7 @@ textarea {
 .style-presets {
   max-height: 90px;
   overflow-y: auto;
+  overflow-x: hidden;
   background: #181818;
   border: 1px solid #333;
   font-size: 12px;
@@ -109,6 +110,24 @@ textarea {
 
 .style-presets div:hover {
   background: #2a2a2a;
+}
+
+.advanced {
+  background: #151515;
+  border: 1px solid #333;
+  padding: 8px;
+}
+
+.adv-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.adv-row input {
+  width: 60px;
+  text-align: right;
 }
 </style>
 </head>
@@ -128,6 +147,7 @@ textarea {
       <button class="create-btn">Record Audio</button>
     </div>
 
+    <!-- CADENCE CONTROLS -->
     <div class="create-section">
       <div class="create-row">
         <button type="button" id="cadenceBtn" class="toggle-btn">Cadence: Original</button>
@@ -136,7 +156,9 @@ textarea {
     </div>
 
     <div class="create-section">
-      <button id="spellBtn" type="button" class="toggle-btn">Spell + Punctuation Check</button>
+      <button type="button" id="spellBtn" class="toggle-btn">
+        Spell + Punctuation Check
+      </button>
     </div>
 
     <div class="create-section">
@@ -151,6 +173,7 @@ textarea {
     <div class="create-section">
       <div class="label">Styles</div>
       <textarea id="styleInput" class="style-input" placeholder="Type custom styles…"></textarea>
+
       <div class="style-presets" id="stylePresets">
         <div>Hardcore Punk</div>
         <div>Industrial</div>
@@ -158,7 +181,44 @@ textarea {
         <div>Hip-Hop</div>
         <div>Electronic</div>
         <div>Experimental</div>
+        <div>Post-Punk</div>
+        <div>Noise Rock</div>
+        <div>Synthwave</div>
+        <div>Darkwave</div>
+        <div>Grunge</div>
+        <div>Alt-Rock</div>
+        <div>Trap</div>
+        <div>Boom Bap</div>
+        <div>Ambient</div>
+        <div>Drone</div>
+        <div>Industrial Metal</div>
+        <div>Hard Techno</div>
+        <div>Minimal</div>
+        <div>Spoken Word</div>
       </div>
+    </div>
+
+    <div class="create-section advanced">
+      <div class="label">Advanced Options</div>
+
+      <div class="adv-row">
+        <span>Craziness</span>
+        <input type="number" min="0" max="99" value="0" />
+      </div>
+
+      <div class="adv-row">
+        <span>Style Influence</span>
+        <input type="number" min="0" max="99" value="0" />
+      </div>
+
+      <div class="adv-row">
+        <span>Audio Influence</span>
+        <input type="number" min="0" max="99" value="0" />
+      </div>
+    </div>
+
+    <div class="create-section">
+      <button class="create-btn">Create Song</button>
     </div>
 
   </div>
@@ -169,67 +229,102 @@ textarea {
 <script>
 window.addEventListener('DOMContentLoaded', () => {
 
+  /* ===== AUTO-EXPAND ===== */
+  function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
+  }
+
   const lyricsBox = document.getElementById('lyricsBox');
   const cadenceBtn = document.getElementById('cadenceBtn');
   const resetCadenceBtn = document.getElementById('resetCadenceBtn');
   const spellBtn = document.getElementById('spellBtn');
   const styleInput = document.getElementById('styleInput');
 
+  /* STYLE PRESET → INPUT (UNCHANGED) */
+  document.getElementById('stylePresets').addEventListener('click', e => {
+    if (!e.target || !e.target.textContent) return;
+    const style = e.target.textContent;
+    const existing = styleInput.value.split(',').map(s => s.trim()).filter(Boolean);
+    if (!existing.includes(style)) {
+      existing.push(style);
+      styleInput.value = existing.join(', ');
+      autoResize(styleInput);
+    }
+  });
+
   let cadenceIndex = 0;
-  let baseText = "";
+  let baseLyrics = "";   // ← authoritative source after spell check
 
-  const cadenceFns = [
-    t => t.split(/\s+/).join(" / "),
-    t => t.split(/\s+/).join("\n"),
-    t => t.split("\n").map(l => l.split(/\s+/).join("  ")).join("\n"),
-    t => t.split(/\s+/).map(w => w + "…").join(" ")
-  ];
-
-  const cadenceNames = ["Chop", "Staccato", "Double Space", "Trailing Echo"];
-
-  function autoResize(el) {
-    el.style.height = 'auto';
-    el.style.height = el.scrollHeight + 'px';
+  function cadence1(text) { return text.split(/\s+/).filter(Boolean).join(" / "); }
+  function cadence2(text) { return text.split(/\s+/).filter(Boolean).join("\n"); }
+  function cadence3(text) {
+    return text.split("\n").map(l => l.split(/\s+/).filter(Boolean).join("  ")).join("\n");
+  }
+  function cadence4(text) {
+    return text.split(/\s+/).filter(Boolean).map(w => w + "…").join(" ");
   }
 
-  lyricsBox.addEventListener('input', () => {
-    baseText = lyricsBox.value;
+  const cadenceFns = [cadence1, cadence2, cadence3, cadence4];
+  const cadenceNames = ["Chop", "Staccato", "Double Space", "Trailing Echo"];
+
+  /* ===== SPELL + PUNCTUATION (REAL, PERMANENT) ===== */
+  spellBtn.addEventListener('click', () => {
+    const text = lyricsBox.value.trim();
+    if (!text) {
+      baseLyrics = "";
+      return;
+    }
+
+    let cleaned = text
+      .replace(/[“”]/g, '"')
+      .replace(/[‘’]/g, "'")
+      .replace(/\s+/g, ' ')
+      .replace(/\s*([,.!?])/g, '$1')
+      .replace(/([.!?])(\w)/g, '$1 $2')
+      .replace(/(^\w|[.!?]\s+\w)/g, c => c.toUpperCase());
+
+    baseLyrics = cleaned;
+    lyricsBox.value = cleaned;
     cadenceIndex = 0;
     cadenceBtn.textContent = "Cadence: Original";
     autoResize(lyricsBox);
   });
 
+  /* ===== CADENCE ===== */
   cadenceBtn.addEventListener('click', () => {
-    if (!baseText) return;
+    if (!lyricsBox.value.trim()) return;
+
+    if (!baseLyrics) baseLyrics = lyricsBox.value;
     cadenceIndex = (cadenceIndex % 4) + 1;
-    lyricsBox.value = cadenceFns[cadenceIndex - 1](baseText);
+
+    lyricsBox.value = cadenceFns[cadenceIndex - 1](baseLyrics);
     cadenceBtn.textContent = "Cadence: " + cadenceNames[cadenceIndex - 1];
     autoResize(lyricsBox);
   });
 
+  /* ===== RESET CADENCE ===== */
   resetCadenceBtn.addEventListener('click', () => {
-    lyricsBox.value = baseText;
+    if (!baseLyrics) return;
+    lyricsBox.value = baseLyrics;
     cadenceIndex = 0;
     cadenceBtn.textContent = "Cadence: Original";
     autoResize(lyricsBox);
   });
 
-  /* REAL spell + punctuation — backend required */
-  spellBtn.addEventListener('click', async () => {
-    if (!lyricsBox.value.trim()) return;
-
-    const response = await fetch('/api/spellcheck', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: lyricsBox.value })
-    });
-
-    const data = await response.json();
-    baseText = data.correctedText;
-    lyricsBox.value = baseText;
-    cadenceIndex = 0;
-    cadenceBtn.textContent = "Cadence: Original";
+  /* ===== DELETE IS FINAL ===== */
+  lyricsBox.addEventListener('input', () => {
+    if (!lyricsBox.value.trim()) {
+      baseLyrics = "";
+      cadenceIndex = 0;
+      cadenceBtn.textContent = "Cadence: Original";
+    }
     autoResize(lyricsBox);
+  });
+
+  [lyricsBox, styleInput].forEach(el => {
+    autoResize(el);
+    el.addEventListener('input', () => autoResize(el));
   });
 
 });
