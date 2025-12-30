@@ -83,17 +83,15 @@ textarea {
   font-size: 13px;
 }
 
-/* Lyrics */
+/* Keep base sizes — JS will override height dynamically */
 textarea {
   resize: none;
   overflow: hidden;
-  min-height: 48px;
 }
 
 .style-input {
   resize: none;
   overflow: hidden;
-  min-height: 48px;
 }
 
 .style-presets {
@@ -242,21 +240,8 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  /* ===== AUTO-RESIZE TEXTAREAS (SURGICAL ADD) ===== */
-  function autoResize(el) {
-    el.style.height = 'auto';
-    el.style.height = el.scrollHeight + 'px';
-  }
-
+  /* ===== CADENCE LOGIC (UNCHANGED) ===== */
   const lyricsBox = document.getElementById('lyricsBox');
-  const styleBox = document.getElementById('styleInput');
-
-  [lyricsBox, styleBox].forEach(el => {
-    autoResize(el);
-    el.addEventListener('input', () => autoResize(el));
-  });
-
-  /* ===== CADENCE LOGIC — UNCHANGED ===== */
   const cadenceBtn = document.getElementById('cadenceBtn');
   const resetCadenceBtn = document.getElementById('resetCadenceBtn');
 
@@ -285,16 +270,27 @@ window.addEventListener('DOMContentLoaded', () => {
     ensureOriginalCaptured();
     cadenceIndex = (cadenceIndex % 4) + 1;
     lyricsBox.value = cadenceFns[cadenceIndex - 1](originalLyrics);
-    autoResize(lyricsBox);
     cadenceBtn.textContent = "Cadence: " + cadenceNames[cadenceIndex - 1];
+    autoResize(lyricsBox);
   });
 
   resetCadenceBtn.addEventListener("click", () => {
     if (originalLyrics === "") return;
     lyricsBox.value = originalLyrics;
-    autoResize(lyricsBox);
     cadenceIndex = 0;
     cadenceBtn.textContent = "Cadence: Original";
+    autoResize(lyricsBox);
+  });
+
+  /* ===== AUTO-EXPAND (SURGICAL ADD ONLY) ===== */
+  function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
+  }
+
+  [lyricsBox, styleInput].forEach(el => {
+    autoResize(el);
+    el.addEventListener('input', () => autoResize(el));
   });
 
 });
