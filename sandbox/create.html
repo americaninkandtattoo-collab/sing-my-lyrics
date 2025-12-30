@@ -81,22 +81,21 @@ textarea {
   color: #fff;
   padding: 6px;
   font-size: 13px;
-  resize: none;
 }
 
-/* 🔧 SURGICAL CHANGE:
-   Lyrics + Style now EXPAND — no internal scroll */
+/* Lyrics */
 textarea {
+  resize: none;
   overflow: hidden;
   min-height: 48px;
 }
 
 .style-input {
+  resize: none;
   overflow: hidden;
   min-height: 48px;
 }
 
-/* Style presets (unchanged) */
 .style-presets {
   max-height: 90px;
   overflow-y: auto;
@@ -115,7 +114,6 @@ textarea {
   background: #2a2a2a;
 }
 
-/* Advanced options (unchanged) */
 .advanced {
   background: #151515;
   border: 1px solid #333;
@@ -244,18 +242,60 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  /* 🔧 SURGICAL: auto-expand textareas */
+  /* ===== AUTO-RESIZE TEXTAREAS (SURGICAL ADD) ===== */
   function autoResize(el) {
     el.style.height = 'auto';
     el.style.height = el.scrollHeight + 'px';
   }
 
   const lyricsBox = document.getElementById('lyricsBox');
-  lyricsBox.addEventListener('input', () => autoResize(lyricsBox));
-  autoResize(lyricsBox);
+  const styleBox = document.getElementById('styleInput');
 
-  styleInput.addEventListener('input', () => autoResize(styleInput));
-  autoResize(styleInput);
+  [lyricsBox, styleBox].forEach(el => {
+    autoResize(el);
+    el.addEventListener('input', () => autoResize(el));
+  });
+
+  /* ===== CADENCE LOGIC — UNCHANGED ===== */
+  const cadenceBtn = document.getElementById('cadenceBtn');
+  const resetCadenceBtn = document.getElementById('resetCadenceBtn');
+
+  let cadenceIndex = 0;
+  let originalLyrics = "";
+
+  function cadence1(text) { return text.split(/\s+/).filter(Boolean).join(" / "); }
+  function cadence2(text) { return text.split(/\s+/).filter(Boolean).join("\n"); }
+  function cadence3(text) {
+    return text.split("\n").map(l => l.split(/\s+/).filter(Boolean).join("  ")).join("\n");
+  }
+  function cadence4(text) {
+    return text.split(/\s+/).filter(Boolean).map(w => w + "…").join(" ");
+  }
+
+  const cadenceFns = [cadence1, cadence2, cadence3, cadence4];
+  const cadenceNames = ["Chop", "Staccato", "Double Space", "Trailing Echo"];
+
+  function ensureOriginalCaptured() {
+    if (originalLyrics === "") {
+      originalLyrics = lyricsBox.value || "";
+    }
+  }
+
+  cadenceBtn.addEventListener("click", () => {
+    ensureOriginalCaptured();
+    cadenceIndex = (cadenceIndex % 4) + 1;
+    lyricsBox.value = cadenceFns[cadenceIndex - 1](originalLyrics);
+    autoResize(lyricsBox);
+    cadenceBtn.textContent = "Cadence: " + cadenceNames[cadenceIndex - 1];
+  });
+
+  resetCadenceBtn.addEventListener("click", () => {
+    if (originalLyrics === "") return;
+    lyricsBox.value = originalLyrics;
+    autoResize(lyricsBox);
+    cadenceIndex = 0;
+    cadenceBtn.textContent = "Cadence: Original";
+  });
 
 });
 </script>
