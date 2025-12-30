@@ -156,9 +156,7 @@ textarea {
     </div>
 
     <div class="create-section">
-      <button type="button" id="spellBtn" class="toggle-btn">
-        Spell + Punctuation Check
-      </button>
+      <button class="toggle-btn">Spell + Punctuation Check</button>
     </div>
 
     <div class="create-section">
@@ -229,19 +227,8 @@ textarea {
 <script>
 window.addEventListener('DOMContentLoaded', () => {
 
-  /* ===== AUTO-EXPAND ===== */
-  function autoResize(el) {
-    el.style.height = 'auto';
-    el.style.height = el.scrollHeight + 'px';
-  }
-
-  const lyricsBox = document.getElementById('lyricsBox');
-  const cadenceBtn = document.getElementById('cadenceBtn');
-  const resetCadenceBtn = document.getElementById('resetCadenceBtn');
-  const spellBtn = document.getElementById('spellBtn');
-  const styleInput = document.getElementById('styleInput');
-
   /* STYLE PRESET → INPUT (UNCHANGED) */
+  const styleInput = document.getElementById('styleInput');
   document.getElementById('stylePresets').addEventListener('click', e => {
     if (!e.target || !e.target.textContent) return;
     const style = e.target.textContent;
@@ -253,8 +240,13 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  /* ===== CADENCE LOGIC (UNCHANGED) ===== */
+  const lyricsBox = document.getElementById('lyricsBox');
+  const cadenceBtn = document.getElementById('cadenceBtn');
+  const resetCadenceBtn = document.getElementById('resetCadenceBtn');
+
   let cadenceIndex = 0;
-  let baseLyrics = "";   // ← authoritative source after spell check
+  let originalLyrics = "";
 
   function cadence1(text) { return text.split(/\s+/).filter(Boolean).join(" / "); }
   function cadence2(text) { return text.split(/\s+/).filter(Boolean).join("\n"); }
@@ -268,59 +260,33 @@ window.addEventListener('DOMContentLoaded', () => {
   const cadenceFns = [cadence1, cadence2, cadence3, cadence4];
   const cadenceNames = ["Chop", "Staccato", "Double Space", "Trailing Echo"];
 
-  /* ===== SPELL + PUNCTUATION (REAL, PERMANENT) ===== */
-  spellBtn.addEventListener('click', () => {
-    const text = lyricsBox.value.trim();
-    if (!text) {
-      baseLyrics = "";
-      return;
+  function ensureOriginalCaptured() {
+    if (originalLyrics === "") {
+      originalLyrics = lyricsBox.value || "";
     }
+  }
 
-    let cleaned = text
-      .replace(/[“”]/g, '"')
-      .replace(/[‘’]/g, "'")
-      .replace(/\s+/g, ' ')
-      .replace(/\s*([,.!?])/g, '$1')
-      .replace(/([.!?])(\w)/g, '$1 $2')
-      .replace(/(^\w|[.!?]\s+\w)/g, c => c.toUpperCase());
-
-    baseLyrics = cleaned;
-    lyricsBox.value = cleaned;
-    cadenceIndex = 0;
-    cadenceBtn.textContent = "Cadence: Original";
-    autoResize(lyricsBox);
-  });
-
-  /* ===== CADENCE ===== */
-  cadenceBtn.addEventListener('click', () => {
-    if (!lyricsBox.value.trim()) return;
-
-    if (!baseLyrics) baseLyrics = lyricsBox.value;
+  cadenceBtn.addEventListener("click", () => {
+    ensureOriginalCaptured();
     cadenceIndex = (cadenceIndex % 4) + 1;
-
-    lyricsBox.value = cadenceFns[cadenceIndex - 1](baseLyrics);
+    lyricsBox.value = cadenceFns[cadenceIndex - 1](originalLyrics);
     cadenceBtn.textContent = "Cadence: " + cadenceNames[cadenceIndex - 1];
     autoResize(lyricsBox);
   });
 
-  /* ===== RESET CADENCE ===== */
-  resetCadenceBtn.addEventListener('click', () => {
-    if (!baseLyrics) return;
-    lyricsBox.value = baseLyrics;
+  resetCadenceBtn.addEventListener("click", () => {
+    if (originalLyrics === "") return;
+    lyricsBox.value = originalLyrics;
     cadenceIndex = 0;
     cadenceBtn.textContent = "Cadence: Original";
     autoResize(lyricsBox);
   });
 
-  /* ===== DELETE IS FINAL ===== */
-  lyricsBox.addEventListener('input', () => {
-    if (!lyricsBox.value.trim()) {
-      baseLyrics = "";
-      cadenceIndex = 0;
-      cadenceBtn.textContent = "Cadence: Original";
-    }
-    autoResize(lyricsBox);
-  });
+  /* ===== AUTO-EXPAND (SURGICAL ADD ONLY) ===== */
+  function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
+  }
 
   [lyricsBox, styleInput].forEach(el => {
     autoResize(el);
