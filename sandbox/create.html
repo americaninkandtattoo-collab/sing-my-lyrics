@@ -244,39 +244,63 @@ document.getElementById('stylePresets').addEventListener('click', e => {
 /* ===== CADENCE LOGIC (SURGICAL ADD) ===== */
 const lyricsBox = document.getElementById('lyricsBox');
 const cadenceBtn = document.getElementById('cadenceBtn');
-const resetBtn = document.getElementById('resetCadenceBtn');
+const resetCadenceBtn = document.getElementById('resetCadenceBtn');
 
-let originalLyrics = '';
 let cadenceIndex = 0;
+let originalLyrics = "";
 
-const cadences = [
-  text => text, // Original
-  text => text.split('\n').map(l => l.trim()).join('\n'), // Tight
-  text => text.split(' ').join(' / '), // Chopped
-  text => text.split('\n').join('\n\n'), // Spaced
-  text => text.split('').join(' ') // Staccato
-];
+/* 4 cadence variants */
+function cadence1(text) {
+  // Chop / slash feel
+  return text.split(/\s+/).filter(Boolean).join(" / ");
+}
 
-const cadenceLabels = [
-  'Original',
-  'Cadence 1',
-  'Cadence 2',
-  'Cadence 3',
-  'Cadence 4'
-];
+function cadence2(text) {
+  // Staccato: one word per line
+  return text.split(/\s+/).filter(Boolean).join("\n");
+}
 
-cadenceBtn.onclick = () => {
-  if (!originalLyrics) originalLyrics = lyricsBox.value;
-  cadenceIndex = (cadenceIndex + 1) % cadences.length;
-  lyricsBox.value = cadences[cadenceIndex](originalLyrics);
-  cadenceBtn.textContent = Cadence: ${cadenceLabels[cadenceIndex]};
-};
+function cadence3(text) {
+  // Double-space feel per line
+  return text
+    .split("\n")
+    .map(line => line.split(/\s+/).filter(Boolean).join("  "))
+    .join("\n");
+}
 
-resetBtn.onclick = () => {
+function cadence4(text) {
+  // Ellipsis feel
+  return text.split(/\s+/).filter(Boolean).map(w => w + "…").join(" ");
+}
+
+const cadenceFns = [cadence1, cadence2, cadence3, cadence4];
+
+function ensureOriginalCaptured() {
+  // Capture only once, so reset always returns to user’s original
+  if (originalLyrics === "") {
+    originalLyrics = lyricsBox.value || "";
+  }
+}
+
+cadenceBtn.addEventListener("click", () => {
+  ensureOriginalCaptured();
+
+  // If empty, just keep labels consistent
+  cadenceIndex = (cadenceIndex % 4) + 1; // 1..4
+  const fn = cadenceFns[cadenceIndex - 1];
+
+  lyricsBox.value = fn(originalLyrics);
+  cadenceBtn.textContent = Cadence: ${cadenceIndex};
+});
+
+resetCadenceBtn.addEventListener("click", () => {
+  // Only reset if we actually captured something
+  if (originalLyrics === "") return;
+
   lyricsBox.value = originalLyrics;
   cadenceIndex = 0;
-  cadenceBtn.textContent = 'Cadence: Original';
-};
+  cadenceBtn.textContent = "Cadence: Original";
+});
 </script>
 
 </body>
