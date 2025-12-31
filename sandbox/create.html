@@ -156,7 +156,7 @@ textarea {
     </div>
 
     <div class="create-section">
-      <button type="button" id="spellBtn" class="toggle-btn">Spell + Punctuation Check</button>w
+      <button class="toggle-btn">Spell + Punctuation Check</button>
     </div>
 
     <div class="create-section">
@@ -226,10 +226,7 @@ textarea {
 
 <script>
 window.addEventListener('DOMContentLoaded', () => {
-const spellBtn = document.getElementById('spellBtn');
-  lyricsBox.value = lyricsBox.value;
-  autoResize(lyricsBox);
-});
+
   /* STYLE PRESET → INPUT (UNCHANGED) */
   const styleInput = document.getElementById('styleInput');
   document.getElementById('stylePresets').addEventListener('click', e => {
@@ -242,26 +239,7 @@ const spellBtn = document.getElementById('spellBtn');
       autoResize(styleInput);
     }
   });
-/* ===== SPELL + PUNCTUATION (FORMAT-SAFE) ===== */
-const spellBtn = document.getElementById('spellBtn');
 
-spellBtn.addEventListener('click', () => {
-  if (!lyricsBox.value) return;
-
-  let text = lyricsBox.value;
-
-  // Fix spacing before punctuation
-  text = text.replace(/\s+([,.!?])/g, '$1');
-
-  // Ensure space after punctuation (without touching line breaks)
-  text = text.replace(/([,.!?])([^\s\n])/g, '$1 $2');
-
-  // Capitalize first letter of each line
-  text = text.replace(/(^|\n)([a-z])/g, (m, p1, p2) => p1 + p2.toUpperCase());
-
-  lyricsBox.value = text;
-  autoResize(lyricsBox);
-});
   /* ===== CADENCE LOGIC (UNCHANGED) ===== */
   const lyricsBox = document.getElementById('lyricsBox');
   const cadenceBtn = document.getElementById('cadenceBtn');
@@ -319,4 +297,4 @@ spellBtn.addEventListener('click', () => {
 </script>
 
 </body>
-</html><b
+</html>
