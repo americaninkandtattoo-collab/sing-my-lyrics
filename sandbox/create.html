@@ -155,8 +155,6 @@ textarea {
       </div>
     </div>
 
-    <!-- SPELL + PUNCTUATION REMOVED -->
-
     <div class="create-section">
       <div class="label">Lyrics</div>
       <textarea id="lyricsBox" placeholder="Enter lyrics here..."></textarea>
@@ -238,7 +236,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  /* ===== CADENCE LOGIC (UNCHANGED) ===== */
+  /* ===== CADENCE LOGIC ===== */
   const lyricsBox = document.getElementById('lyricsBox');
   const cadenceBtn = document.getElementById('cadenceBtn');
   const resetCadenceBtn = document.getElementById('resetCadenceBtn');
@@ -273,24 +271,30 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   resetCadenceBtn.addEventListener("click", () => {
-    if (originalLyrics === "") return;
+    if (!originalLyrics) return;
     lyricsBox.value = originalLyrics;
     cadenceIndex = 0;
     cadenceBtn.textContent = "Cadence: Original";
     autoResize(lyricsBox);
   });
 
-  /* ===== AUTO-EXPAND (SURGICAL ADD ONLY) ===== */
+  /* ===== SURGICAL FIX ===== */
+  lyricsBox.addEventListener('input', () => {
+    if (lyricsBox.value === "") {
+      originalLyrics = "";
+      cadenceIndex = 0;
+      cadenceBtn.textContent = "Cadence: Original";
+    }
+    autoResize(lyricsBox);
+  });
+
+  /* ===== AUTO-EXPAND ===== */
   function autoResize(el) {
     el.style.height = 'auto';
     el.style.height = el.scrollHeight + 'px';
   }
 
-  [lyricsBox, styleInput].forEach(el => {
-    autoResize(el);
-    el.addEventListener('input', () => autoResize(el));
-  });
-
+  autoResize(styleInput);
 });
 </script>
 
