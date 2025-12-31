@@ -147,6 +147,7 @@ textarea {
       <button class="create-btn">Record Audio</button>
     </div>
 
+    <!-- CADENCE CONTROLS -->
     <div class="create-section">
       <div class="create-row">
         <button type="button" id="cadenceBtn" class="toggle-btn">Cadence: Original</button>
@@ -155,12 +156,12 @@ textarea {
     </div>
 
     <div class="create-section">
-      <button id="spellBtn" class="toggle-btn">Spell + Punctuation Check</button>
+      <button type="button" id="spellBtn" class="toggle-btn">Spell + Punctuation Check</button>w
     </div>
 
     <div class="create-section">
       <div class="label">Lyrics</div>
-      <textarea id="lyricsBox" placeholder="Enter lyrics here..." spellcheck="true"></textarea>
+      <textarea id="lyricsBox" placeholder="Enter lyrics here..."></textarea>
     </div>
 
     <div class="create-section">
@@ -225,20 +226,97 @@ textarea {
 
 <script>
 window.addEventListener('DOMContentLoaded', () => {
+const spellBtn = document.getElementById('spellBtn');
+  lyricsBox.value = lyricsBox.value;
+  autoResize(lyricsBox);
+});
+  /* STYLE PRESET → INPUT (UNCHANGED) */
+  const styleInput = document.getElementById('styleInput');
+  document.getElementById('stylePresets').addEventListener('click', e => {
+    if (!e.target || !e.target.textContent) return;
+    const style = e.target.textContent;
+    const existing = styleInput.value.split(',').map(s => s.trim()).filter(Boolean);
+    if (!existing.includes(style)) {
+      existing.push(style);
+      styleInput.value = existing.join(', ');
+      autoResize(styleInput);
+    }
+  });
+/* ===== SPELL + PUNCTUATION (FORMAT-SAFE) ===== */
+const spellBtn = document.getElementById('spellBtn');
 
+spellBtn.addEventListener('click', () => {
+  if (!lyricsBox.value) return;
+
+  let text = lyricsBox.value;
+
+  // Fix spacing before punctuation
+  text = text.replace(/\s+([,.!?])/g, '$1');
+
+  // Ensure space after punctuation (without touching line breaks)
+  text = text.replace(/([,.!?])([^\s\n])/g, '$1 $2');
+
+  // Capitalize first letter of each line
+  text = text.replace(/(^|\n)([a-z])/g, (m, p1, p2) => p1 + p2.toUpperCase());
+
+  lyricsBox.value = text;
+  autoResize(lyricsBox);
+});
+  /* ===== CADENCE LOGIC (UNCHANGED) ===== */
+  const lyricsBox = document.getElementById('lyricsBox');
+  const cadenceBtn = document.getElementById('cadenceBtn');
+  const resetCadenceBtn = document.getElementById('resetCadenceBtn');
+
+  let cadenceIndex = 0;
+  let originalLyrics = "";
+
+  function cadence1(text) { return text.split(/\s+/).filter(Boolean).join(" / "); }
+  function cadence2(text) { return text.split(/\s+/).filter(Boolean).join("\n"); }
+  function cadence3(text) {
+    return text.split("\n").map(l => l.split(/\s+/).filter(Boolean).join("  ")).join("\n");
+  }
+  function cadence4(text) {
+    return text.split(/\s+/).filter(Boolean).map(w => w + "…").join(" ");
+  }
+
+  const cadenceFns = [cadence1, cadence2, cadence3, cadence4];
+  const cadenceNames = ["Chop", "Staccato", "Double Space", "Trailing Echo"];
+
+  function ensureOriginalCaptured() {
+    if (originalLyrics === "") {
+      originalLyrics = lyricsBox.value || "";
+    }
+  }
+
+  cadenceBtn.addEventListener("click", () => {
+    ensureOriginalCaptured();
+    cadenceIndex = (cadenceIndex % 4) + 1;
+    lyricsBox.value = cadenceFns[cadenceIndex - 1](originalLyrics);
+    cadenceBtn.textContent = "Cadence: " + cadenceNames[cadenceIndex - 1];
+    autoResize(lyricsBox);
+  });
+
+  resetCadenceBtn.addEventListener("click", () => {
+    if (originalLyrics === "") return;
+    lyricsBox.value = originalLyrics;
+    cadenceIndex = 0;
+    cadenceBtn.textContent = "Cadence: Original";
+    autoResize(lyricsBox);
+  });
+
+  /* ===== AUTO-EXPAND (SURGICAL ADD ONLY) ===== */
   function autoResize(el) {
     el.style.height = 'auto';
     el.style.height = el.scrollHeight + 'px';
   }
 
-  const lyricsBox = document.getElementById('lyricsBox');
-  const spellBtn = document.getElementById('spellBtn');
+  [lyricsBox, styleInput].forEach(el => {
+    autoResize(el);
+    el.addEventListener('input', () => autoResize(el));
+  });
 
-  
-  autoResize(lyricsBox);
-  lyricsBox.addEventListener('input', () => autoResize(lyricsBox));
 });
 </script>
 
 </body>
-</html>
+</html><b
