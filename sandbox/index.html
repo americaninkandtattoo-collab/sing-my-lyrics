@@ -229,18 +229,7 @@ html, body {
 </style>  
 </head>  
   
-<body>  
-  <div class="create-section">
-  <a href="/sing-my-lyrics/sandbox/create.html">
-    <button class="create-btn">Create</button>
-  </a>
-</div>
 
-<div class="create-section">
- <a href="/sing-my-lyrics/sandbox/library.html">
-    <button class="create-btn">Library</button>
-  </a>
-</div>
 <div class="app" id="app">  
   
   <!-- LEFT PANEL -->  
@@ -254,8 +243,8 @@ html, body {
     <div class="left-nav">  
       <div class="left-item"><span class="icon">👤</span><span class="label">User</span></div>  
       <div class="left-item"><span class="icon">🏠</span><span class="label">Home</span></div>  
-      <div class="left-item"><span class="icon">✱</span><span class="label">Create</span></div>  
-      <div class="left-item"><span class="icon">☰</span><span class="label">Library</span></div>  
+     <a class="left-item" href="./create.html"><span class="icon">*</span><span class="label">Create</span></a> 
+     <a class="left-item" href="./library.html"><span class="icon">📁</span><span class="label">Library</span></a>  
       <div class="left-item"><span class="icon">🔍</span><span class="label">Search</span></div>  
       <div class="left-item"><span class="icon">🗑</span><span class="label">Trash</span></div>  
       <div class="left-item"><span class="icon">💳</span><span class="label">Credits</span></div>  
@@ -265,7 +254,12 @@ html, body {
   </div>  
   
   <!-- CENTER PANEL -->  
-  <div class="center">CENTER PANEL</div>  
+  <div class="center">
+  <iframe
+    src="./create.html"
+    style="width:100%; height:100%; border:none;"
+  ></iframe>
+</div>
   
   <!-- RIGHT PANEL — REBUILT INTERNALLY -->  
   <div class="right">  
