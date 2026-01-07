@@ -1124,3 +1124,865 @@ Select a song card to preview lyrics here.
   </script>
 </body>
 </html>
+You sent
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SML Lite</title>
+
+<style>
+  :root{
+    --bg:#111;
+    --panel:#1e1e1e;
+    --panel2:#222;
+    --panel3:#1b1b1b;
+    --border:#444;
+    --border2:#555;
+    --text:#fff;
+    --muted:#bdbdbd;
+    --muted2:#9a9a9a;
+    --chip:#2a2a2a;
+    --chip2:#303030;
+    --accent:#dcdcdc;
+  }
+
+  html, body{
+    margin:0;
+    padding:0;
+    height:100%;
+    overflow:hidden;
+    background:var(--bg);
+    color:var(--text);
+    font-family: Arial, sans-serif;
+  }
+
+  /* ====== APP GRID (MATCHES YOUR DRAWING) ====== */
+  .app{
+    height:100vh;
+    width:100vw;
+    display:grid;
+    grid-template-columns: 220px 420px 1fr 260px;
+    grid-template-rows: 1fr 80px;
+    gap:0;
+  }
+
+  /* ====== LEFT CONTROL PANEL ====== */
+  .left{
+    grid-column:1;
+    grid-row:1 / span 2;
+    background:var(--panel);
+    border-right:2px solid var(--border2);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .left-top{
+    padding:10px;
+    border-bottom:1px solid #2b2b2b;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+
+  .toggle-btn{
+    background:#000;
+    color:#fff;
+    border:1px solid var(--border2);
+    cursor:pointer;
+    padding:4px 8px;
+    font-size:14px;
+    border-radius:4px;
+  }
+
+  .logo{
+    font-weight:bold;
+    font-size:14px;
+    letter-spacing:0.5px;
+  }
+
+  .left-nav{
+    padding:10px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    overflow:auto;
+  }
+
+  .left-item{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 10px;
+    border:1px solid transparent;
+    border-radius:6px;
+    cursor:pointer;
+    user-select:none;
+  }
+
+  .left-item:hover{
+    background:#202020;
+    border-color:#2f2f2f;
+  }
+
+  .left-item.active{
+    background:#242424;
+    border-color:var(--border);
+  }
+
+  .left-item .icon{
+    width:20px;
+    text-align:center;
+    opacity:0.9;
+  }
+
+  .left-item .label{
+    white-space:nowrap;
+    font-size:14px;
+  }
+
+  /* collapsed left */
+  .app.left-collapsed{
+    grid-template-columns: 44px 420px 1fr 260px;
+  }
+  .app.left-collapsed .left-item .label,
+  .app.left-collapsed .logo{
+    display:none;
+  }
+  .app.left-collapsed .left-top{
+    justify-content:center;
+  }
+  .app.left-collapsed .left-nav{
+    padding:10px 6px;
+  }
+  .app.left-collapsed .left-item{
+    justify-content:center;
+    padding:10px 0;
+  }
+
+  /* ====== CREATE PANEL (COLUMN 2) ====== */
+  .create{
+    grid-column:2;
+    grid-row:1;
+    background:var(--panel2);
+    border-right:2px solid var(--border2);
+    overflow:auto;
+    padding:12px;
+  }
+
+  .create-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:10px;
+  }
+
+  .panel-title{
+    font-size:14px;
+    font-weight:bold;
+    opacity:0.95;
+  }
+
+  .pill{
+    font-size:12px;
+    color:var(--muted);
+    background:#1a1a1a;
+    border:1px solid #2f2f2f;
+    padding:4px 8px;
+    border-radius:999px;
+  }
+
+  .btn{
+    width:100%;
+    background:#121212;
+    color:#fff;
+    border:1px solid var(--border2);
+    padding:10px 10px;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:14px;
+  }
+
+  .btn:hover{ border-color:#777; }
+
+  .row{
+    display:flex;
+    gap:10px;
+    width:100%;
+  }
+
+  .row .btn{
+    width:50%;
+  }
+
+  .section{
+    border:1px solid var(--border);
+    background:#1a1a1a;
+    border-radius:8px;
+    padding:10px;
+    margin-top:10px;
+  }
+
+  .section-label{
+    font-size:12px;
+    color:var(--muted);
+    margin-bottom:6px;
+  }
+
+  .cadence-row{
+    display:flex;
+    gap:10px;
+    align-items:center;
+  }
+
+  .cadence-chip{
+    flex:1;
+    background:var(--chip);
+    border:1px solid var(--border);
+    padding:8px 10px;
+    border-radius:6px;
+    font-size:13px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+  }
+
+  .mini-btn{
+    background:#101010;
+    color:#fff;
+    border:1px solid var(--border2);
+    padding:8px 10px;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:13px;
+    white-space:nowrap;
+  }
+
+  .mini-btn:hover{ border-color:#777; }
+
+  textarea, input{
+    width:100%;
+    box-sizing:border-box;
+    background:#111;
+    color:#fff;
+    border:1px solid var(--border2);
+    border-radius:6px;
+    padding:10px;
+    font-size:13px;
+    outline:none;
+  }
+
+  textarea{ resize:none; }
+
+  .field{
+    margin-top:10px;
+  }
+
+  .field input{
+    height:40px;
+  }
+
+  .styles-grid{
+    display:grid;
+    grid-template-columns: 1fr;
+    gap:8px;
+    margin-top:8px;
+  }
+
+  .styles-list{
+    background:#111;
+    border:1px solid var(--border2);
+    border-radius:6px;
+    padding:8px;
+    max-height:130px;
+    overflow:auto;
+  }
+
+  .style-item{
+    padding:6px 8px;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:13px;
+    color:#eaeaea;
+  }
+
+  .style-item:hover{
+    background:#1c1c1c;
+  }
+
+  .style-item.active{
+    background:#232323;
+    border:1px solid #333;
+  }
+
+  .create-actions{
+    display:flex;
+    gap:10px;
+    margin-top:10px;
+  }
+
+  .create-actions .btn{
+    width:50%;
+  }
+
+  /* ====== WORKSPACE / LIBRARY (COLUMN 3) ====== */
+  .workspace{
+    grid-column:3;
+    grid-row:1;
+    background:var(--panel3);
+    overflow:auto;
+    padding:12px;
+  }
+
+  .workspace-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:10px;
+  }
+
+  .workspace-sub{
+    font-size:12px;
+    color:var(--muted);
+  }
+
+  .song-card{
+    border:1px solid var(--border);
+    background:#202020;
+    border-radius:10px;
+    padding:10px;
+    margin-bottom:10px;
+    cursor:pointer;
+  }
+
+  .song-card:hover{ border-color:#777; }
+
+  .song-card.active{
+    outline:2px solid #777;
+  }
+
+  .song-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+  }
+
+  .song-name{
+    font-weight:bold;
+    font-size:13px;
+  }
+
+  .song-meta{
+    font-size:12px;
+    color:var(--muted);
+    margin-top:6px;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .meta-chip{
+    background:#161616;
+    border:1px solid #2c2c2c;
+    padding:3px 8px;
+    border-radius:999px;
+  }
+
+  /* ====== SONG PANEL (COLUMN 4) ====== */
+  .song-panel{
+    grid-column:4;
+    grid-row:1 / span 2;
+    background:var(--panel);
+    border-left:2px solid var(--border2);
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+  }
+
+  .song-panel-header{
+    padding:12px;
+    border-bottom:1px solid #2b2b2b;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+
+  .song-panel-title{
+    font-weight:bold;
+    font-size:14px;
+  }
+
+  .song-panel-body{
+    padding:12px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    overflow:auto;
+    height:100%;
+  }
+
+  .right-image{
+    height:160px;
+    background:#2a2a2a;
+    border:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#888;
+    font-size:12px;
+    border-radius:8px;
+  }
+
+  .right-user{
+    font-size:12px;
+    color:var(--muted);
+    border-bottom:1px solid #333;
+    padding-bottom:8px;
+  }
+
+  .right-song-info{
+    font-size:13px;
+    font-weight:bold;
+  }
+
+  .right-lyrics{
+    flex:1;
+    overflow:auto;
+    background:#181818;
+    border:1px solid #333;
+    border-radius:8px;
+    padding:10px;
+    font-size:13px;
+    line-height:1.5;
+    color:#e6e6e6;
+    white-space:pre-wrap;
+    min-height:140px;
+  }
+
+  .right-date{
+    font-size:11px;
+    color:#777;
+    text-align:right;
+  }
+
+  /* ====== PLAYER BAR (BOTTOM, SPANS COL 2-3) ====== */
+  .player{
+    grid-column:2 / span 2;
+    grid-row:2;
+    background:#0d0d0d;
+    border-top:2px solid var(--border2);
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:0 12px;
+  }
+
+  .player-controls{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+
+  .player-btn{
+    cursor:pointer;
+    opacity:0.9;
+    border:1px solid #333;
+    background:#111;
+    padding:6px 10px;
+    border-radius:8px;
+    user-select:none;
+  }
+
+  .player-btn:hover{ opacity:1; border-color:#666; }
+
+  .player-timeline{
+    flex:1;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+
+  .player-time{
+    font-size:12px;
+    color:#aaa;
+    min-width:44px;
+    text-align:center;
+  }
+
+  .player-bar{
+    flex:1;
+    height:6px;
+    background:#2a2a2a;
+    border-radius:999px;
+    position:relative;
+    overflow:hidden;
+    border:1px solid #333;
+  }
+
+  .player-bar-fill{
+    width:0%;
+    height:100%;
+    background:#e6e6e6;
+  }
+
+  .player-now{
+    font-size:12px;
+    color:#aaa;
+    min-width:180px;
+    text-align:right;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+</style>
+</head>
+
+<body>
+<div class="app" id="app">
+
+  <!-- LEFT CONTROL PANEL -->
+  <div class="left">
+    <div class="left-top">
+      <button class="toggle-btn" id="toggleBtn" onclick="toggleLeft()">❮</button>
+      <div class="logo">SML</div>
+    </div>
+
+    <div class="left-nav" id="leftNav">
+      <div class="left-item"><span class="icon">👤</span><span class="label">User</span></div>
+      <div class="left-item"><span class="icon">🏠</span><span class="label">Home</span></div>
+      <div class="left-item active"><span class="icon">*</span><span class="label">Create</span></div>
+      <div class="left-item"><span class="icon">📁</span><span class="label">Library</span></div>
+      <div class="left-item"><span class="icon">🔍</span><span class="label">Search</span></div>
+      <div class="left-item"><span class="icon">🗑</span><span class="label">Trash</span></div>
+      <div class="left-item"><span class="icon">💳</span><span class="label">Credits</span></div>
+    </div>
+  </div>
+
+  <!-- CREATE PANEL (THIS IS THE "CREATE" YOU WANTED) -->
+  <div class="create">
+    <div class="create-header">
+      <div class="panel-title">Create</div>
+      <div class="pill" id="statusPill">Viewing: Draft</div>
+    </div>
+
+    <div class="row">
+      <button class="btn" id="btnCreateSong">Create Song</button>
+      <button class="btn" id="btnRecordAudio">Record Audio</button>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Cadence</div>
+      <div class="cadence-row">
+        <div class="cadence-chip">
+          <span id="cadenceLabel">Cadence: Original</span>
+          <span style="color:#9a9a9a;font-size:12px;">(locked)</span>
+        </div>
+        <button class="mini-btn" id="btnResetCadence">Reset Cadence</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Lyrics</div>
+      <textarea id="lyricsBox" rows="7" placeholder="Enter lyrics here..."></textarea>
+
+      <div class="field">
+        <div class="section-label" style="margin:8px 0 6px;">Song Title</div>
+        <input id="titleBox" placeholder="Add Song Title" />
+      </div>
+
+      <div class="field">
+        <div class="section-label" style="margin:8px 0 6px;">Styles</div>
+        <input id="styleInput" placeholder="Type custom styles..." />
+
+        <div class="styles-grid">
+          <div class="styles-list" id="stylesList">
+            <div class="style-item">Hardcore Punk</div>
+            <div class="style-item">Industrial</div>
+            <div class="style-item">Lo-Fi</div>
+            <div class="style-item">Hip-Hop</div>
+            <div class="style-item">Synthwave</div>
+            <div class="style-item">Cinematic</div>
+            <div class="style-item">Dark Pop</div>
+            <div class="style-item">Acoustic</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="create-actions">
+        <button class="btn" id="btnRunDraft">Run Draft</button>
+        <button class="btn" id="btnClear">Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- WORKSPACE / LIBRARY -->
+  <div class="workspace">
+    <div class="workspace-header">
+      <div class="panel-title">Workspace / Library</div>
+      <div class="workspace-sub">Your songs (3)</div>
+    </div>
+
+    <div class="song-card active" data-id="1">
+      <div class="song-top">
+        <div class="song-name">Untitled Song #1</div>
+        <div class="workspace-sub">Draft</div>
+      </div>
+      <div class="song-meta">
+        <span class="meta-chip">Draft • just now</span>
+        <span class="meta-chip">Cadence: Original</span>
+        <span class="meta-chip">Hardcore Punk</span>
+      </div>
+    </div>
+
+    <div class="song-card" data-id="2">
+      <div class="song-top">
+        <div class="song-name">Untitled Song #2</div>
+        <div class="workspace-sub">Draft</div>
+      </div>
+      <div class="song-meta">
+        <span class="meta-chip">Draft • today</span>
+        <span class="meta-chip">Cadence: Original</span>
+        <span class="meta-chip">Industrial</span>
+      </div>
+    </div>
+
+    <div class="song-card" data-id="3">
+      <div class="song-top">
+        <div class="song-name">Untitled Song #3</div>
+        <div class="workspace-sub">Draft</div>
+      </div>
+      <div class="song-meta">
+        <span class="meta-chip">Draft • today</span>
+        <span class="meta-chip">Cadence: Original</span>
+        <span class="meta-chip">Lo-Fi</span>
+      </div>
+    </div>
+
+    <div class="workspace-sub" style="margin-top:10px;opacity:0.9;">
+      (This list is placeholder — later it becomes your real saved songs.)
+    </div>
+  </div>
+
+  <!-- SONG PANEL -->
+  <div class="song-panel">
+    <div class="song-panel-header">
+      <div class="song-panel-title">Song Panel</div>
+      <div class="workspace-sub" id="songStatus">Draft</div>
+    </div>
+
+    <div class="song-panel-body">
+      <div class="right-image">Draft image (stub)</div>
+      <div class="right-user" id="userLine">User: You</div>
+      <div class="right-song-info" id="songInfo">Song: Untitled Song #1</div>
+      <div class="right-lyrics" id="lyricsPreview">(Select a song card to preview lyrics here — then later this becomes your real lyrics.)</div>
+      <div class="right-date" id="dateLine">—</div>
+    </div>
+  </div>
+
+  <!-- PLAYER BAR -->
+  <div class="player">
+    <div class="player-controls">
+      <div class="player-btn" id="btnPrev">⏮</div>
+      <div class="player-btn" id="btnPlay">▶</div>
+      <div class="player-btn" id="btnNext">⏭</div>
+    </div>
+
+    <div class="player-timeline">
+      <div class="player-time" id="tCur">0:00</div>
+      <div class="player-bar" id="bar">
+        <div class="player-bar-fill" id="barFill"></div>
+      </div>
+      <div class="player-time" id="tTot">3:30</div>
+    </div>
+
+    <div class="player-now" id="nowPlaying">Now Playing: —</div>
+  </div>
+
+</div>
+
+<script>
+  // ===== LEFT COLLAPSE =====
+  function toggleLeft(){
+    const app = document.getElementById("app");
+    const btn = document.getElementById("toggleBtn");
+    app.classList.toggle("left-collapsed");
+    btn.textContent = app.classList.contains("left-collapsed") ? "❯" : "❮";
+  }
+
+  // ===== STYLE PICKER (adds to style input) =====
+  const stylesList = document.getElementById("stylesList");
+  const styleInput = document.getElementById("styleInput");
+
+  stylesList.addEventListener("click", (e) => {
+    const item = e.target.closest(".style-item");
+    if(!item) return;
+
+    // toggle highlight
+    const all = stylesList.querySelectorAll(".style-item");
+    all.forEach(x => x.classList.remove("active"));
+    item.classList.add("active");
+
+    // set style input
+    styleInput.value = item.textContent.trim();
+  });
+
+  // ===== MOCK SONG DATA =====
+  const songs = {
+    1: {
+      title: "Untitled Song #1",
+      status: "Draft",
+      date: "Today",
+      lyrics: "yyyyy\nyyyy\nyyyy\nyyyy\nyy",
+    },
+    2: {
+      title: "Untitled Song #2",
+      status: "Draft",
+      date: "Today",
+      lyrics: "Put your lyrics here...\nThis is a placeholder preview.\nSong #2.",
+    },
+    3: {
+      title: "Untitled Song #3",
+      status: "Draft",
+      date: "Today",
+      lyrics: "Put your lyrics here...\nThis is a placeholder preview.\nSong #3.",
+    },
+  };
+
+  // ===== WORKSPACE SELECT =====
+  const cards = document.querySelectorAll(".song-card");
+  const lyricsPreview = document.getElementById("lyricsPreview");
+  const songInfo = document.getElementById("songInfo");
+  const songStatus = document.getElementById("songStatus");
+  const dateLine = document.getElementById("dateLine");
+  const nowPlaying = document.getElementById("nowPlaying");
+  const statusPill = document.getElementById("statusPill");
+
+  let currentSongId = 1;
+
+  function selectSong(id){
+    currentSongId = id;
+    cards.forEach(c => c.classList.toggle("active", c.dataset.id == id));
+
+    const s = songs[id];
+    songInfo.textContent = "Song: " + s.title;
+    songStatus.textContent = s.status;
+    dateLine.textContent = s.date;
+    lyricsPreview.textContent = s.lyrics;
+
+    // keep Create panel in sync (non-destructive)
+    const titleBox = document.getElementById("titleBox");
+    if(!titleBox.value || titleBox.value.startsWith("Untitled Song")){
+      titleBox.value = s.title;
+    }
+
+    statusPill.textContent = "Viewing: " + s.status;
+  }
+
+  cards.forEach(c => c.addEventListener("click", () => selectSong(Number(c.dataset.id))));
+
+  // initialize
+  selectSong(1);
+
+  // ===== CREATE BUTTONS (stubbed actions, layout stays) =====
+  document.getElementById("btnClear").addEventListener("click", () => {
+    document.getElementById("lyricsBox").value = "";
+    document.getElementById("titleBox").value = "";
+    document.getElementById("styleInput").value = "";
+    stylesList.querySelectorAll(".style-item").forEach(x => x.classList.remove("active"));
+  });
+
+  document.getElementById("btnRunDraft").addEventListener("click", () => {
+    // update preview using current inputs (still stubbed)
+    const lyr = document.getElementById("lyricsBox").value.trim();
+    const ttl = document.getElementById("titleBox").value.trim() || "Untitled Song #" + currentSongId;
+    const sty = document.getElementById("styleInput").value.trim();
+
+    songs[currentSongId].title = ttl;
+    songs[currentSongId].lyrics = lyr || "(No lyrics yet.)";
+
+    // update card title text
+    const card = document.querySelector('.song-card[data-id="'+currentSongId+'"]');
+    if(card){
+      card.querySelector(".song-name").textContent = ttl;
+      // update style chip if present
+      const chips = card.querySelectorAll(".meta-chip");
+      if(chips.length >= 3 && sty){
+        chips[2].textContent = sty;
+      }
+    }
+
+    selectSong(currentSongId);
+    nowPlaying.textContent = "Now Playing: " + ttl;
+  });
+
+  document.getElementById("btnCreateSong").addEventListener("click", () => {
+    nowPlaying.textContent = "Now Playing: (creating...)";
+  });
+
+  document.getElementById("btnRecordAudio").addEventListener("click", () => {
+    nowPlaying.textContent = "Now Playing: (recording stub)";
+  });
+
+  document.getElementById("btnResetCadence").addEventListener("click", () => {
+    // cadence is locked in this stub; keep label stable
+    document.getElementById("cadenceLabel").textContent = "Cadence: Original";
+  });
+
+  // ===== PLAYER (simple fake progress) =====
+  const btnPlay = document.getElementById("btnPlay");
+  const barFill = document.getElementById("barFill");
+  const tCur = document.getElementById("tCur");
+  const tTot = document.getElementById("tTot");
+
+  let playing = false;
+  let pct = 0;
+  const totalSeconds = 210; // 3:30
+  tTot.textContent = "3:30";
+
+  function fmt(sec){
+    const m = Math.floor(sec/60);
+    const s = sec%60;
+    return m + ":" + String(s).padStart(2,"0");
+  }
+
+  function tick(){
+    if(!playing) return;
+    pct += 0.35; // speed
+    if(pct >= 100){
+      pct = 100;
+      playing = false;
+      btnPlay.textContent = "▶";
+    }
+    barFill.style.width = pct + "%";
+    const curSec = Math.min(totalSeconds, Math.floor((pct/100) * totalSeconds));
+    tCur.textContent = fmt(curSec);
+    requestAnimationFrame(tick);
+  }
+
+  btnPlay.addEventListener("click", () => {
+    playing = !playing;
+    btnPlay.textContent = playing ? "⏸" : "▶";
+    if(playing) tick();
+  });
+
+  document.getElementById("btnPrev").addEventListener("click", () => {
+    const id = currentSongId === 1 ? 3 : currentSongId - 1;
+    selectSong(id);
+    nowPlaying.textContent = "Now Playing: " + songs[id].title;
+    pct = 0; barFill.style.width = "0%"; tCur.textContent = "0:00";
+  });
+
+  document.getElementById("btnNext").addEventListener("click", () => {
+    const id = currentSongId === 3 ? 1 : currentSongId + 1;
+    selectSong(id);
+    nowPlaying.textContent = "Now Playing: " + songs[id].title;
+    pct = 0; barFill.style.width = "0%"; tCur.textContent = "0:00";
+  });
+</script>
+</body>
+</html>
+Sent
+Write to
