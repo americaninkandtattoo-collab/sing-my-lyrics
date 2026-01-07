@@ -463,6 +463,7 @@
       <div class="playerCtrls">
         <div class="circleBtn" id="btnPrev">⏮</div>
         <div class="circleBtn" id="btnPlayBig">▶</div>
+        <div class="circleBtn" id="btnStop">⏹</div>
         <div class="circleBtn" id="btnNext">⏭</div>
       </div>
 
@@ -867,10 +868,11 @@ $("btnToTrash").onclick = ()=>{
   }
 };
 
-$("btnPlay").onclick = ()=> togglePlay();
-$("btnPlayBig").onclick = ()=> togglePlay();
-$("btnPrev").onclick = ()=> selectNeighbor(-1);
-$("btnNext").onclick = ()=> selectNeighbor(+1);
+$("btnPlay").onclick = () => togglePlay();
+$("btnPlayBig").onclick = () => togglePlay();
+$("btnStop").onclick = () => stopTimer();
+$("btnPrev").onclick = () => selectNeighbor(-1);
+$("btnNext").onclick = () => selectNeighbor(+1);
 
 function selectNeighbor(dir){
   const items = (listMode==="library") ? tracks : trash;
