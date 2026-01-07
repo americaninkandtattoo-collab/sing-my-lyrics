@@ -460,12 +460,11 @@
     <footer class="player">
       <div class="playerLeft" id="audioStatus">No audio yet</div>
 
-     <div class="playerCtrls">
-  <div class="circleBtn" id="btnPrev">⏮</div>
-  <div class="circleBtn" id="btnPlayBig">▶</div>
-  <div class="circleBtn" id="btnStop">⏹</div>
-  <div class="circleBtn" id="btnNext">⏭</div>
-</div>
+      <div class="playerCtrls">
+        <div class="circleBtn" id="btnPrev">⏮</div>
+        <div class="circleBtn" id="btnPlayBig">▶</div>
+        <div class="circleBtn" id="btnNext">⏭</div>
+      </div>
 
       <div class="timeline">
         <div class="time" id="tCur">0:00</div>
@@ -868,11 +867,10 @@ $("btnToTrash").onclick = ()=>{
   }
 };
 
-$("#btnPlay").onclick = () => togglePlay();
-$("#btnPlayBig").onclick = () => togglePlay();
-$("#btnStop").onclick = () => stopTimer();
-$("#btnPrev").onclick = () => selectNeighbor(-1);
-$("#btnNext").onclick = () => selectNeighbor(+1);
+$("btnPlay").onclick = ()=> togglePlay();
+$("btnPlayBig").onclick = ()=> togglePlay();
+$("btnPrev").onclick = ()=> selectNeighbor(-1);
+$("btnNext").onclick = ()=> selectNeighbor(+1);
 
 function selectNeighbor(dir){
   const items = (listMode==="library") ? tracks : trash;
