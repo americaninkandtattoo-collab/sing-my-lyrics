@@ -1022,28 +1022,7 @@
     };
 
     // ====== Init ======
-    function setPlaying(on){
-      if(on===isPlaying) return;
-      const t=getSelected();
-      if(on && !t) return;
-
-      if(on){
-        if(!audioCtx){
-          audioCtx=new (window.AudioContext||window.webkitAudioContext)();
-          gain=audioCtx.createGain();
-          gain.gain.value=0.08;
-          gain.connect(audioCtx.destination);
-        }
-        if(audioCtx.state==="suspended") audioCtx.resume();
-
-        if(osc){ try{osc.stop();}catch(e){} try{osc.disconnect();}catch(e){} }
-        osc=audioCtx.createOscillator();
-        osc.type="sawtooth";
-        osc.frequency.value=140;
-        osc.connect(gain);
-        osc.start();
-
-        isPlaying=true;
+   ;
         pPlay.textContent="⏸";
         btnPlay.textContent="Stop";
         audioStatus.textContent="Preview audio";
