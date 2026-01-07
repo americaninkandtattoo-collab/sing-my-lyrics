@@ -698,13 +698,22 @@ function renderLeft(){
   linkSlider("sCrazy","pCrazy");
   linkSlider("sStyle","pStyle");
   linkSlider("sAudio","pAudio");
-
+let cadenceMode = "original";
+let originalLyrics = "";
+const cadences = ["original","tight","loose","spaced","staccato"];
   // buttons
   $("btnCreateTop").onclick = ()=> $("btnGenerate").click();
   $("btnRecordTop").onclick = ()=> alert("Record Audio is a placeholder in SML Lite (front-end only).");
 
-  $("btnCadence").onclick = ()=> alert("Cadence control is a placeholder in SML Lite.");
-  $("btnResetCadence").onclick = ()=> alert("Reset Cadence is a placeholder in SML Lite.");
+ $("btnCadence").onclick = ()=>{
+  if(!originalLyrics) originalLyrics = $("lyrics").value;
+};
+  $("btnResetCadence").onclick = ()=>{
+  if(originalLyrics){
+    $("lyrics").value = originalLyrics;
+    cadenceMode = "original";
+  }
+};
 
   $("btnExportTxt").onclick = ()=>{
     const txt = ($("lyrics").value || "").trim();
