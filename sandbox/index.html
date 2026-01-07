@@ -16,13 +16,9 @@
       --line2:#2b303a;
       --blue:#1aa7ff;
       --btn:#2a2f3a;
-      --btn2:#171a20;
       --danger:#e04b4b;
-      --ok:#2ad17a;
       --shadow: 0 6px 22px rgba(0,0,0,.35);
-      --radius: 10px;
     }
-
     *{ box-sizing:border-box; }
     html,body{ height:100%; }
     body{
@@ -33,16 +29,16 @@
       overflow:hidden;
     }
 
-    /* ======= APP GRID (YOUR DRAWING) ======= */
+    /* 4-column layout + bottom player */
     .app{
       height:100vh;
       width:100vw;
       display:grid;
-      grid-template-columns: 220px 420px 1fr 300px; /* left | create | workspace | song panel */
-      grid-template-rows: 1fr 78px; /* content | player bar */
+      grid-template-columns: 220px 420px 1fr 300px;
+      grid-template-rows: 1fr 78px;
     }
 
-    /* ======= LEFT CONTROL PANEL ======= */
+    /* LEFT */
     .left{
       grid-column:1;
       grid-row:1 / span 2;
@@ -52,63 +48,29 @@
       overflow:auto;
     }
     .brand{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      margin-bottom:10px;
-      padding:6px 8px;
+      display:flex; align-items:center; gap:10px;
+      margin-bottom:10px; padding:6px 8px;
     }
-    .brand .logo{
-      font-weight:800;
-      letter-spacing:.5px;
-      font-size:15px;
-    }
-    .brand .dot{
-      width:10px;height:10px;border-radius:50%;
-      background:var(--blue);
-      box-shadow:0 0 18px rgba(26,167,255,.55);
-    }
+    .dot{ width:10px;height:10px;border-radius:50%; background:var(--blue); box-shadow:0 0 18px rgba(26,167,255,.55); }
+    .logo{ font-weight:800; letter-spacing:.5px; font-size:15px; }
 
-    .nav{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-      padding-top:6px;
-    }
-    .nav a{
-      text-decoration:none;
-      color:var(--ink);
-    }
+    .nav{ display:flex; flex-direction:column; gap:6px; padding-top:6px; }
     .nav-item{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding:10px 10px;
+      display:flex; align-items:center; gap:10px;
+      padding:10px 10px; border-radius:10px;
+      cursor:pointer; user-select:none;
       border:1px solid transparent;
-      border-radius:10px;
-      cursor:pointer;
-      user-select:none;
     }
-    .nav-item:hover{
-      background:#1e2128;
-      border-color:#2b303a;
-    }
+    .nav-item:hover{ background:#1e2128; border-color:#2b303a; }
     .nav-item.active{
       background:#232733;
       border-color:#3a4252;
       box-shadow: inset 0 0 0 1px rgba(26,167,255,.25);
     }
-    .icon{
-      width:22px;
-      text-align:center;
-      opacity:.95;
-    }
-    .label{
-      font-size:14px;
-      font-weight:600;
-    }
+    .icon{ width:22px; text-align:center; opacity:.95; }
+    .label{ font-size:14px; font-weight:600; }
 
-    /* ======= CENTER: CREATE PANEL COLUMN ======= */
+    /* CREATE COL */
     .create-col{
       grid-column:2;
       grid-row:1;
@@ -119,6 +81,33 @@
       flex-direction:column;
       min-width:0;
     }
+
+    /* WORK COL */
+    .work-col{
+      grid-column:3;
+      grid-row:1;
+      background:var(--panel2);
+      border-right:2px solid var(--line);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      min-width:0;
+    }
+
+    /* RIGHT SONG PANEL */
+    .song{
+      grid-column:4;
+      grid-row:1 / span 2;
+      background:#16181d;
+      border-left:2px solid var(--line);
+      padding:12px;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      min-width:0;
+    }
+
     .col-header{
       padding:10px 12px;
       border-bottom:1px solid var(--line2);
@@ -128,21 +117,14 @@
       justify-content:space-between;
       gap:10px;
     }
-    .col-header .title{
-      font-weight:800;
-      font-size:14px;
-      letter-spacing:.2px;
-    }
-    .col-header .chip{
-      font-size:12px;
-      color:var(--muted);
+    .title{ font-weight:800; font-size:14px; }
+    .chip{
+      font-size:12px; color:var(--muted);
       border:1px solid var(--line);
-      padding:5px 8px;
-      border-radius:999px;
+      padding:5px 8px; border-radius:999px;
       background:#14161b;
     }
-
-    .create-scroll{
+    .scroll{
       overflow:auto;
       padding:12px;
       display:flex;
@@ -151,11 +133,6 @@
       min-height:0;
     }
 
-    .btn-row{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-    }
     .btn{
       background:var(--btn);
       color:var(--ink);
@@ -167,48 +144,16 @@
       box-shadow:var(--shadow);
     }
     .btn:hover{ filter:brightness(1.07); }
-    .btn.secondary{
-      background:#1a1e27;
-      box-shadow:none;
-      font-weight:700;
-    }
-    .btn.danger{
-      background:#2a1717;
-      border-color:#5a2b2b;
-      color:#ffd7d7;
-      box-shadow:none;
-    }
-    .btn.small{
-      padding:8px 8px;
-      border-radius:10px;
-      font-size:13px;
-      font-weight:800;
-      box-shadow:none;
-    }
-    .btn.disabled{
-      opacity:.45;
-      cursor:not-allowed;
-      filter:none;
-    }
+    .btn.secondary{ background:#1a1e27; box-shadow:none; font-weight:700; }
+    .btn.danger{ background:#2a1717; border-color:#5a2b2b; color:#ffd7d7; box-shadow:none; }
+    .btn.disabled{ opacity:.45; cursor:not-allowed; filter:none; }
+    .btn.small{ padding:8px 8px; font-size:13px; font-weight:800; box-shadow:none; }
 
-    .row-2{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-    }
+    .grid2{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+    .grid3{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px; }
 
-    .field{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
-    .field label{
-      font-size:12px;
-      font-weight:800;
-      color:var(--muted);
-      letter-spacing:.25px;
-    }
-    input, textarea, select{
+    label{ font-size:12px; font-weight:800; color:var(--muted); letter-spacing:.25px; }
+    input, textarea{
       width:100%;
       background:#12141a;
       color:var(--ink);
@@ -220,11 +165,6 @@
     }
     textarea{ min-height:140px; resize:vertical; }
 
-    .style-box{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:8px;
-    }
     .style-list{
       background:#12141a;
       border:1px solid var(--line);
@@ -233,7 +173,7 @@
       max-height:140px;
       overflow:auto;
     }
-    .style-pill{
+    .pill{
       display:inline-block;
       margin:4px 6px 0 0;
       padding:6px 10px;
@@ -245,10 +185,8 @@
       cursor:pointer;
       user-select:none;
     }
-    .style-pill:hover{ filter:brightness(1.08); }
 
     .adv{
-      margin-top:2px;
       border:1px solid var(--line);
       border-radius:12px;
       background:#171a22;
@@ -259,21 +197,10 @@
       font-weight:900;
       background:#151821;
       border-bottom:1px solid var(--line2);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
+      display:flex; align-items:center; justify-content:space-between;
     }
-    .adv-h span{
-      color:var(--muted);
-      font-size:12px;
-      font-weight:800;
-    }
-    .adv-b{
-      padding:12px;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-    }
+    .adv-h span{ color:var(--muted); font-size:12px; font-weight:800; }
+    .adv-b{ padding:12px; display:flex; flex-direction:column; gap:12px; }
 
     .slider-row{
       display:grid;
@@ -281,21 +208,8 @@
       gap:10px;
       align-items:center;
     }
-    .slider-row .name{
-      font-weight:900;
-      font-size:13px;
-      color:var(--ink);
-      margin-bottom:6px;
-    }
-    .slider-row .leftbox{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
-    .range{
-      width:100%;
-      accent-color: var(--blue);
-    }
+    .name{ font-weight:900; font-size:13px; margin-bottom:6px; }
+    .range{ width:100%; accent-color: var(--blue); }
     .pct{
       border:1px solid var(--line);
       background:#11131a;
@@ -303,27 +217,6 @@
       padding:10px;
       text-align:center;
       font-weight:900;
-    }
-
-    /* Styles to Exclude (NO slider) */
-    .exclude-box{
-      border:1px solid var(--line);
-      border-radius:10px;
-      background:#12141a;
-      padding:10px;
-    }
-    .exclude-box .hint{
-      font-size:12px;
-      color:var(--muted);
-      font-weight:700;
-      margin-top:6px;
-    }
-
-    .actions{
-      display:grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap:10px;
-      margin-top:2px;
     }
 
     .note{
@@ -341,123 +234,41 @@
       background: rgba(26,167,255,.06);
     }
 
-    /* ======= WORKSPACE / LIBRARY COLUMN ======= */
-    .work-col{
-      grid-column:3;
-      grid-row:1;
-      background:var(--panel2);
-      border-right:2px solid var(--line);
-      overflow:hidden;
-      display:flex;
-      flex-direction:column;
-      min-width:0;
-    }
-    .work-scroll{
-      overflow:auto;
-      padding:12px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      min-height:0;
-    }
-
-    .cards{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
+    /* Cards */
     .card{
       background:#191c25;
       border:1px solid #3a3f4a;
       border-radius:12px;
-      padding:10px 10px;
+      padding:10px;
       cursor:pointer;
-      user-select:none;
       display:flex;
       flex-direction:column;
       gap:8px;
     }
     .card:hover{ filter:brightness(1.07); }
-    .card.active{
-      outline:2px solid rgba(26,167,255,.35);
-      border-color:#49607a;
-    }
-    .card-top{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .card-title{
-      font-weight:900;
-      font-size:14px;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-    }
-    .card-meta{
-      font-size:12px;
-      color:var(--muted);
-      font-weight:800;
-    }
-    .badges{
-      display:flex;
-      flex-wrap:wrap;
-      gap:6px;
-    }
+    .card.active{ outline:2px solid rgba(26,167,255,.35); border-color:#49607a; }
+    .card-top{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .card-title{ font-weight:900; font-size:14px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .card-meta{ font-size:12px; color:var(--muted); font-weight:800; }
+    .badges{ display:flex; flex-wrap:wrap; gap:6px; }
     .badge{
-      font-size:11px;
-      font-weight:900;
+      font-size:11px; font-weight:900;
       border:1px solid #3a3f4a;
       padding:4px 8px;
       border-radius:999px;
-      color:#dce6f6;
       background:#141823;
     }
 
-    /* ======= SONG PANEL (RIGHT) ======= */
-    .song{
-      grid-column:4;
-      grid-row:1 / span 2;
-      background:#16181d;
-      padding:12px;
-      overflow:hidden;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      min-width:0;
-      border-left:2px solid var(--line);
-    }
-
+    /* Right panel boxes */
     .song-box{
       border:1px solid #3a3f4a;
       border-radius:12px;
       background:#12141a;
       overflow:hidden;
     }
-    .song-box .h{
-      padding:10px 10px;
-      font-weight:900;
-      border-bottom:1px solid #2b303a;
-      background:#14161b;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-    .song-box .b{
-      padding:10px;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.35;
-      min-height:70px;
-    }
-
     .imgbox{
       height:140px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
+      display:flex; align-items:center; justify-content:center;
       background:rgba(26,167,255,.06);
       color:#9dcfff;
       font-weight:900;
@@ -471,15 +282,14 @@
       border-top:1px solid #2b303a;
       background:#14161b;
     }
-
     .lyrics-preview{
       white-space:pre-wrap;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-family: ui-monospace, Menlo, Consolas, monospace;
       font-size:12px;
       color:#cfe1ff;
     }
 
-    /* ======= PLAYER BAR (BOTTOM) ======= */
+    /* Player */
     .player{
       grid-column:2 / span 2;
       grid-row:2;
@@ -491,17 +301,8 @@
       padding:10px 12px;
       overflow:hidden;
     }
-    .p-left{
-      color:var(--muted);
-      font-weight:800;
-      font-size:12px;
-      min-width:90px;
-    }
-    .p-controls{
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
+    .p-left{ color:var(--muted); font-weight:800; font-size:12px; min-width:90px; }
+    .p-controls{ display:flex; align-items:center; gap:10px; }
     .pbtn{
       width:36px;height:36px;
       border-radius:12px;
@@ -511,34 +312,10 @@
       cursor:pointer;
       font-weight:900;
     }
-    .pbtn:hover{ filter:brightness(1.08); }
-    .timeline{
-      flex:1;
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width:0;
-    }
-    .time{
-      width:44px;
-      text-align:center;
-      font-size:12px;
-      color:var(--muted);
-      font-weight:900;
-    }
-    .bar{
-      flex:1;
-      height:6px;
-      border-radius:999px;
-      background:#2a2f3a;
-      overflow:hidden;
-      border:1px solid #3a3f4a;
-    }
-    .fill{
-      height:100%;
-      width:0%;
-      background:var(--blue);
-    }
+    .timeline{ flex:1; display:flex; align-items:center; gap:10px; min-width:0; }
+    .time{ width:44px; text-align:center; font-size:12px; color:var(--muted); font-weight:900; }
+    .bar{ flex:1; height:6px; border-radius:999px; background:#2a2f3a; overflow:hidden; border:1px solid #3a3f4a; }
+    .fill{ height:100%; width:0%; background:var(--blue); }
     .now{
       min-width:160px;
       color:var(--muted);
@@ -549,17 +326,11 @@
       white-space:nowrap;
       text-align:right;
     }
-
-    /* Small screens: still works */
-    @media (max-width: 1100px){
-      .app{ grid-template-columns: 220px 1fr 1fr 300px; }
-      .create-col{ min-width:0; }
-    }
   </style>
 </head>
 
 <body>
-  <div class="app" id="appRoot">
+  <div class="app">
 
     <!-- LEFT -->
     <aside class="left">
@@ -577,69 +348,62 @@
       </nav>
     </aside>
 
-    <!-- CREATE COLUMN -->
+    <!-- CREATE -->
     <section class="create-col">
       <div class="col-header">
-        <div class="title" id="createHeaderTitle">Create</div>
-        <div class="chip" id="createHeaderChip">Human lyrics only</div>
+        <div class="title" id="createTitle">Create</div>
+        <div class="chip" id="createChip">Human lyrics only</div>
       </div>
-
-      <div class="create-scroll" id="createArea">
-        <!-- Filled by JS -->
-      </div>
+      <div class="scroll" id="createArea"></div>
     </section>
 
-    <!-- WORKSPACE COLUMN -->
+    <!-- WORK -->
     <section class="work-col">
       <div class="col-header">
-        <div class="title" id="workHeaderTitle">Workspace / Library</div>
-        <div class="chip" id="workHeaderChip">Your songs</div>
+        <div class="title" id="workTitle">Workspace / Library</div>
+        <div class="chip" id="workChip">Your songs</div>
       </div>
-
-      <div class="work-scroll" id="workArea">
-        <!-- Filled by JS -->
-      </div>
+      <div class="scroll" id="workArea"></div>
     </section>
 
-    <!-- SONG PANEL -->
+    <!-- RIGHT -->
     <aside class="song">
       <div class="song-box">
         <div class="imgbox">Generated Image</div>
-        <div class="b" style="padding-bottom:0;">
+        <div class="scroll" style="padding:10px; gap:8px;">
           <div><b>User:</b> <span id="userName">YOU</span></div>
-          <div style="margin-top:6px;"><b>Song:</b> <span id="selectedTitle">No song selected</span></div>
+          <div><b>Song:</b> <span id="selTitle">No song selected</span></div>
         </div>
-
         <div class="song-actions">
-          <button class="btn small secondary" id="btnPlayRight">Play</button>
-          <button class="btn small secondary" id="btnDownloadRight">Download Lyrics</button>
-          <button class="btn small danger" id="btnTrashRight">Move to Trash</button>
+          <button class="btn small secondary" id="btnPlay">Play</button>
+          <button class="btn small secondary" id="btnDl">Download Lyrics</button>
+          <button class="btn small danger" id="btnTrash">Move to Trash</button>
         </div>
       </div>
 
       <div class="song-box" style="flex:1; display:flex; flex-direction:column; min-height:0;">
-        <div class="h">
-          <div>Lyrics Preview</div>
-          <div style="font-size:12px;color:var(--muted);font-weight:800;" id="previewMeta">—</div>
+        <div class="col-header" style="border-bottom:1px solid #2b303a;">
+          <div class="title">Lyrics Preview</div>
+          <div class="chip" id="meta">—</div>
         </div>
-        <div class="b" style="flex:1; overflow:auto; min-height:0;">
-          <div class="lyrics-preview" id="lyricsPreview">Select a track to preview lyrics here.</div>
+        <div class="scroll" style="min-height:0;">
+          <div class="lyrics-preview" id="preview">Select a track to preview lyrics here.</div>
         </div>
       </div>
 
       <div class="note ethics">
-        <b>Ethics locked:</b> SML Lite never generates lyrics. It only stores what <b>you</b> paste.
+        <b>Ethics locked:</b> SML Lite never generates lyrics. It only stores what you paste.
       </div>
     </aside>
 
-    <!-- PLAYER BAR -->
+    <!-- PLAYER -->
     <footer class="player">
       <div class="p-left" id="audioStatus">No audio yet</div>
 
       <div class="p-controls">
-        <button class="pbtn" id="pPrev" title="Prev">⏮</button>
-        <button class="pbtn" id="pPlay" title="Play">▶</button>
-        <button class="pbtn" id="pNext" title="Next">⏭</button>
+        <button class="pbtn" id="pPrev">⏮</button>
+        <button class="pbtn" id="pPlay">▶</button>
+        <button class="pbtn" id="pNext">⏭</button>
       </div>
 
       <div class="timeline">
@@ -648,101 +412,110 @@
         <div class="time" id="tDur">0:30</div>
       </div>
 
-      <div class="now" id="nowPlaying">Now Playing: —</div>
+      <div class="now" id="now">Now Playing: —</div>
     </footer>
-
   </div>
 
   <script>
-    /*********************
-     * SML Lite — Single-file app (GitHub Pages)
-     * - Home/Create/Library/Trash/Profile
-     * - localStorage persistence
-     * - Human lyrics only (no AI lyric generation)
-     *********************/
+    // ====== Storage ======
+    const LS_TRACKS="sml_tracks_v2";
+    const LS_TRASH ="sml_trash_v2";
+    const LS_USER  ="sml_user_v2";
+    const LS_FORM  ="sml_form_v2";
 
-    const LS_TRACKS = "sml_tracks_v1";
-    const LS_TRASH  = "sml_trash_v1";
-    const LS_USER   = "sml_user_v1";
-    const LS_CREDITS= "sml_credits_v1";
+    let view="create";
+    let tracks=[];
+    let trash=[];
+    let selectedId=null;
 
-    // In-memory
-    let view = "create";
-    let tracks = [];
-    let trash = [];
-    let selectedId = null;
+    // ====== Audio stub ======
+    let audioCtx=null, osc=null, gain=null;
+    let isPlaying=false, playTimer=null, playPos=0;
+    const playDur=30;
 
-    // Simple “preview audio” oscillator
-    let audioCtx = null;
-    let osc = null;
-    let gain = null;
-    let isPlaying = false;
-    let playTimer = null;
-    let playPos = 0;      // seconds
-    const playDur = 30;   // seconds
+    // ====== DOM ======
+    const nav=document.getElementById("nav");
+    const createArea=document.getElementById("createArea");
+    const workArea=document.getElementById("workArea");
 
-    // DOM
-    const nav = document.getElementById("nav");
-    const createArea = document.getElementById("createArea");
-    const workArea = document.getElementById("workArea");
+    const createTitle=document.getElementById("createTitle");
+    const createChip=document.getElementById("createChip");
+    const workTitle=document.getElementById("workTitle");
+    const workChip=document.getElementById("workChip");
 
-    const userNameEl = document.getElementById("userName");
-    const selectedTitleEl = document.getElementById("selectedTitle");
-    const lyricsPreviewEl = document.getElementById("lyricsPreview");
-    const previewMetaEl = document.getElementById("previewMeta");
+    const userNameEl=document.getElementById("userName");
+    const selTitleEl=document.getElementById("selTitle");
+    const metaEl=document.getElementById("meta");
+    const previewEl=document.getElementById("preview");
+    const nowEl=document.getElementById("now");
 
-    const btnPlayRight = document.getElementById("btnPlayRight");
-    const btnDownloadRight = document.getElementById("btnDownloadRight");
-    const btnTrashRight = document.getElementById("btnTrashRight");
+    const btnPlay=document.getElementById("btnPlay");
+    const btnDl=document.getElementById("btnDl");
+    const btnTrash=document.getElementById("btnTrash");
 
-    const audioStatusEl = document.getElementById("audioStatus");
-    const nowPlayingEl = document.getElementById("nowPlaying");
-    const pPlay = document.getElementById("pPlay");
-    const pPrev = document.getElementById("pPrev");
-    const pNext = document.getElementById("pNext");
-    const fillEl = document.getElementById("fill");
-    const tCurEl = document.getElementById("tCur");
-    const tDurEl = document.getElementById("tDur");
+    const audioStatus=document.getElementById("audioStatus");
+    const pPrev=document.getElementById("pPrev");
+    const pPlay=document.getElementById("pPlay");
+    const pNext=document.getElementById("pNext");
+    const fillEl=document.getElementById("fill");
+    const tCur=document.getElementById("tCur");
+    const tDur=document.getElementById("tDur");
 
-    const createHeaderTitle = document.getElementById("createHeaderTitle");
-    const createHeaderChip  = document.getElementById("createHeaderChip");
-    const workHeaderTitle = document.getElementById("workHeaderTitle");
-    const workHeaderChip  = document.getElementById("workHeaderChip");
-
-    function fmtTime(sec){
-      sec = Math.max(0, Math.min(playDur, sec));
-      const m = Math.floor(sec/60);
-      const s = Math.floor(sec%60).toString().padStart(2,"0");
-      return ${m}:${s};
+    function escapeHtml(s){
+      return String(s??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+    }
+    function safeFilename(name){ return name.replace(/[\\/:*?"<>|]+/g,"_"); }
+    function downloadText(filename,text){
+      const blob=new Blob([text],{type:"text/plain"});
+      const url=URL.createObjectURL(blob);
+      const a=document.createElement("a");
+      a.href=url; a.download=filename;
+      document.body.appendChild(a);
+      a.click(); a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),800);
     }
 
+    // ====== Routing FIX ======
+    // Supports:
+    // - /index.html
+    // - /index.html/trash
+    // - #trash
+    function viewFromUrl(){
+      const hash=(location.hash||"").replace("#","").trim().toLowerCase();
+      if(["home","create","library","trash","profile"].includes(hash)) return hash;
+
+      const parts=location.pathname.split("/").filter(Boolean);
+      const last=(parts[parts.length-1]||"").toLowerCase();
+      if(["home","create","library","trash","profile"].includes(last)) return last;
+
+      // if ends with index.html, ignore
+      return "create";
+    }
+    function setUrl(v){
+      // keep it stable on index.html, use hash
+      location.hash = v;
+    }
+
+    // ====== State ======
     function loadState(){
-      try{
-        tracks = JSON.parse(localStorage.getItem(LS_TRACKS) || "[]");
-        trash  = JSON.parse(localStorage.getItem(LS_TRASH)  || "[]");
-      }catch(e){
-        tracks = [];
-        trash = [];
-      }
-      const user = localStorage.getItem(LS_USER) || "YOU";
-      const credits = Number(localStorage.getItem(LS_CREDITS) || "0");
-      userNameEl.textContent = user;
-      return { user, credits };
+      try{ tracks=JSON.parse(localStorage.getItem(LS_TRACKS)||"[]"); }catch(e){ tracks=[]; }
+      try{ trash =JSON.parse(localStorage.getItem(LS_TRASH )||"[]"); }catch(e){ trash=[]; }
+      userNameEl.textContent = localStorage.getItem(LS_USER) || "YOU";
     }
-
     function saveState(){
       localStorage.setItem(LS_TRACKS, JSON.stringify(tracks));
-      localStorage.setItem(LS_TRASH, JSON.stringify(trash));
+      localStorage.setItem(LS_TRASH , JSON.stringify(trash));
     }
 
     function setActiveNav(){
       [...nav.querySelectorAll(".nav-item")].forEach(el=>{
-        el.classList.toggle("active", el.dataset.view === view);
+        el.classList.toggle("active", el.dataset.view===view);
       });
     }
 
-    function setView(next){
-      view = next;
+    function setView(v){
+      view=v;
+      setUrl(v);
       setActiveNav();
       renderAll();
     }
@@ -752,338 +525,284 @@
     }
 
     function selectTrack(id){
-      selectedId = id;
-      const t = getSelected();
+      selectedId=id;
+      const t=getSelected();
       if(!t){
-        selectedTitleEl.textContent = "No song selected";
-        lyricsPreviewEl.textContent = "Select a track to preview lyrics here.";
-        previewMetaEl.textContent = "—";
-        nowPlayingEl.textContent = "Now Playing: —";
+        selTitleEl.textContent="No song selected";
+        metaEl.textContent="—";
+        previewEl.textContent="Select a track to preview lyrics here.";
+        nowEl.textContent="Now Playing: —";
         updateRightButtons();
-        renderAll();
+        renderWork();
         return;
       }
-
-      selectedTitleEl.textContent = t.title?.trim() ? t.title : "Untitled Song";
-      lyricsPreviewEl.textContent = (t.lyrics || "").trim() || "(No lyrics)";
-      previewMetaEl.textContent = t.createdAt ? new Date(t.createdAt).toLocaleString() : "—";
-      nowPlayingEl.textContent = Now Playing: ${selectedTitleEl.textContent};
+      selTitleEl.textContent=t.title?.trim()?t.title:"Untitled Song";
+      metaEl.textContent = t.createdAt ? new Date(t.createdAt).toLocaleString() : "—";
+      previewEl.textContent=(t.lyrics||"").trim() || "(No lyrics)";
+      nowEl.textContent=`Now Playing: ${selTitleEl.textContent}`;
       updateRightButtons();
-      renderAll(false);
+      renderWork();
     }
 
     function updateRightButtons(){
-      const t = getSelected();
-      const inTrash = trash.some(x=>x.id===selectedId);
-      btnPlayRight.disabled = !t;
-      btnDownloadRight.disabled = !t;
-      btnTrashRight.disabled = !t;
+      const t=getSelected();
+      const inTrash=trash.some(x=>x.id===selectedId);
+      btnPlay.disabled=!t;
+      btnDl.disabled=!t;
+      btnTrash.disabled=!t;
 
       if(!t){
-        btnTrashRight.textContent = "Move to Trash";
-        btnTrashRight.classList.add("danger");
+        btnTrash.textContent="Move to Trash";
+        btnTrash.className="btn small danger";
         return;
       }
-
       if(inTrash){
-        btnTrashRight.textContent = "Restore";
-        btnTrashRight.classList.remove("danger");
-        btnTrashRight.style.background = "#15241a";
-        btnTrashRight.style.borderColor = "#2f6b45";
-        btnTrashRight.style.color = "#d9ffe8";
+        btnTrash.textContent="Restore";
+        btnTrash.className="btn small secondary";
       }else{
-        btnTrashRight.textContent = "Move to Trash";
-        btnTrashRight.classList.add("danger");
-        btnTrashRight.style.background = "";
-        btnTrashRight.style.borderColor = "";
-        btnTrashRight.style.color = "";
+        btnTrash.textContent="Move to Trash";
+        btnTrash.className="btn small danger";
       }
     }
 
-    function makeId(){
-      return "t_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2,7);
+    // ====== Audio ======
+    function fmt(sec){
+      sec=Math.max(0,Math.min(playDur,sec));
+      const m=Math.floor(sec/60);
+      const s=Math.floor(sec%60).toString().padStart(2,"0");
+      return ${m}:${s};
     }
-
-    function downloadText(filename, text){
-      const blob = new Blob([text], {type:"text/plain"});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      setTimeout(()=>URL.revokeObjectURL(url), 800);
-    }
-
     function ensureAudio(){
       if(audioCtx) return;
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      gain = audioCtx.createGain();
-      gain.gain.value = 0.08;
+      audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+      gain=audioCtx.createGain();
+      gain.gain.value=0.08;
       gain.connect(audioCtx.destination);
     }
-
     function startOsc(){
       ensureAudio();
       stopOsc();
-      osc = audioCtx.createOscillator();
-      osc.type = "sawtooth";
-      osc.frequency.value = 140;
+      osc=audioCtx.createOscillator();
+      osc.type="sawtooth";
+      osc.frequency.value=140;
       osc.connect(gain);
       osc.start();
-      audioStatusEl.textContent = "Preview audio";
+      audioStatus.textContent="Preview audio";
     }
-
     function stopOsc(){
       if(osc){
-        try{ osc.stop(); }catch(e){}
-        osc.disconnect();
-        osc = null;
+        try{osc.stop();}catch(e){}
+        try{osc.disconnect();}catch(e){}
+        osc=null;
       }
     }
-
+    function syncTimeline(){
+      tCur.textContent=fmt(playPos);
+      tDur.textContent=fmt(playDur);
+      fillEl.style.width=((playPos/playDur)*100).toFixed(1)+"%";
+    }
     function setPlaying(on){
-      if(on === isPlaying) return;
+      if(on===isPlaying) return;
+      const t=getSelected();
+      if(on && !t) return;
 
       if(on){
-        const t = getSelected();
-        if(!t) return;
         ensureAudio();
-        if(audioCtx.state === "suspended") audioCtx.resume();
+        if(audioCtx.state==="suspended") audioCtx.resume();
         startOsc();
-
-        isPlaying = true;
-        pPlay.textContent = "⏸";
-        btnPlayRight.textContent = "Stop";
-
+        isPlaying=true;
+        pPlay.textContent="⏸";
+        btnPlay.textContent="Stop";
         if(!playTimer){
-          playTimer = setInterval(()=>{
-            playPos += 0.25;
-            if(playPos >= playDur){
-              playPos = 0;
+          playTimer=setInterval(()=>{
+            playPos+=0.25;
+            if(playPos>=playDur){
+              playPos=0;
               setPlaying(false);
               return;
             }
             syncTimeline();
-          }, 250);
+          },250);
         }
       }else{
-        isPlaying = false;
-        pPlay.textContent = "▶";
-        btnPlayRight.textContent = "Play";
+        isPlaying=false;
+        pPlay.textContent="▶";
+        btnPlay.textContent="Play";
         stopOsc();
-        audioStatusEl.textContent = "No audio yet";
-        if(playTimer){
-          clearInterval(playTimer);
-          playTimer = null;
-        }
+        audioStatus.textContent="No audio yet";
+        if(playTimer){ clearInterval(playTimer); playTimer=null; }
         syncTimeline();
       }
     }
 
-    function syncTimeline(){
-      tCurEl.textContent = fmtTime(playPos);
-      tDurEl.textContent = fmtTime(playDur);
-      fillEl.style.width = ((playPos/playDur)*100).toFixed(1) + "%";
-    }
-
-    function prevTrack(){
-      const list = (view==="trash") ? trash : tracks;
-      if(list.length === 0) return;
-      if(!selectedId){
-        selectTrack(list[0].id);
-        return;
-      }
-      const idx = list.findIndex(t=>t.id===selectedId);
-      const next = list[Math.max(0, idx-1)] || list[0];
-      selectTrack(next.id);
-    }
-
-    function nextTrack(){
-      const list = (view==="trash") ? trash : tracks;
-      if(list.length === 0) return;
-      if(!selectedId){
-        selectTrack(list[0].id);
-        return;
-      }
-      const idx = list.findIndex(t=>t.id===selectedId);
-      const next = list[Math.min(list.length-1, idx+1)] || list[list.length-1];
-      selectTrack(next.id);
-    }
-
-    // =========================
-    // RENDERING
-    // =========================
-    function renderAll(alsoScroll=true){
-      renderCreateColumn();
-      renderWorkColumn();
+    // ====== Render ======
+    function renderAll(){
+      renderHeaders();
+      renderCreate();
+      renderWork();
       updateRightButtons();
-      if(alsoScroll){
-        // keep stable; do nothing fancy
+      syncTimeline();
+
+      // SAFETY: never leave blank columns
+      if(!createArea.innerHTML.trim()){
+        createArea.innerHTML = <div class="note"><b>Render error.</b><br/>Create panel failed to load. Refresh page.</div>;
+      }
+      if(!workArea.innerHTML.trim()){
+        workArea.innerHTML = <div class="note"><b>Render error.</b><br/>Workspace failed to load. Refresh page.</div>;
       }
     }
 
-    function renderCreateColumn(){
-      // Header labels per view
-      if(view === "home"){
-        createHeaderTitle.textContent = "Home";
-        createHeaderChip.textContent = "SML Lite";
-        workHeaderTitle.textContent = "Quick Links";
-        workHeaderChip.textContent = "Shortcuts";
-      } else if(view === "profile"){
-        createHeaderTitle.textContent = "Profile";
-        createHeaderChip.textContent = "Credits & Ownership";
-        workHeaderTitle.textContent = "Notes";
-        workHeaderChip.textContent = "Ethics";
-      } else if(view === "trash"){
-        createHeaderTitle.textContent = "Trash";
-        createHeaderChip.textContent = "Restore or delete";
-        workHeaderTitle.textContent = "Trash Items";
-        workHeaderChip.textContent = "30-day concept";
-      } else {
-        createHeaderTitle.textContent = "Create";
-        createHeaderChip.textContent = "Human lyrics only";
-        workHeaderTitle.textContent = "Workspace / Library";
-        workHeaderChip.textContent = "Your songs";
+    function renderHeaders(){
+      if(view==="home"){
+        createTitle.textContent="Home";
+        createChip.textContent="SML Lite";
+        workTitle.textContent="Quick Links";
+        workChip.textContent="Shortcuts";
+      }else if(view==="profile"){
+        createTitle.textContent="Profile";
+        createChip.textContent="Ownership";
+        workTitle.textContent="Notes";
+        workChip.textContent="Ethics";
+      }else if(view==="trash"){
+        createTitle.textContent="Trash";
+        createChip.textContent="Restore or delete";
+        workTitle.textContent="Trash Items";
+        workChip.textContent="30-day concept";
+      }else{
+        createTitle.textContent="Create";
+        createChip.textContent="Human lyrics only";
+        workTitle.textContent="Workspace / Library";
+        workChip.textContent="Your songs";
       }
+    }
 
-      if(view === "home"){
+    function getForm(){
+      let f={ lyrics:"", title:"", include:"", exclude:"", craz:50, style:50, audio:50 };
+      try{ f={...f, ...JSON.parse(localStorage.getItem(LS_FORM)||"{}")}; }catch(e){}
+      return f;
+    }
+    function saveForm(obj){
+      localStorage.setItem(LS_FORM, JSON.stringify(obj));
+    }
+
+    function renderCreate(){
+      if(view==="home"){
         createArea.innerHTML = `
           <div class="note ethics">
             <div style="font-size:14px;font-weight:900;margin-bottom:6px;">Making rock stars — one human at a time.</div>
-            <div><b>Mission:</b> You own your lyrics 100%. SML Lite does <b>not</b> generate lyrics. It only uses what you paste.</div>
+            <div><b>Mission:</b> You own lyrics 100%. SML Lite does <b>not</b> generate lyrics.</div>
             <div style="margin-top:8px;color:var(--muted);font-weight:800;">Runs 100% on GitHub Pages — no backend.</div>
           </div>
-
-          <div class="actions">
-            <button class="btn small" onclick="setView('create')">Go to Create</button>
-            <button class="btn small secondary" onclick="setView('library')">Open Library</button>
-            <button class="btn small danger" onclick="setView('trash')">Open Trash</button>
-          </div>
-
-          <div class="note">
-            <b>Success checks:</b><br/>
-            • Sidebar links work<br/>
-            • Create → Generate adds a track to Library<br/>
-            • Library → Move to Trash / Restore works<br/>
-            • Lyrics download works
+          <div class="grid3">
+            <button class="btn small" id="goCreate">Go to Create</button>
+            <button class="btn small secondary" id="goLib">Open Library</button>
+            <button class="btn small danger" id="goTrash">Open Trash</button>
           </div>
         `;
+        createArea.querySelector("#goCreate").onclick=()=>setView("create");
+        createArea.querySelector("#goLib").onclick=()=>setView("library");
+        createArea.querySelector("#goTrash").onclick=()=>setView("trash");
         return;
       }
 
-      if(view === "profile"){
-        const user = localStorage.getItem(LS_USER) || "YOU";
-        const credits = Number(localStorage.getItem(LS_CREDITS) || "0");
-        createArea.innerHTML = `
+      if(view==="profile"){
+        const curName=localStorage.getItem(LS_USER)||"YOU";
+        createArea.innerHTML=`
           <div class="note">
             <b>Display name</b>
             <div style="margin-top:8px;">
-              <input id="profileName" value="${escapeHtml(user)}" />
+              <input id="nm" value="${escapeHtml(curName)}"/>
             </div>
             <div style="margin-top:10px;">
-              <button class="btn small" onclick="saveProfileName()">Save Name</button>
+              <button class="btn small" id="saveNm">Save Name</button>
             </div>
           </div>
-
-          <div class="note">
-            <b>Credits</b>
-            <div style="margin-top:8px;font-size:28px;font-weight:900;">${credits}</div>
-            <div style="margin-top:8px;color:var(--muted);font-weight:800;">Front-end number only (for now).</div>
-            <div style="margin-top:10px;" class="actions">
-              <button class="btn small disabled" disabled>Buy Credits (Coming Soon)</button>
-              <button class="btn small disabled" disabled>Subscribe (Coming Soon)</button>
-              <button class="btn small secondary" onclick="addCredits()">+10 Credits (test)</button>
-            </div>
-          </div>
-
           <div class="note ethics">
-            <b>Ownership statement</b><br/>
-            Your lyrics remain yours — 100%. SML Lite doesn’t generate lyrics, doesn’t upload, and doesn’t sync.
+            <b>Ownership</b><br/>
+            Lyrics stay yours — 100%. No AI lyric generation.
           </div>
         `;
+        createArea.querySelector("#saveNm").onclick=()=>{
+          const v=(createArea.querySelector("#nm").value||"").trim()||"YOU";
+          localStorage.setItem(LS_USER,v);
+          userNameEl.textContent=v;
+        };
         return;
       }
 
-      // CREATE view (and also shown when Library/Trash selected — create column stays “Create”)
-      const form = getCreateFormDefaults();
-      createArea.innerHTML = `
-        <div class="btn-row">
+      // MAIN CREATE FORM (shows even if you’re on Library/Trash)
+      const f=getForm();
+
+      createArea.innerHTML=`
+        <div class="grid2">
           <button class="btn" id="btnCreateSong">Create Song</button>
           <button class="btn" id="btnRecordAudio">Record Audio</button>
         </div>
 
-        <div class="row-2">
-          <button class="btn small secondary" id="btnCadence">Cadence: <b>${escapeHtml(form.cadence)}</b></button>
-          <button class="btn small secondary" id="btnResetCadence">Reset Cadence</button>
+        <div class="grid2">
+          <button class="btn small secondary" id="cad">Cadence: <b>Original</b></button>
+          <button class="btn small secondary" id="resetCad">Reset Cadence</button>
         </div>
 
-        <div class="field">
+        <div>
           <label>Lyrics (required — human)</label>
-          <textarea id="lyrics" placeholder="Enter lyrics here...">${escapeHtml(form.lyrics)}</textarea>
+          <textarea id="lyrics" placeholder="Enter lyrics here...">${escapeHtml(f.lyrics)}</textarea>
         </div>
 
-        <div class="field">
+        <div>
           <label>Song Title (optional)</label>
-          <input id="title" placeholder="Add Song Title" value="${escapeHtml(form.title)}"/>
+          <input id="title" placeholder="Add Song Title" value="${escapeHtml(f.title)}"/>
         </div>
 
-        <div class="field">
+        <div>
           <label>Styles (include)</label>
-          <input id="styleInclude" placeholder="Type custom styles..." value="${escapeHtml(form.styleInclude)}"/>
-          <div class="style-list" id="styleQuick">
-            ${["Hardcore Punk","Industrial","Lo-Fi","Hip-Hop","Hard Techno","Minimal","Spoken Word"].map(s=>`<span class="style-pill" data-style="${escapeHtml(s)}">${escapeHtml(s)}</span>`).join("")}
+          <input id="include" placeholder="Type custom styles..." value="${escapeHtml(f.include)}"/>
+          <div class="style-list" id="quick">
+            ${["Hardcore Punk","Industrial","Lo-Fi","Hip-Hop","Hard Techno","Minimal","Spoken Word"].map(s=>`<span class="pill" data-s="${escapeHtml(s)}">${escapeHtml(s)}</span>`).join("")}
           </div>
         </div>
 
         <div class="adv">
           <div class="adv-h">
-            <div>Advanced Options</div>
-            <span>front-end only</span>
+            <div>Advanced Options</div><span>front-end only</span>
           </div>
           <div class="adv-b">
-
-            <!-- Styles to Exclude (NO slider) -->
-            <div class="field">
+            <div>
               <label>Styles to Exclude (optional)</label>
-              <div class="exclude-box">
-                <input id="styleExclude" placeholder="e.g. country, acoustic, opera" value="${escapeHtml(form.styleExclude)}"/>
-                <div class="hint">No slider here — just type what you do NOT want.</div>
-              </div>
+              <input id="exclude" placeholder="e.g. country, acoustic, opera" value="${escapeHtml(f.exclude)}"/>
+              <div class="note" style="margin-top:8px;">No slider here — just type what you do NOT want.</div>
             </div>
 
             <div class="slider-row">
-              <div class="leftbox">
+              <div>
                 <div class="name">Craziness</div>
-                <input class="range" type="range" min="0" max="100" value="${form.craziness}" id="craziness"/>
+                <input class="range" id="craz" type="range" min="0" max="100" value="${f.craz}"/>
               </div>
-              <div class="pct"><span id="crazinessVal">${form.craziness}</span>%</div>
+              <div class="pct"><span id="crazVal">${f.craz}</span>%</div>
             </div>
 
             <div class="slider-row">
-              <div class="leftbox">
+              <div>
                 <div class="name">Style Influence</div>
-                <input class="range" type="range" min="0" max="100" value="${form.styleInfluence}" id="styleInfluence"/>
+                <input class="range" id="style" type="range" min="0" max="100" value="${f.style}"/>
               </div>
-              <div class="pct"><span id="styleInfluenceVal">${form.styleInfluence}</span>%</div>
+              <div class="pct"><span id="styleVal">${f.style}</span>%</div>
             </div>
 
             <div class="slider-row">
-              <div class="leftbox">
+              <div>
                 <div class="name">Audio Influence</div>
-                <input class="range" type="range" min="0" max="100" value="${form.audioInfluence}" id="audioInfluence"/>
+                <input class="range" id="audio" type="range" min="0" max="100" value="${f.audio}"/>
               </div>
-              <div class="pct"><span id="audioInfluenceVal">${form.audioInfluence}</span>%</div>
+              <div class="pct"><span id="audioVal">${f.audio}</span>%</div>
             </div>
-
           </div>
         </div>
 
-        <div class="actions">
-          <button class="btn small" id="btnGenerate">Generate</button>
-          <button class="btn small secondary" id="btnExportLyrics">Export Lyrics</button>
-          <button class="btn small disabled" id="btnSheet" disabled>Export Sheet Music (Coming Soon)</button>
+        <div class="grid3">
+          <button class="btn small" id="gen">Generate</button>
+          <button class="btn small secondary" id="export">Export Lyrics</button>
+          <button class="btn small disabled" disabled>Export Sheet Music (Coming Soon)</button>
         </div>
 
         <div class="note ethics">
@@ -1091,444 +810,297 @@
         </div>
       `;
 
-      // Hook events
-      const lyrics = createArea.querySelector("#lyrics");
-      const title = createArea.querySelector("#title");
-      const styleInclude = createArea.querySelector("#styleInclude");
-      const styleExclude = createArea.querySelector("#styleExclude");
+      const lyrics=createArea.querySelector("#lyrics");
+      const title=createArea.querySelector("#title");
+      const include=createArea.querySelector("#include");
+      const exclude=createArea.querySelector("#exclude");
+      const craz=createArea.querySelector("#craz");
+      const style=createArea.querySelector("#style");
+      const audio=createArea.querySelector("#audio");
+      const crazVal=createArea.querySelector("#crazVal");
+      const styleVal=createArea.querySelector("#styleVal");
+      const audioVal=createArea.querySelector("#audioVal");
 
-      const craziness = createArea.querySelector("#craziness");
-      const styleInfluence = createArea.querySelector("#styleInfluence");
-      const audioInfluence = createArea.querySelector("#audioInfluence");
-
-      const cv = createArea.querySelector("#crazinessVal");
-      const sv = createArea.querySelector("#styleInfluenceVal");
-      const av = createArea.querySelector("#audioInfluenceVal");
-
-      function persistForm(){
-        localStorage.setItem("sml_form_v1", JSON.stringify({
+      function persist(){
+        saveForm({
           lyrics: lyrics.value,
           title: title.value,
-          styleInclude: styleInclude.value,
-          styleExclude: styleExclude.value,
-          cadence: localStorage.getItem("sml_cadence_v1") || "Original",
-          craziness: Number(craziness.value),
-          styleInfluence: Number(styleInfluence.value),
-          audioInfluence: Number(audioInfluence.value),
-        }));
+          include: include.value,
+          exclude: exclude.value,
+          craz: Number(craz.value),
+          style: Number(style.value),
+          audio: Number(audio.value)
+        });
       }
 
-      [lyrics,title,styleInclude,styleExclude].forEach(el=>{
-        el.addEventListener("input", persistForm);
+      [lyrics,title,include,exclude].forEach(el=>el.addEventListener("input",persist));
+      [craz,style,audio].forEach(el=>el.addEventListener("input",()=>{
+        crazVal.textContent=craz.value;
+        styleVal.textContent=style.value;
+        audioVal.textContent=audio.value;
+        persist();
+      }));
+
+      createArea.querySelectorAll(".pill").forEach(p=>{
+        p.onclick=()=>{
+          const s=p.dataset.s;
+          const cur=include.value.trim();
+          if(!cur) include.value=s;
+          else if(!cur.toLowerCase().includes(s.toLowerCase())) include.value=cur+", "+s;
+          persist();
+        };
       });
 
-      const syncVals = ()=>{
-        cv.textContent = craziness.value;
-        sv.textContent = styleInfluence.value;
-        av.textContent = audioInfluence.value;
-        persistForm();
+      createArea.querySelector("#btnRecordAudio").onclick=()=>alert("Record Audio is stubbed in SML Lite (front-end only).");
+
+      createArea.querySelector("#export").onclick=()=>{
+        const lyr=lyrics.value.trim();
+        if(!lyr) return alert("Nothing to export. Paste lyrics first.");
+        downloadText(safeFilename((title.value.trim()||"SML_Lyrics")+".txt"), lyr+"\n");
       };
-      [craziness,styleInfluence,audioInfluence].forEach(el=>{
-        el.addEventListener("input", syncVals);
-      });
 
-      // Quick style pills
-      const quick = createArea.querySelector("#styleQuick");
-      quick.querySelectorAll(".style-pill").forEach(p=>{
-        p.addEventListener("click", ()=>{
-          const s = p.dataset.style;
-          if(!styleInclude.value.trim()){
-            styleInclude.value = s;
-          }else{
-            // append if not already present
-            const cur = styleInclude.value.trim();
-            const lowered = cur.toLowerCase();
-            if(!lowered.includes(s.toLowerCase())){
-              styleInclude.value = cur + ", " + s;
-            }
-          }
-          persistForm();
-        });
-      });
+      createArea.querySelector("#gen").onclick=()=>{
+        const lyr=lyrics.value.trim();
+        if(!lyr) return alert("Lyrics are required (human). Paste your lyrics first.");
 
-      // Buttons
-      createArea.querySelector("#btnGenerate").onclick = ()=>{
-        const lyr = lyrics.value.trim();
-        if(!lyr){
-          alert("Lyrics are required (human). Paste your lyrics first.");
-          return;
-        }
-        const t = {
-          id: makeId(),
-          title: title.value.trim() || "Untitled Song",
-          lyrics: lyr,
-          styleInclude: styleInclude.value.trim(),
-          styleExclude: styleExclude.value.trim(),
-          cadence: localStorage.getItem("sml_cadence_v1") || "Original",
-          createdAt: new Date().toISOString(),
-          options: {
-            craziness: Number(craziness.value),
-            styleInfluence: Number(styleInfluence.value),
-            audioInfluence: Number(audioInfluence.value)
-          }
+        const t={
+          id:"t_"+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2,7),
+          title:(title.value.trim()||"Untitled Song"),
+          lyrics:lyr,
+          include:(include.value||"").trim(),
+          exclude:(exclude.value||"").trim(),
+          createdAt:new Date().toISOString()
         };
         tracks.unshift(t);
         saveState();
         selectTrack(t.id);
         setView("library");
       };
-
-      createArea.querySelector("#btnExportLyrics").onclick = ()=>{
-        const lyr = lyrics.value.trim();
-        if(!lyr){
-          alert("Nothing to export. Paste lyrics first.");
-          return;
-        }
-        const fn = (title.value.trim() || "SML_Lyrics") + ".txt";
-        downloadText(safeFilename(fn), lyr + "\n");
-      };
-
-      createArea.querySelector("#btnCreateSong").onclick = ()=>{
-        setView("create");
-        // minor UI “pulse”
-        flashChip("Create ready");
-      };
-
-      createArea.querySelector("#btnRecordAudio").onclick = ()=>{
-        flashChip("Recording (stub)");
-        alert("Record Audio is stubbed in SML Lite (front-end only).");
-      };
-
-      createArea.querySelector("#btnCadence").onclick = ()=>{
-        const cur = localStorage.getItem("sml_cadence_v1") || "Original";
-        const next = cur === "Original" ? "Choppy" : (cur === "Choppy" ? "Flow" : "Original");
-        localStorage.setItem("sml_cadence_v1", next);
-        persistForm();
-        renderAll(false);
-      };
-
-      createArea.querySelector("#btnResetCadence").onclick = ()=>{
-        localStorage.setItem("sml_cadence_v1", "Original");
-        persistForm();
-        renderAll(false);
-      };
-
-      // keep form persisted
-      persistForm();
-      syncVals();
     }
 
-    function renderWorkColumn(){
-      // Home view: shortcuts in workspace
-      if(view === "home"){
-        const total = tracks.length;
-        const tr = trash.length;
-        workArea.innerHTML = `
-          <div class="note">
-            <b>Quick stats</b><br/>
-            Tracks in Library: <b>${total}</b><br/>
-            Items in Trash: <b>${tr}</b>
-          </div>
-
-          <div class="cards">
-            <div class="card" onclick="setView('create')">
-              <div class="card-top">
-                <div class="card-title">Go to Create</div>
-                <div class="card-meta">Core money page</div>
-              </div>
-              <div class="badges">
-                <span class="badge">Human lyrics only</span>
-                <span class="badge">Generate → Library</span>
-              </div>
-            </div>
-
-            <div class="card" onclick="setView('library')">
-              <div class="card-top">
-                <div class="card-title">Open Library</div>
-                <div class="card-meta">Saved tracks</div>
-              </div>
-              <div class="badges">
-                <span class="badge">Play preview</span>
-                <span class="badge">Download lyrics</span>
-              </div>
-            </div>
-
-            <div class="card" onclick="setView('trash')">
-              <div class="card-top">
-                <div class="card-title">Open Trash</div>
-                <div class="card-meta">Restore</div>
-              </div>
-              <div class="badges">
-                <span class="badge">Restore</span>
-                <span class="badge">Delete (manual)</span>
-              </div>
-            </div>
-          </div>
+    function renderWork(){
+      if(view==="profile"){
+        workArea.innerHTML=`
+          <div class="note ethics"><b>Ethics locked</b><br/>• Human lyrics only<br/>• No AI lyric generation<br/>• Stored locally</div>
+          <div class="note"><b>SML Lite</b><br/>Static GitHub Pages app using localStorage.</div>
         `;
         return;
       }
 
-      if(view === "profile"){
-        workArea.innerHTML = `
-          <div class="note ethics">
-            <b>Ethics rules (locked)</b><br/>
-            • You own lyrics 100%<br/>
-            • No AI lyric generation<br/>
-            • Stored locally (browser only)
-          </div>
-          <div class="note">
-            <b>What SML Lite is</b><br/>
-            • Static GitHub Pages app<br/>
-            • localStorage tracks + trash<br/>
-            • Downloads work
-          </div>
-        `;
-        return;
-      }
-
-      if(view === "trash"){
-        // “30-day concept” display-only — we can simulate by filtering on load
-        const items = [...trash].sort((a,b)=> (b.createdAt||"").localeCompare(a.createdAt||""));
-        workArea.innerHTML = `
+      if(view==="trash"){
+        workArea.innerHTML=`
           <div class="note">
             <b>Trash</b><br/>
             Restore items or delete permanently.<br/>
-            <span style="color:var(--muted);font-weight:800;">“Auto-delete after 30 days” is concept-only (GitHub Pages can’t run timers). We simulate by dates later.</span>
+            <span style="color:var(--muted);font-weight:800;">“Auto-delete after 30 days” is concept-only.</span>
           </div>
-
-          <div class="cards" id="trashCards"></div>
-
-          <div class="actions">
-            <button class="btn small secondary" onclick="emptyTrash()">Delete ALL permanently</button>
-            <button class="btn small" onclick="restoreAll()">Restore ALL</button>
-            <button class="btn small danger" onclick="setView('library')">Back to Library</button>
+          <div id="trashList"></div>
+          <div class="grid3">
+            <button class="btn small danger" id="backLib">Back to Library</button>
+            <button class="btn small secondary" id="restoreAll">Restore ALL</button>
+            <button class="btn small secondary" id="empty">Delete ALL</button>
           </div>
         `;
-        const wrap = workArea.querySelector("#trashCards");
-        if(items.length===0){
-          wrap.innerHTML = <div class="note">Trash is empty.</div>;
-          return;
+        const list=workArea.querySelector("#trashList");
+        if(trash.length===0){
+          list.innerHTML=`<div class="note">Trash is empty.</div>`;
+        }else{
+          list.innerHTML=trash.map(t=>cardHtml(t,true)).join("");
+          list.querySelectorAll(".card").forEach(c=>c.onclick=()=>selectTrack(c.dataset.id));
         }
-        wrap.innerHTML = items.map(t=>trashCardHtml(t)).join("");
-        wrap.querySelectorAll(".card").forEach(el=>{
-          el.addEventListener("click", ()=> selectTrack(el.dataset.id));
-        });
+        workArea.querySelector("#backLib").onclick=()=>setView("library");
+        workArea.querySelector("#restoreAll").onclick=()=>{
+          tracks=[...trash,...tracks];
+          trash=[];
+          saveState();
+          setView("library");
+        };
+        workArea.querySelector("#empty").onclick=()=>{
+          if(!confirm("Delete ALL trash permanently?")) return;
+          trash=[];
+          saveState();
+          selectedId=null;
+          setPlaying(false);
+          renderAll();
+        };
         return;
       }
 
-      // Library / Create view => show library cards in workspace column
-      const items = [...tracks].sort((a,b)=> (b.createdAt||"").localeCompare(a.createdAt||""));
-      workArea.innerHTML = `
+      // Home view: show quick links
+      if(view==="home"){
+        workArea.innerHTML=`
+          <div class="note"><b>Quick links</b><br/>Jump straight to what matters.</div>
+          <div class="card" id="goC"><div class="card-title">Go to Create</div><div class="card-meta">Core money page</div></div>
+          <div class="card" id="goL"><div class="card-title">Open Library</div><div class="card-meta">Saved tracks</div></div>
+          <div class="card" id="goT"><div class="card-title">Open Trash</div><div class="card-meta">Restore</div></div>
+        `;
+        workArea.querySelector("#goC").onclick=()=>setView("create");
+        workArea.querySelector("#goL").onclick=()=>setView("library");
+        workArea.querySelector("#goT").onclick=()=>setView("trash");
+        return;
+      }
+
+      // Library view (and also shown while on Create)
+      workArea.innerHTML=`
         <div class="note">
           <b>Workspace / Library</b><br/>
-          Click a track to load the Song Panel.<br/>
-          <span style="color:var(--muted);font-weight:800;">Generate in Create adds a track here.</span>
+          Click a track to load the Song Panel.
         </div>
-
-        <div class="cards" id="libCards"></div>
+        <div id="libList"></div>
       `;
-      const lib = workArea.querySelector("#libCards");
-      if(items.length===0){
-        lib.innerHTML = <div class="note">No tracks yet. Go to <b>Create</b> and press <b>Generate</b>.</div>;
-        return;
+      const list=workArea.querySelector("#libList");
+      if(tracks.length===0){
+        list.innerHTML=`<div class="note">No tracks yet. Go to <b>Create</b> and press <b>Generate</b>.</div>`;
+      }else{
+        list.innerHTML=tracks.map(t=>cardHtml(t,false)).join("");
+        list.querySelectorAll(".card").forEach(c=>c.onclick=()=>selectTrack(c.dataset.id));
       }
-      lib.innerHTML = items.map(t=>libraryCardHtml(t)).join("");
-      lib.querySelectorAll(".card").forEach(el=>{
-        el.addEventListener("click", ()=> selectTrack(el.dataset.id));
-      });
     }
 
-    function libraryCardHtml(t){
-      const active = (t.id===selectedId) ? "active" : "";
-      const dt = t.createdAt ? new Date(t.createdAt) : null;
-      const when = dt ? dt.toLocaleString() : "—";
-      const draft = (dt && (Date.now()-dt.getTime()< 6*60*60*1000)) ? "Draft • Just now" : "Draft • Today";
-      const cadence = t.cadence || "Original";
-      const style = (t.styleInclude || "").trim() ? t.styleInclude.trim().split(",")[0] : "—";
+    function cardHtml(t,isTrash){
+      const active=(t.id===selectedId)?"active":"";
+      const dt=t.createdAt?new Date(t.createdAt).toLocaleString():"—";
+      const s1=isTrash?"Trashed":"Draft";
+      const tag=(t.include||"").trim().split(",")[0] || "—";
       return `
         <div class="card ${active}" data-id="${t.id}">
           <div class="card-top">
-            <div class="card-title">${escapeHtml(t.title || "Untitled Song")}</div>
-            <div class="card-meta">${escapeHtml(draft)}</div>
+            <div class="card-title">${escapeHtml(t.title||"Untitled Song")}</div>
+            <div class="card-meta">${escapeHtml(s1)}</div>
           </div>
           <div class="badges">
-            <span class="badge">Cadence: ${escapeHtml(cadence)}</span>
-            <span class="badge">${escapeHtml(style)}</span>
+            <span class="badge">${escapeHtml(dt)}</span>
+            <span class="badge">${escapeHtml(tag)}</span>
             <span class="badge">Human lyrics</span>
           </div>
         </div>
       `;
     }
 
-    function trashCardHtml(t){
-      const active = (t.id===selectedId) ? "active" : "";
-      const dt = t.createdAt ? new Date(t.createdAt) : null;
-      const when = dt ? dt.toLocaleString() : "—";
-      return `
-        <div class="card ${active}" data-id="${t.id}">
-          <div class="card-top">
-            <div class="card-title">${escapeHtml(t.title || "Untitled Song")}</div>
-            <div class="card-meta">Trashed</div>
-          </div>
-          <div class="badges">
-            <span class="badge">${escapeHtml(when)}</span>
-            <span class="badge">Restore available</span>
-          </div>
-        </div>
-      `;
+    // ====== Buttons (Right + Player) ======
+    btnPlay.onclick=()=>setPlaying(!isPlaying);
+    btnDl.onclick=()=>{
+      const t=getSelected();
+      if(!t) return;
+      downloadText(safeFilename((t.title||"SML_Lyrics")+".txt"), (t.lyrics||"")+"\n");
+    };
+    btnTrash.onclick=()=>{
+      const t=getSelected();
+      if(!t) return;
+      const inTrash=trash.some(x=>x.id===selectedId);
+      if(inTrash){
+        // restore
+        trash=trash.filter(x=>x.id!==selectedId);
+        tracks.unshift(t);
+        saveState();
+        setView("library");
+        selectTrack(t.id);
+      }else{
+        // move to trash
+        tracks=tracks.filter(x=>x.id!==selectedId);
+        trash.unshift(t);
+        saveState();
+        setView("trash");
+        selectTrack(t.id);
+      }
+    };
+
+    pPlay.onclick=()=>btnPlay.click();
+    pPrev.onclick=()=>{
+      const list=(view==="trash")?trash:tracks;
+      if(list.length===0) return;
+      const idx=list.findIndex(x=>x.id===selectedId);
+      const next=list[Math.max(0,idx-1)] || list[0];
+      selectTrack(next.id);
+    };
+    pNext.onclick=()=>{
+      const list=(view==="trash")?trash:tracks;
+      if(list.length===0) return;
+      const idx=list.findIndex(x=>x.id===selectedId);
+      const next=list[Math.min(list.length-1,idx+1)] || list[list.length-1];
+      selectTrack(next.id);
+    };
+
+    // ====== Init ======
+    function setPlaying(on){
+      if(on===isPlaying) return;
+      const t=getSelected();
+      if(on && !t) return;
+
+      if(on){
+        if(!audioCtx){
+          audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+          gain=audioCtx.createGain();
+          gain.gain.value=0.08;
+          gain.connect(audioCtx.destination);
+        }
+        if(audioCtx.state==="suspended") audioCtx.resume();
+
+        if(osc){ try{osc.stop();}catch(e){} try{osc.disconnect();}catch(e){} }
+        osc=audioCtx.createOscillator();
+        osc.type="sawtooth";
+        osc.frequency.value=140;
+        osc.connect(gain);
+        osc.start();
+
+        isPlaying=true;
+        pPlay.textContent="⏸";
+        btnPlay.textContent="Stop";
+        audioStatus.textContent="Preview audio";
+
+        if(!playTimer){
+          playTimer=setInterval(()=>{
+            playPos+=0.25;
+            if(playPos>=playDur){
+              playPos=0;
+              setPlaying(false);
+              return;
+            }
+            syncTimeline();
+          },250);
+        }
+      }else{
+        isPlaying=false;
+        pPlay.textContent="▶";
+        btnPlay.textContent="Play";
+        audioStatus.textContent="No audio yet";
+        if(osc){ try{osc.stop();}catch(e){} try{osc.disconnect();}catch(e){} osc=null; }
+        if(playTimer){ clearInterval(playTimer); playTimer=null; }
+        syncTimeline();
+      }
     }
 
-    function getCreateFormDefaults(){
-      let form = {
-        lyrics:"",
-        title:"",
-        styleInclude:"",
-        styleExclude:"",
-        cadence: localStorage.getItem("sml_cadence_v1") || "Original",
-        craziness: 50,
-        styleInfluence: 50,
-        audioInfluence: 50
-      };
-      try{
-        const saved = JSON.parse(localStorage.getItem("sml_form_v1") || "{}");
-        form = {...form, ...saved};
-      }catch(e){}
-      return form;
-    }
-
-    function moveToTrash(id){
-      const idx = tracks.findIndex(t=>t.id===id);
-      if(idx<0) return;
-      const t = tracks.splice(idx,1)[0];
-      trash.unshift(t);
-      saveState();
-      setView("trash");
-      selectTrack(t.id);
-    }
-
-    function restoreFromTrash(id){
-      const idx = trash.findIndex(t=>t.id===id);
-      if(idx<0) return;
-      const t = trash.splice(idx,1)[0];
-      tracks.unshift(t);
-      saveState();
-      setView("library");
-      selectTrack(t.id);
-    }
-
-    function emptyTrash(){
-      if(!confirm("Delete ALL trash items permanently?")) return;
-      trash = [];
-      saveState();
-      selectedId = null;
-      setPlaying(false);
-      renderAll();
-    }
-
-    function restoreAll(){
-      if(trash.length===0) return;
-      tracks = [...trash, ...tracks];
-      trash = [];
-      saveState();
-      setView("library");
-      renderAll();
-    }
-
-    function saveProfileName(){
-      const el = document.getElementById("profileName");
-      if(!el) return;
-      const name = (el.value || "").trim() || "YOU";
-      localStorage.setItem(LS_USER, name);
-      userNameEl.textContent = name;
-      flashChip("Saved");
-    }
-
-    function addCredits(){
-      const cur = Number(localStorage.getItem(LS_CREDITS) || "0");
-      localStorage.setItem(LS_CREDITS, String(cur + 10));
-      flashChip("+10 credits");
-      renderAll(false);
-    }
-
-    function flashChip(text){
-      const old = createHeaderChip.textContent;
-      createHeaderChip.textContent = text;
-      setTimeout(()=> createHeaderChip.textContent = old, 900);
-    }
-
-    function safeFilename(name){
-      return name.replace(/[\\/:*?"<>|]+/g, "_");
-    }
-
-    function escapeHtml(str){
-      return String(str ?? "")
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
-
-    // =========================
-    // EVENTS
-    // =========================
-    nav.addEventListener("click", (e)=>{
-      const item = e.target.closest(".nav-item");
+    // Sidebar click
+    nav.addEventListener("click",(e)=>{
+      const item=e.target.closest(".nav-item");
       if(!item) return;
       setView(item.dataset.view);
     });
 
-    btnPlayRight.onclick = ()=>{
-      const t = getSelected();
-      if(!t) return;
-      setPlaying(!isPlaying);
-    };
+    // Handle hash changes (routing stable)
+    window.addEventListener("hashchange", ()=>{
+      const v=viewFromUrl();
+      if(v!==view) { view=v; setActiveNav(); renderAll(); }
+    });
 
-    btnDownloadRight.onclick = ()=>{
-      const t = getSelected();
-      if(!t) return;
-      const fn = safeFilename((t.title || "SML_Lyrics") + ".txt");
-      downloadText(fn, (t.lyrics || "") + "\n");
-    };
-
-    btnTrashRight.onclick = ()=>{
-      const t = getSelected();
-      if(!t) return;
-      const inTrash = trash.some(x=>x.id===selectedId);
-      if(inTrash){
-        restoreFromTrash(selectedId);
-      }else{
-        moveToTrash(selectedId);
-      }
-    };
-
-    pPlay.onclick = ()=> btnPlayRight.click();
-    pPrev.onclick = ()=> prevTrack();
-    pNext.onclick = ()=> nextTrack();
-
-    // =========================
-    // INIT
-    // =========================
+    // Startup
     (function init(){
       loadState();
-      setView("create");
+
+      const start=viewFromUrl();
+      // force hash routing so you never end up on /index.html/trash again
+      setUrl(start);
+      view=start;
+
       setActiveNav();
+      renderAll();
       syncTimeline();
+      updateRightButtons();
 
-      // Auto-select latest track if exists
-      if(tracks.length>0){
-        selectTrack(tracks[0].id);
-      }else{
-        updateRightButtons();
-      }
+      // if tracks exist, select first
+      if(tracks.length>0) selectTrack(tracks[0].id);
     })();
-
-    // Expose view function for inline buttons
-    window.setView = setView;
-    window.saveProfileName = saveProfileName;
-    window.addCredits = addCredits;
-    window.emptyTrash = emptyTrash;
-    window.restoreAll = restoreAll;
   </script>
 </body>
 </html>
+
