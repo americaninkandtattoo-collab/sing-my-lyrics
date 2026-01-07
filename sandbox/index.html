@@ -16,7 +16,7 @@ html, body {
   overflow: hidden;
 }
 
-/* ===== GRID LAYOUT (LOCKED) ===== */
+/* ===== APP GRID ===== */
 .app {
   display: grid;
   grid-template-columns: 220px 1fr 1fr 260px;
@@ -34,12 +34,14 @@ html, body {
   padding: 12px;
 }
 
-.left .item {
-  margin: 12px 0;
+.left .nav-item {
+  margin: 10px 0;
   cursor: pointer;
   opacity: 0.85;
 }
-.left .item:hover { opacity: 1; }
+.left .nav-item:hover {
+  opacity: 1;
+}
 
 /* ===== CREATE PANEL ===== */
 .create {
@@ -50,83 +52,68 @@ html, body {
   overflow-y: auto;
 }
 
-.create h3 {
-  margin: 10px 0 6px;
-  font-size: 14px;
-  font-weight: bold;
+.section {
+  margin-bottom: 16px;
 }
 
-.create button {
+button {
   width: 100%;
-  margin-bottom: 10px;
   padding: 10px;
+  margin-bottom: 8px;
   background: #111;
   color: #fff;
   border: 1px solid #444;
   cursor: pointer;
 }
 
-.row {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-
-.row button {
-  flex: 1;
-}
-
-textarea,
-input {
+input, textarea {
   width: 100%;
   padding: 8px;
   background: #111;
   color: #fff;
   border: 1px solid #444;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
-.styles {
-  border: 1px solid #444;
+textarea {
+  resize: vertical;
+}
+
+.label {
+  font-size: 13px;
+  margin-bottom: 6px;
+  color: #ccc;
+}
+
+/* ===== STYLES LIST ===== */
+.styles-box {
   background: #111;
-  padding: 6px;
-  height: 100px;
+  border: 1px solid #444;
+  padding: 8px;
+  max-height: 120px;
   overflow-y: auto;
-  margin-bottom: 12px;
+}
+.styles-box div {
+  padding: 4px 0;
 }
 
-.styles div {
-  padding: 4px;
-  font-size: 13px;
-}
-
-/* ===== ADVANCED OPTIONS ===== */
-.advanced {
-  border-top: 1px solid #333;
-  padding-top: 10px;
-}
-
+/* ===== SLIDERS ===== */
 .slider-row {
-  display: grid;
-  grid-template-columns: 1fr 60px;
-  gap: 8px;
+  display: flex;
   align-items: center;
+  gap: 10px;
   margin-bottom: 10px;
 }
 
-.slider-row label {
-  grid-column: 1 / span 2;
-  font-size: 13px;
-  margin-bottom: 2px;
+.slider-row input[type="range"] {
+  flex: 1;
 }
 
-.slider-row input[type=range] {
-  width: 100%;
-}
-
-.slider-row input[type=text] {
-  text-align: center;
-  background: #222;
+.slider-val {
+  width: 40px;
+  text-align: right;
+  font-size: 12px;
+  color: #ccc;
 }
 
 /* ===== WORKSPACE / LIBRARY ===== */
@@ -143,7 +130,6 @@ input {
   border: 1px solid #444;
   padding: 10px;
   margin-bottom: 10px;
-  font-size: 13px;
 }
 
 /* ===== SONG PANEL ===== */
@@ -156,10 +142,10 @@ input {
   font-size: 13px;
 }
 
-.image-box {
-  height: 150px;
+.song-image {
+  height: 140px;
   background: #333;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -176,7 +162,6 @@ input {
   align-items: center;
   justify-content: center;
   gap: 20px;
-  font-size: 18px;
 }
 </style>
 </head>
@@ -184,81 +169,102 @@ input {
 <body>
 <div class="app">
 
-  <!-- LEFT -->
+  <!-- LEFT PANEL -->
   <div class="left">
-    <div class="item">User</div>
-    <div class="item">Home</div>
-    <div class="item">Create</div>
-    <div class="item">Library</div>
-    <div class="item">Search</div>
-    <div class="item">Trash</div>
-    <div class="item">Credits</div>
+    <div class="nav-item">User</div>
+    <div class="nav-item">Home</div>
+    <div class="nav-item">Create</div>
+    <div class="nav-item">Library</div>
+    <div class="nav-item">Search</div>
+    <div class="nav-item">Trash</div>
+    <div class="nav-item">Credits</div>
   </div>
 
-  <!-- CREATE -->
+  <!-- CREATE PANEL -->
   <div class="create">
-    <button>Create Song</button>
-    <button>Record Audio</button>
 
-    <div class="row">
+    <div class="section">
+      <button>Create Song</button>
+      <button>Record Audio</button>
+    </div>
+
+    <div class="section">
       <button>Cadence: Original</button>
       <button>Reset Cadence</button>
     </div>
 
-    <h3>Lyrics</h3>
-    <textarea rows="5" placeholder="Enter lyrics here..."></textarea>
-
-    <input placeholder="Add Song Title" />
-
-    <h3>Styles</h3>
-    <input placeholder="Type custom styles..." />
-
-    <div class="styles">
-      <div>Hardcore Punk</div>
-      <div>Industrial</div>
-      <div>Lo-Fi</div>
-      <div>Hip-Hop</div>
+    <div class="section">
+      <div class="label">Lyrics</div>
+      <textarea rows="6" placeholder="Enter lyrics here..."></textarea>
     </div>
 
-    <div class="advanced">
-      <h3>Advanced Options</h3>
+    <div class="section">
+      <input placeholder="Add Song Title" />
+    </div>
 
-      <div class="slider-row">
-        <label>Craziness</label>
-        <input type="range" value="50">
-        <input type="text" value="50%">
-      </div>
-
-      <div class="slider-row">
-        <label>Style Influence</label>
-        <input type="range" value="50">
-        <input type="text" value="50%">
-      </div>
-
-      <div class="slider-row">
-        <label>Audio Influence</label>
-        <input type="range" value="50">
-        <input type="text" value="50%">
+    <div class="section">
+      <div class="label">Styles</div>
+      <input placeholder="Type custom styles..." />
+      <div class="styles-box">
+        <div>Hardcore Punk</div>
+        <div>Industrial</div>
+        <div>Lo-Fi</div>
+        <div>Hip-Hop</div>
       </div>
     </div>
+
+    <div class="section">
+      <div class="label">Styles to Exclude</div>
+      <input placeholder="Type styles to exclude..." />
+    </div>
+
+    <div class="section">
+      <div class="label">Advanced Options</div>
+
+      <div class="slider-row">
+        <span>Craziness</span>
+        <input type="range" min="0" max="100" value="50">
+        <span class="slider-val">50%</span>
+      </div>
+
+      <div class="slider-row">
+        <span>Style Influence</span>
+        <input type="range" min="0" max="100" value="50">
+        <span class="slider-val">50%</span>
+      </div>
+
+      <div class="slider-row">
+        <span>Audio Influence</span>
+        <input type="range" min="0" max="100" value="50">
+        <span class="slider-val">50%</span>
+      </div>
+    </div>
+
+    <!-- BOTTOM CREATE BUTTON -->
+    <div class="section">
+      <button>Create Song</button>
+    </div>
+
   </div>
 
   <!-- WORKSPACE -->
   <div class="workspace">
-    <div class="song-card">Untitled Song #1<br>Draft · Just now</div>
-    <div class="song-card">Untitled Song #2<br>Draft · Today</div>
-    <div class="song-card">Untitled Song #3<br>Draft · Today</div>
+    <div class="song-card">Untitled Song #1 — Draft</div>
+    <div class="song-card">Untitled Song #2 — Draft</div>
+    <div class="song-card">Untitled Song #3 — Draft</div>
   </div>
 
   <!-- SONG PANEL -->
   <div class="song-panel">
-    <div class="image-box">Generated Image</div>
+    <div class="song-image">Generated Image</div>
     <div>User: You</div>
     <div style="margin-top:10px;">Select a song to preview lyrics</div>
   </div>
 
   <!-- PLAYER -->
-  <div class="player">⏮ ▶ ⏭</div>
+  <div class="player">
+    ⏮ ▶ ⏭
+  </div>
 
 </div>
 </body>
