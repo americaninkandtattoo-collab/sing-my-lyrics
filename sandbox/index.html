@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>SML Lite</title>
 
 <style>
@@ -16,270 +16,136 @@ html, body {
   overflow: hidden;
 }
 
-/* ===== APP GRID ===== */
+/* === APP GRID (MATCHES YOUR DRAWING) === */
 .app {
   display: grid;
-  grid-template-columns: 220px 1fr 260px;
+  grid-template-columns: 220px 1fr 1fr 260px;
   grid-template-rows: 1fr 80px;
   height: 100vh;
-  transition: grid-template-columns 0.25s ease;
+  width: 100vw;
 }
 
-.app.left-collapsed {
-  grid-template-columns: 40px 1fr 260px;
-}
-
-/* ===== LEFT PANEL ===== */
+/* === LEFT CONTROL PANEL === */
 .left {
+  grid-column: 1;
   grid-row: 1 / span 2;
   background: #1e1e1e;
-  border-right: 2px solid #555;
-  padding: 10px;
+  border-right: 2px solid #444;
+  padding: 12px;
 }
 
-.left .label {
-  white-space: nowrap;
-}
-
-.app.left-collapsed .label {
-  display: none;
-}
-
-.toggle-btn {
-  width: 100%;
-  background: #000;
-  border: 1px solid #555;
-  color: #fff;
-  cursor: pointer;
-  margin-bottom: 12px;
-}
-
-.nav {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.nav-item {
-  display: flex;
-  gap: 10px;
+.left .item {
+  margin: 10px 0;
   cursor: pointer;
 }
 
-/* ===== CENTER (CREATE) ===== */
-.center {
+/* === CREATE PAGE === */
+.create {
   grid-column: 2;
   grid-row: 1;
   background: #222;
-  padding: 12px;
+  padding: 16px;
   overflow-y: auto;
 }
 
-.create {
-  max-width: 360px;
+.create input,
+.create textarea,
+.create button {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px;
+  background: #111;
+  color: #fff;
+  border: 1px solid #444;
 }
 
-/* inputs */
-input, textarea {
-  width: 100%;
-  background: #181818;
-  border: 1px solid #333;
-  color: #fff;
-  padding: 6px;
+/* === WORKSPACE / LIBRARY === */
+.workspace {
+  grid-column: 3;
+  grid-row: 1;
+  background: #1b1b1b;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.song-card {
+  background: #222;
+  border: 1px solid #444;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+/* === SONG PANEL === */
+.song-panel {
+  grid-column: 4;
+  grid-row: 1 / span 2;
+  background: #1e1e1e;
+  border-left: 2px solid #444;
+  padding: 12px;
   font-size: 13px;
 }
 
-textarea {
-  resize: none;
-}
-
-.section {
-  margin-bottom: 14px;
-}
-
-.row {
-  display: flex;
-  gap: 6px;
-}
-
-.btn {
-  width: 100%;
-  padding: 8px;
-  background: #000;
-  border: 1px solid #555;
-  color: #fff;
-  cursor: pointer;
-}
-
-.toggle {
-  flex: 1;
-  padding: 6px;
-  background: #111;
-  border: 1px solid #444;
-  color: #fff;
-  cursor: pointer;
-}
-
-.advanced {
-  background: #151515;
-  border: 1px solid #333;
-  padding: 8px;
-}
-
-.adv-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 6px;
-}
-
-.adv-input {
-  width: 60px;
-  text-align: right;
-}
-
-/* ===== RIGHT PANEL (SONG CARD) ===== */
-.right {
-  grid-row: 1 / span 2;
-  background: #1e1e1e;
-  border-left: 2px solid #555;
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.cover {
-  height: 160px;
-  background: #2a2a2a;
-  border: 1px solid #444;
+/* === PLAYER BAR === */
+.player {
+  grid-column: 2 / span 2;
+  grid-row: 2;
+  background: #0d0d0d;
+  border-top: 2px solid #444;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #777;
-}
-
-.song-info {
-  font-size: 13px;
-  font-weight: bold;
-}
-
-.lyrics {
-  flex: 1;
-  background: #181818;
-  border: 1px solid #333;
-  padding: 8px;
-  overflow-y: auto;
-  font-size: 13px;
-}
-
-/* ===== PLAYER ===== */
-.player {
-  grid-column: 2;
-  grid-row: 2;
-  background: #0d0d0d;
-  border-top: 2px solid #555;
-  display: flex;
-  align-items: center;
-  padding: 0 12px;
-  gap: 12px;
-}
-
-.bar {
-  flex: 1;
-  height: 4px;
-  background: #333;
-}
-
-.fill {
-  width: 25%;
-  height: 100%;
-  background: #fff;
+  gap: 20px;
 }
 </style>
 </head>
 
 <body>
+<div class="app">
 
-<div class="app" id="app">
-
-  <!-- LEFT -->
+  <!-- LEFT CONTROL PANEL -->
   <div class="left">
-    <button class="toggle-btn" onclick="toggleLeft()">❮</button>
+    <div class="item">User</div>
+    <div class="item">Home</div>
+    <div class="item">Create</div>
+    <div class="item">Library</div>
+    <div class="item">Search</div>
+    <div class="item">Trash</div>
+    <div class="item">Credits</div>
+  </div>
 
-    <div class="nav">
-      <div class="nav-item">👤 <span class="label">User</span></div>
-      <div class="nav-item">🏠 <span class="label">Home</span></div>
-      <div class="nav-item">✱ <span class="label">Create</span></div>
-      <div class="nav-item">📁 <span class="label">Library</span></div>
-      <div class="nav-item">🗑 <span class="label">Trash</span></div>
+  <!-- CREATE PAGE -->
+  <div class="create">
+    <button>Create Song</button>
+    <button>Record Audio</button>
+
+    <textarea rows="6" placeholder="Enter lyrics here..."></textarea>
+    <input placeholder="Song title" />
+    <input placeholder="Styles" />
+  </div>
+
+  <!-- WORKSPACE / LIBRARY -->
+  <div class="workspace">
+    <div class="song-card">Untitled Song #1</div>
+    <div class="song-card">Untitled Song #2</div>
+    <div class="song-card">Untitled Song #3</div>
+  </div>
+
+  <!-- SONG PANEL -->
+  <div class="song-panel">
+    <div style="height:140px;background:#333;margin-bottom:10px;display:flex;align-items:center;justify-content:center;">
+      Generated Image
+    </div>
+    <div>User: You</div>
+    <div style="margin-top:10px;">
+      Select a song to preview lyrics
     </div>
   </div>
 
-  <!-- CENTER CREATE -->
-  <div class="center">
-    <div class="create">
-
-      <div class="section">
-        <button class="btn">Create Song</button>
-      </div>
-
-      <div class="section row">
-        <button class="toggle">Cadence</button>
-        <button class="toggle">Reset</button>
-      </div>
-
-      <div class="section">
-        <textarea placeholder="Lyrics..."></textarea>
-      </div>
-
-      <div class="section">
-        <input placeholder="Song title">
-      </div>
-
-      <div class="section advanced">
-        <div class="adv-row">
-          <span>Craziness</span>
-          <input class="adv-input" value="50%">
-        </div>
-        <div class="adv-row">
-          <span>Style Influence</span>
-          <input class="adv-input" value="50%">
-        </div>
-        <div class="adv-row">
-          <span>Audio Influence</span>
-          <input class="adv-input" value="50%">
-        </div>
-      </div>
-
-      <div class="section">
-        <button class="btn">Generate</button>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- RIGHT SONG -->
-  <div class="right">
-    <div class="cover">Artwork</div>
-    <div class="song-info">Song Title</div>
-    <div class="lyrics">Lyrics preview…</div>
-  </div>
-
-  <!-- PLAYER -->
+  <!-- PLAYER BAR -->
   <div class="player">
-    ▶
-    <div class="bar"><div class="fill"></div></div>
-    0:00
+    ⏮ ▶ ⏭
   </div>
 
 </div>
-
-<script>
-function toggleLeft() {
-  document.getElementById('app').classList.toggle('left-collapsed');
-}
-</script>
-
 </body>
 </html>
