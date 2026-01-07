@@ -1,1988 +1,265 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SML Lite (Stubbed)</title>
-
-  <style>
-    :root{
-      --bg:#111;
-      --panel:#1e1e1e;
-      --panel2:#222;
-      --panel3:#1b1b1b;
-      --border:#444;
-      --border2:#555;
-      --muted:#aaa;
-      --muted2:#888;
-      --text:#fff;
-      --btn:#0d0d0d;
-      --field:#111;
-      --accent:#d7d7d7;
-      --ok:#7CFF7C;
-      --warn:#ffb36b;
-      --danger:#ff6b6b;
-      --shadow: 0 6px 18px rgba(0,0,0,.35);
-    }
-
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      background: var(--bg);
-      color: var(--text);
-      font-family: Arial, sans-serif;
-      overflow: hidden;
-    }
-
-    /* ===== LAYOUT (MATCHES YOUR DRAWING) =====
-       [ Left Control ] [ Create Page ] [ Workspace/Library ] [ Song Panel ]
-       Player bar under Create + Workspace
-    */
-    .app{
-      height:100vh;
-      width:100vw;
-      display:grid;
-      grid-template-columns: 220px minmax(360px, 1fr) minmax(360px, 1fr) 260px;
-      grid-template-rows: 1fr 80px;
-      gap:0;
-      background: var(--bg);
-    }
-
-    /* Collapsed left */
-    .app.left-collapsed{
-      grid-template-columns: 44px minmax(360px, 1fr) minmax(360px, 1fr) 260px;
-    }
-
-    /* ===== LEFT CONTROL PANEL ===== */
-    .left{
-      grid-column:1;
-      grid-row:1 / span 2;
-      background: var(--panel);
-      border-right: 2px solid var(--border);
-      overflow:hidden;
-      display:flex;
-      flex-direction:column;
-      min-width:0;
-    }
-
-    .left-top{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding:10px;
-      border-bottom:1px solid #333;
-    }
-
-    .toggle-btn{
-      background:#000;
-      color:#fff;
-      border:1px solid var(--border2);
-      cursor:pointer;
-      padding:4px 6px;
-      font-size:14px;
-      border-radius:4px;
-      line-height:1;
-    }
-
-    .brand{
-      font-weight:700;
-      font-size:14px;
-      letter-spacing:.6px;
-      white-space:nowrap;
-    }
-
-    .nav{
-      padding:10px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      overflow:auto;
-    }
-
-    .nav-item{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding:8px 10px;
-      border:1px solid transparent;
-      border-radius:6px;
-      cursor:pointer;
-      user-select:none;
-      color:#ddd;
-    }
-    .nav-item:hover{
-      background:#232323;
-      border-color:#2f2f2f;
-    }
-    .nav-item.active{
-      background:#2a2a2a;
-      border-color:#3a3a3a;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
-    }
-    .nav-icon{
-      width:22px;
-      text-align:center;
-      flex:0 0 22px;
-    }
-    .nav-label{
-      white-space:nowrap;
-    }
-
-    .app.left-collapsed .brand,
-    .app.left-collapsed .nav-label{
-      display:none;
-    }
-    .app.left-collapsed .nav{
-      padding:10px 6px;
-    }
-    .app.left-collapsed .nav-item{
-      justify-content:center;
-      padding:10px 8px;
-    }
-
-    /* ===== CREATE COLUMN ===== */
-    .create{
-      grid-column:2;
-      grid-row:1;
-      background: var(--panel2);
-      border-right: 2px solid var(--border);
-      overflow:hidden;
-      display:flex;
-      flex-direction:column;
-      min-width:0;
-    }
-
-    .col-header{
-      padding:10px 12px;
-      border-bottom:1px solid #333;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      background: linear-gradient(to bottom, rgba(255,255,255,.02), rgba(255,255,255,0));
-    }
-    .col-title{
-      font-weight:700;
-      font-size:14px;
-      letter-spacing:.3px;
-    }
-    .status-pill{
-      font-size:12px;
-      color:#ddd;
-      border:1px solid #3a3a3a;
-      background:#1a1a1a;
-      padding:4px 8px;
-      border-radius:999px;
-      white-space:nowrap;
-    }
-
-    .create-scroll{
-      padding:12px;
-      overflow:auto;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-
-    .btn-row{
-      display:flex;
-      gap:10px;
-    }
-
-    .btn{
-      background: var(--btn);
-      color: var(--text);
-      border:1px solid var(--border2);
-      padding:10px 10px;
-      border-radius:6px;
-      cursor:pointer;
-      font-weight:700;
-      font-size:13px;
-      width:100%;
-    }
-    .btn:hover{ border-color:#777; }
-    .btn:active{ transform: translateY(1px); }
-
-    .sub-row{
-      display:flex;
-      gap:10px;
-      align-items:center;
-    }
-
-    .chip{
-      flex:1;
-      background:#141414;
-      border:1px solid #3a3a3a;
-      border-radius:6px;
-      padding:8px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      min-width:0;
-    }
-    .chip span{
-      color:#ddd;
-      font-size:12px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .chip button{
-      background:#000;
-      border:1px solid #444;
-      color:#fff;
-      padding:6px 8px;
-      border-radius:6px;
-      cursor:pointer;
-      font-weight:700;
-      font-size:12px;
-      white-space:nowrap;
-    }
-
-    .field-label{
-      font-size:12px;
-      color:var(--muted);
-      margin-top:2px;
-      margin-bottom:-4px;
-    }
-
-    textarea, input{
-      width:100%;
-      background: var(--field);
-      color: var(--text);
-      border:1px solid var(--border2);
-      border-radius:6px;
-      padding:10px;
-      font-size:13px;
-      outline:none;
-      box-sizing:border-box;
-    }
-    textarea{ resize:none; min-height:120px; }
-    input::placeholder, textarea::placeholder{ color:#777; }
-
-    .styles-box{
-      background:#141414;
-      border:1px solid #3a3a3a;
-      border-radius:6px;
-      overflow:hidden;
-    }
-    .styles-box .styles-head{
-      padding:8px 10px;
-      border-bottom:1px solid #2f2f2f;
-      font-size:12px;
-      color:#cfcfcf;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-    }
-    .styles-list{
-      max-height:140px;
-      overflow:auto;
-    }
-    .style-item{
-      padding:8px 10px;
-      border-bottom:1px solid #222;
-      cursor:pointer;
-      font-size:13px;
-      color:#ddd;
-    }
-    .style-item:hover{ background:#1d1d1d; }
-    .style-item:last-child{ border-bottom:none; }
-
-    .mini-actions{
-      display:flex;
-      gap:10px;
-    }
-    .mini-btn{
-      background:#000;
-      border:1px solid #444;
-      color:#fff;
-      padding:10px;
-      border-radius:6px;
-      cursor:pointer;
-      font-weight:700;
-      font-size:12px;
-      width:100%;
-    }
-
-    /* ===== WORKSPACE / LIBRARY COLUMN ===== */
-    .workspace{
-      grid-column:3;
-      grid-row:1;
-      background: var(--panel3);
-      border-right: 2px solid var(--border);
-      overflow:hidden;
-      display:flex;
-      flex-direction:column;
-      min-width:0;
-    }
-
-    .workspace-scroll{
-      padding:12px;
-      overflow:auto;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-
-    .song-card{
-      background:#222;
-      border:1px solid var(--border2);
-      border-radius:8px;
-      padding:10px;
-      cursor:pointer;
-      box-shadow: inset 0 0 0 1px rgba(255,255,255,.02);
-    }
-    .song-card:hover{ border-color:#777; }
-    .song-card.selected{
-      border-color:#cfcfcf;
-      box-shadow: 0 0 0 2px rgba(255,255,255,.08);
-    }
-    .song-title{
-      font-weight:700;
-      font-size:13px;
-      margin-bottom:6px;
-    }
-    .song-meta{
-      font-size:12px;
-      color:var(--muted);
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-    .tag{
-      border:1px solid #3a3a3a;
-      background:#171717;
-      padding:2px 6px;
-      border-radius:999px;
-      color:#ddd;
-    }
-
-    /* ===== SONG PANEL (RIGHT) ===== */
-    .song-panel{
-      grid-column:4;
-      grid-row:1 / span 2;
-      background: var(--panel);
-      border-left:2px solid var(--border);
-      overflow:hidden;
-      display:flex;
-      flex-direction:column;
-      min-width:0;
-    }
-
-    .song-panel-scroll{
-      padding:12px;
-      overflow:auto;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      flex:1;
-    }
-
-    .img-box{
-      height:160px;
-      background:#2a2a2a;
-      border:1px solid #444;
-      border-radius:8px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      color:var(--muted2);
-      font-size:12px;
-    }
-
-    .info-line{
-      font-size:12px;
-      color:#bbb;
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      border-bottom:1px solid #333;
-      padding-bottom:8px;
-    }
-
-    .song-info{
-      font-size:13px;
-      font-weight:700;
-      line-height:1.25;
-    }
-
-    .lyrics-preview{
-      flex:1;
-      min-height:140px;
-      background:#181818;
-      border:1px solid #333;
-      border-radius:8px;
-      padding:10px;
-      overflow:auto;
-      font-size:13px;
-      line-height:1.5;
-      white-space:pre-wrap;
-    }
-
-    .date-line{
-      font-size:11px;
-      color:#777;
-      text-align:right;
-    }
-
-    /* ===== PLAYER BAR (BOTTOM UNDER CREATE + WORKSPACE) ===== */
-    .player{
-      grid-column:2 / span 2;
-      grid-row:2;
-      background: #0d0d0d;
-      border-top:2px solid var(--border);
-      display:flex;
-      align-items:center;
-      gap:12px;
-      padding:0 12px;
-      min-width:0;
-    }
-
-    .player-controls{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      flex:0 0 auto;
-    }
-    .pbtn{
-      background:#000;
-      border:1px solid #444;
-      color:#fff;
-      width:34px;
-      height:34px;
-      border-radius:8px;
-      cursor:pointer;
-      font-weight:900;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      opacity:.9;
-      user-select:none;
-    }
-    .pbtn:hover{ opacity:1; border-color:#777; }
-
-    .timeline{
-      flex:1;
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width:0;
-    }
-    .time{
-      font-size:12px;
-      color:var(--muted);
-      width:44px;
-      text-align:center;
-      flex:0 0 44px;
-    }
-    .bar{
-      flex:1;
-      height:6px;
-      background:#333;
-      border-radius:999px;
-      position:relative;
-      overflow:hidden;
-      cursor:pointer;
-      min-width:0;
-    }
-    .fill{
-      height:100%;
-      width:0%;
-      background:#fff;
-      border-radius:999px;
-    }
-    .nowplaying{
-      font-size:12px;
-      color:#ccc;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      flex:0 0 auto;
-      max-width:260px;
-    }
-
-    /* Small screens: keep structure but allow tighter */
-    @media (max-width: 1100px){
-      .app{ grid-template-columns: 220px minmax(320px, 1fr) minmax(320px, 1fr) 240px; }
-      .app.left-collapsed{ grid-template-columns: 44px minmax(320px, 1fr) minmax(320px, 1fr) 240px; }
-      .nowplaying{ max-width:180px; }
-    }
-  </style>
-</head>
-
-<body>
-  <div class="app" id="app">
-
-    <!-- LEFT CONTROL PANEL -->
-    <aside class="left">
-      <div class="left-top">
-        <button class="toggle-btn" id="toggleLeftBtn" title="Collapse">❮</button>
-        <div class="brand">SML</div>
-      </div>
-
-      <nav class="nav" id="nav">
-        <div class="nav-item" data-route="user"><span class="nav-icon">👤</span><span class="nav-label">User</span></div>
-        <div class="nav-item" data-route="home"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></div>
-        <div class="nav-item active" data-route="create"><span class="nav-icon">✳</span><span class="nav-label">Create</span></div>
-        <div class="nav-item" data-route="library"><span class="nav-icon">📁</span><span class="nav-label">Library</span></div>
-        <div class="nav-item" data-route="search"><span class="nav-icon">🔍</span><span class="nav-label">Search</span></div>
-        <div class="nav-item" data-route="trash"><span class="nav-icon">🗑</span><span class="nav-label">Trash</span></div>
-        <div class="nav-item" data-route="credits"><span class="nav-icon">💳</span><span class="nav-label">Credits</span></div>
-      </nav>
-    </aside>
-
-    <!-- CREATE PAGE COLUMN -->
-    <section class="create">
-      <div class="col-header">
-        <div class="col-title">Create</div>
-        <div class="status-pill" id="createStatus">Ready</div>
-      </div>
-
-      <div class="create-scroll">
-
-        <div class="btn-row">
-          <button class="btn" id="btnCreateSong">Create Song</button>
-          <button class="btn" id="btnRecordAudio">Record Audio</button>
-        </div>
-
-        <div class="sub-row">
-          <div class="chip" title="Cadence (stub)">
-            <span id="cadenceLabel">Cadence: Original</span>
-            <button id="btnCycleCadence">Change</button>
-          </div>
-          <div class="chip">
-            <span>Reset</span>
-            <button id="btnResetCadence">Reset Cadence</button>
-          </div>
-        </div>
-
-        <div class="field-label">Lyrics</div>
-        <textarea id="lyrics" placeholder="Enter lyrics here..."></textarea>
-
-        <div class="field-label">Song Title</div>
-        <input id="title" placeholder="Add Song Title" />
-
-        <div class="field-label">Styles</div>
-        <input id="styleInput" placeholder="Type custom styles..." />
-
-        <div class="styles-box">
-          <div class="styles-head">
-            <span>Quick Styles</span>
-            <span style="color:#888;font-size:11px;">(click to add)</span>
-          </div>
-          <div class="styles-list" id="stylesList">
-            <div class="style-item">Hardcore Punk</div>
-            <div class="style-item">Industrial</div>
-            <div class="style-item">Lo-Fi</div>
-            <div class="style-item">Hip-Hop</div>
-            <div class="style-item">Synthwave</div>
-            <div class="style-item">Metal</div>
-            <div class="style-item">Acoustic</div>
-            <div class="style-item">Spoken Word</div>
-          </div>
-        </div>
-
-        <div class="mini-actions">
-          <button class="mini-btn" id="btnSaveDraft">Save Draft</button>
-          <button class="mini-btn" id="btnClearForm">Clear</button>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- WORKSPACE / LIBRARY COLUMN -->
-    <section class="workspace">
-      <div class="col-header">
-        <div class="col-title">Workspace / Library</div>
-        <div class="status-pill" id="libraryStatus">Your songs</div>
-      </div>
-
-      <div class="workspace-scroll" id="cards"></div>
-    </section>
-
-    <!-- SONG PANEL (RIGHT) -->
-    <aside class="song-panel">
-      <div class="col-header">
-        <div class="col-title">Song Panel</div>
-        <div class="status-pill" id="songPanelStatus">No selection</div>
-      </div>
-
-      <div class="song-panel-scroll">
-        <div class="img-box" id="imgBox">Generated Image</div>
-
-        <div class="info-line">
-          <div id="userLine">User: You</div>
-          <div id="songIdLine" style="color:#888;">—</div>
-        </div>
-
-        <div class="song-info" id="songInfo">
-          Song: —
-        </div>
-
-        <div class="lyrics-preview" id="lyricsPreview">
-Select a song card to preview lyrics here.
-        </div>
-
-        <div class="date-line" id="dateLine">—</div>
-      </div>
-    </aside>
-
-    <!-- PLAYER BAR (BOTTOM) -->
-    <footer class="player">
-      <div class="player-controls">
-        <div class="pbtn" id="btnPrev" title="Previous">⏮</div>
-        <div class="pbtn" id="btnPlay" title="Play/Pause">▶</div>
-        <div class="pbtn" id="btnNext" title="Next">⏭</div>
-      </div>
-
-      <div class="timeline">
-        <div class="time" id="tCur">0:00</div>
-        <div class="bar" id="bar" title="Seek">
-          <div class="fill" id="fill"></div>
-        </div>
-        <div class="time" id="tDur">3:30</div>
-      </div>
-
-      <div class="nowplaying" id="nowPlaying">Now Playing: —</div>
-    </footer>
-
-  </div>
-
-  <script>
-    /* =========================
-       SML Lite (Stubbed)
-       - LocalStorage saved library
-       - Select song updates right panel
-       - Create Song produces stub "generated" song
-       - Player is fake timeline with play/pause/seek
-       ========================= */
-
-    const LS_KEY = "sml_lite_stubbed_v1";
-
-    const app = document.getElementById("app");
-    const toggleLeftBtn = document.getElementById("toggleLeftBtn");
-
-    const nav = document.getElementById("nav");
-    const createStatus = document.getElementById("createStatus");
-    const libraryStatus = document.getElementById("libraryStatus");
-    const songPanelStatus = document.getElementById("songPanelStatus");
-
-    const lyricsEl = document.getElementById("lyrics");
-    const titleEl = document.getElementById("title");
-    const styleInputEl = document.getElementById("styleInput");
-
-    const btnCreateSong = document.getElementById("btnCreateSong");
-    const btnRecordAudio = document.getElementById("btnRecordAudio");
-    const btnSaveDraft = document.getElementById("btnSaveDraft");
-    const btnClearForm = document.getElementById("btnClearForm");
-
-    const cadenceLabel = document.getElementById("cadenceLabel");
-    const btnCycleCadence = document.getElementById("btnCycleCadence");
-    const btnResetCadence = document.getElementById("btnResetCadence");
-
-    const stylesList = document.getElementById("stylesList");
-
-    const cardsEl = document.getElementById("cards");
-
-    const imgBox = document.getElementById("imgBox");
-    const songIdLine = document.getElementById("songIdLine");
-    const songInfo = document.getElementById("songInfo");
-    const lyricsPreview = document.getElementById("lyricsPreview");
-    const dateLine = document.getElementById("dateLine");
-    const nowPlaying = document.getElementById("nowPlaying");
-
-    // Player
-    const btnPrev = document.getElementById("btnPrev");
-    const btnPlay = document.getElementById("btnPlay");
-    const btnNext = document.getElementById("btnNext");
-    const tCur = document.getElementById("tCur");
-    const tDur = document.getElementById("tDur");
-    const bar = document.getElementById("bar");
-    const fill = document.getElementById("fill");
-
-    const CADENCES = ["Original", "Fast", "Half-Time", "Double-Time", "Swing"];
-    const DEFAULT_DURATION_SEC = 210; // 3:30
-
-    let state = loadState();
-    let selectedId = state.selectedId || null;
-
-    // playback
-    let isPlaying = false;
-    let playTimer = null;
-    let curSec = 0;
-    let durSec = DEFAULT_DURATION_SEC;
-
-    init();
-
-    function init(){
-      // Left collapse
-      if(state.leftCollapsed) app.classList.add("left-collapsed");
-      toggleLeftBtn.textContent = app.classList.contains("left-collapsed") ? "❯" : "❮";
-
-      toggleLeftBtn.addEventListener("click", () => {
-        app.classList.toggle("left-collapsed");
-        state.leftCollapsed = app.classList.contains("left-collapsed");
-        toggleLeftBtn.textContent = state.leftCollapsed ? "❯" : "❮";
-        saveState();
-      });
-
-      // Nav (stub)
-      nav.addEventListener("click", (e) => {
-        const item = e.target.closest(".nav-item");
-        if(!item) return;
-
-        document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
-        item.classList.add("active");
-
-        // stub: only show status change (layout stays the same)
-        const route = item.dataset.route;
-        createStatus.textContent = route === "create" ? "Ready" : ("Viewing: " + route);
-      });
-
-      // Cadence
-      if(!state.cadence) state.cadence = "Original";
-      renderCadence();
-
-      btnCycleCadence.addEventListener("click", () => {
-        const idx = CADENCES.indexOf(state.cadence);
-        state.cadence = CADENCES[(idx + 1) % CADENCES.length];
-        renderCadence();
-        saveState();
-      });
-
-      btnResetCadence.addEventListener("click", () => {
-        state.cadence = "Original";
-        renderCadence();
-        saveState();
-      });
-
-      // Quick styles
-      stylesList.addEventListener("click", (e) => {
-        const item = e.target.closest(".style-item");
-        if(!item) return;
-        addStyleToken(item.textContent.trim());
-      });
-
-      // Form persistence (draft typing)
-      lyricsEl.value = state.draft?.lyrics || "";
-      titleEl.value = state.draft?.title || "";
-      styleInputEl.value = state.draft?.styles || "";
-
-      lyricsEl.addEventListener("input", saveDraftFromForm);
-      titleEl.addEventListener("input", saveDraftFromForm);
-      styleInputEl.addEventListener("input", saveDraftFromForm);
-
-      // Buttons
-      btnSaveDraft.addEventListener("click", () => {
-        // Save as Draft song card (not generated)
-        const draft = getFormData();
-        const card = makeSong({
-          title: draft.title || "Untitled Draft",
-          lyrics: draft.lyrics || "",
-          styles: draft.styles || "",
-          cadence: state.cadence || "Original",
-          isGenerated: false
-        });
-        state.songs.unshift(card);
-        selectedId = card.id;
-        state.selectedId = selectedId;
-        flash(createStatus, "Draft saved");
-        saveState();
-        render();
-        selectSong(selectedId);
-      });
-
-      btnClearForm.addEventListener("click", () => {
-        lyricsEl.value = "";
-        titleEl.value = "";
-        styleInputEl.value = "";
-        saveDraftFromForm();
-        flash(createStatus, "Cleared");
-      });
-
-      btnCreateSong.addEventListener("click", () => {
-        const draft = getFormData();
-        if(!draft.lyrics.trim()){
-          flash(createStatus, "Add lyrics first", true);
-          return;
-        }
-        const card = makeSong({
-          title: draft.title || "Untitled Song",
-          lyrics: draft.lyrics,
-          styles: draft.styles,
-          cadence: state.cadence || "Original",
-          isGenerated: true
-        });
-        state.songs.unshift(card);
-        selectedId = card.id;
-        state.selectedId = selectedId;
-        flash(createStatus, "Song created (stub)");
-        saveState();
-        render();
-        selectSong(selectedId);
-      });
-
-      btnRecordAudio.addEventListener("click", () => {
-        // Stub only
-        flash(createStatus, "Record Audio (stub)", false);
-      });
-
-      // Player controls
-      btnPlay.addEventListener("click", togglePlay);
-      btnPrev.addEventListener("click", () => stepTrack(-1));
-      btnNext.addEventListener("click", () => stepTrack(1));
-      bar.addEventListener("click", (e) => {
-        const rect = bar.getBoundingClientRect();
-        const pct = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
-        curSec = Math.floor(pct * durSec);
-        renderPlayer();
-      });
-
-      // Ensure at least starter cards exist (only if empty)
-      if(!state.songs || state.songs.length === 0){
-        state.songs = [
-          makeSong({ title:"Untitled Song #1", lyrics:"(Placeholder lyrics — replace with your own.)", styles:"Hardcore Punk", cadence:"Original", isGenerated:false, fixedId:true }),
-          makeSong({ title:"Untitled Song #2", lyrics:"(Placeholder lyrics — replace with your own.)", styles:"Industrial", cadence:"Original", isGenerated:false, fixedId:true }),
-          makeSong({ title:"Untitled Song #3", lyrics:"(Placeholder lyrics — replace with your own.)", styles:"Lo-Fi", cadence:"Original", isGenerated:false, fixedId:true }),
-        ];
-        selectedId = state.songs[0].id;
-        state.selectedId = selectedId;
-        saveState();
-      }
-
-      render();
-
-      // restore selection
-      if(selectedId){
-        selectSong(selectedId);
-      }else{
-        clearSongPanel();
-      }
-
-      // restore player
-      durSec = DEFAULT_DURATION_SEC;
-      curSec = 0;
-      renderPlayer();
-    }
-
-    function render(){
-      libraryStatus.textContent = "Your songs (" + state.songs.length + ")";
-      renderCards();
-    }
-
-    function renderCards(){
-      cardsEl.innerHTML = "";
-      state.songs.forEach(song => {
-        const card = document.createElement("div");
-        card.className = "song-card" + (song.id === selectedId ? " selected" : "");
-        card.dataset.id = song.id;
-
-        const title = document.createElement("div");
-        title.className = "song-title";
-        title.textContent = song.title;
-
-        const meta = document.createElement("div");
-        meta.className = "song-meta";
-
-        const d = document.createElement("span");
-        d.className = "tag";
-        d.textContent = (song.isGenerated ? "Generated" : "Draft") + " • " + fmtTimeAgo(song.createdAt);
-
-        const c = document.createElement("span");
-        c.className = "tag";
-        c.textContent = "Cadence: " + (song.cadence || "Original");
-
-        const s = document.createElement("span");
-        s.className = "tag";
-        s.textContent = song.styles ? trimForTag(song.styles) : "No styles";
-
-        meta.appendChild(d);
-        meta.appendChild(c);
-        meta.appendChild(s);
-
-        card.appendChild(title);
-        card.appendChild(meta);
-
-        card.addEventListener("click", () => {
-          selectedId = song.id;
-          state.selectedId = selectedId;
-          saveState();
-          renderCards();
-          selectSong(song.id);
-        });
-
-        cardsEl.appendChild(card);
-      });
-    }
-
-    function selectSong(id){
-      const song = state.songs.find(x => x.id === id);
-      if(!song){
-        clearSongPanel();
-        return;
-      }
-
-      songPanelStatus.textContent = song.isGenerated ? "Generated" : "Draft";
-      songIdLine.textContent = song.id;
-
-      songInfo.textContent = "Song: " + (song.title || "—");
-
-      // right image box (stub)
-      imgBox.textContent = song.isGenerated ? "Generated Image (stub)" : "Draft Image (stub)";
-
-      lyricsPreview.textContent = (song.lyrics && song.lyrics.trim())
-        ? song.lyrics
-        : "(No lyrics saved yet.)";
-
-      dateLine.textContent = new Date(song.createdAt).toLocaleString();
-
-      // Update Now Playing
-      nowPlaying.textContent = "Now Playing: " + (song.title || "—");
-
-      // Reset player when switching tracks
-      stopPlay(false);
-      curSec = 0;
-      renderPlayer();
-    }
-
-    function clearSongPanel(){
-      songPanelStatus.textContent = "No selection";
-      songIdLine.textContent = "—";
-      songInfo.textContent = "Song: —";
-      imgBox.textContent = "Generated Image";
-      lyricsPreview.textContent = "Select a song card to preview lyrics here.";
-      dateLine.textContent = "—";
-      nowPlaying.textContent = "Now Playing: —";
-      stopPlay(false);
-      curSec = 0;
-      renderPlayer();
-    }
-
-    function addStyleToken(style){
-      const current = styleInputEl.value.trim();
-      const parts = current ? current.split(",").map(s => s.trim()).filter(Boolean) : [];
-      if(!parts.includes(style)) parts.push(style);
-      styleInputEl.value = parts.join(", ");
-      saveDraftFromForm();
-      flash(createStatus, "Added style");
-    }
-
-    function saveDraftFromForm(){
-      state.draft = getFormData();
-      saveState();
-    }
-
-    function getFormData(){
-      return {
-        lyrics: lyricsEl.value || "",
-        title: titleEl.value || "",
-        styles: styleInputEl.value || ""
-      };
-    }
-
-    function renderCadence(){
-      cadenceLabel.textContent = "Cadence: " + (state.cadence || "Original");
-    }
-
-    function makeSong({ title, lyrics, styles, cadence, isGenerated, fixedId=false }){
-      const id = fixedId ? shortId() : shortId();
-      return {
-        id,
-        title: (title || "").trim() || "Untitled",
-        lyrics: lyrics || "",
-        styles: styles || "",
-        cadence: cadence || "Original",
-        isGenerated: !!isGenerated,
-        createdAt: Date.now()
-      };
-    }
-
-    function shortId(){
-      // simple short-ish id (looks like your commit hashes vibe but local)
-      return Math.random().toString(16).slice(2, 8);
-    }
-
-    function loadState(){
-      try{
-        const raw = localStorage.getItem(LS_KEY);
-        if(!raw) return { songs:[], draft:{}, cadence:"Original", leftCollapsed:false, selectedId:null };
-        const parsed = JSON.parse(raw);
-        if(!parsed.songs) parsed.songs = [];
-        if(!parsed.draft) parsed.draft = {};
-        return parsed;
-      }catch{
-        return { songs:[], draft:{}, cadence:"Original", leftCollapsed:false, selectedId:null };
-      }
-    }
-
-    function saveState(){
-      localStorage.setItem(LS_KEY, JSON.stringify(state));
-    }
-
-    function flash(el, text, isError=false){
-      const old = el.textContent;
-      el.textContent = text;
-
-      el.style.borderColor = isError ? "rgba(255,107,107,.65)" : "rgba(124,255,124,.5)";
-      el.style.color = isError ? "#ffd1d1" : "#e9ffe9";
-      el.style.background = "#141414";
-
-      setTimeout(() => {
-        el.textContent = old;
-        el.style.borderColor = "";
-        el.style.color = "";
-        el.style.background = "";
-      }, 850);
-    }
-
-    function trimForTag(s){
-      const t = s.trim();
-      if(t.length <= 18) return t;
-      return t.slice(0, 18) + "…";
-    }
-
-    function fmtTimeAgo(ts){
-      const sec = Math.floor((Date.now() - ts)/1000);
-      if(sec < 60) return "just now";
-      const min = Math.floor(sec/60);
-      if(min < 60) return min + "m ago";
-      const hr = Math.floor(min/60);
-      if(hr < 24) return hr + "h ago";
-      const d = Math.floor(hr/24);
-      return d + "d ago";
-    }
-
-    /* ===== PLAYER (FAKE) ===== */
-    function togglePlay(){
-      if(!selectedId){
-        flash(songPanelStatus, "Select a song", true);
-        return;
-      }
-      if(isPlaying){
-        stopPlay(true);
-      }else{
-        startPlay();
-      }
-    }
-
-    function startPlay(){
-      isPlaying = true;
-      btnPlay.textContent = "⏸";
-      if(playTimer) clearInterval(playTimer);
-      playTimer = setInterval(() => {
-        curSec = Math.min(durSec, curSec + 1);
-        renderPlayer();
-        if(curSec >= durSec){
-          stopPlay(false);
-        }
-      }, 1000);
-    }
-
-    function stopPlay(keepButtonState){
-      isPlaying = false;
-      if(playTimer){
-        clearInterval(playTimer);
-        playTimer = null;
-      }
-      btnPlay.textContent = keepButtonState ? "▶" : "▶";
-    }
-
-    function renderPlayer(){
-      fill.style.width = (durSec ? (curSec/durSec)*100 : 0) + "%";
-      tCur.textContent = fmtMMSS(curSec);
-      tDur.textContent = fmtMMSS(durSec);
-    }
-
-    function fmtMMSS(s){
-      const m = Math.floor(s/60);
-      const r = s % 60;
-      return m + ":" + String(r).padStart(2,"0");
-    }
-
-    function stepTrack(dir){
-      if(!state.songs.length) return;
-      if(!selectedId){
-        selectedId = state.songs[0].id;
-        state.selectedId = selectedId;
-        saveState();
-        renderCards();
-        selectSong(selectedId);
-        return;
-      }
-      const idx = state.songs.findIndex(x => x.id === selectedId);
-      const next = (idx + dir + state.songs.length) % state.songs.length;
-      selectedId = state.songs[next].id;
-      state.selectedId = selectedId;
-      saveState();
-      renderCards();
-      selectSong(selectedId);
-    }
-  </script>
-</body>
-</html>
-You sent
-<!DOCTYPE html>
-<html lang="en">
-<head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>SML Lite</title>
 
 <style>
-  :root{
-    --bg:#111;
-    --panel:#1e1e1e;
-    --panel2:#222;
-    --panel3:#1b1b1b;
-    --border:#444;
-    --border2:#555;
-    --text:#fff;
-    --muted:#bdbdbd;
-    --muted2:#9a9a9a;
-    --chip:#2a2a2a;
-    --chip2:#303030;
-    --accent:#dcdcdc;
-  }
-
-  html, body{
-    margin:0;
-    padding:0;
-    height:100%;
-    overflow:hidden;
-    background:var(--bg);
-    color:var(--text);
-    font-family: Arial, sans-serif;
-  }
-
-  /* ====== APP GRID (MATCHES YOUR DRAWING) ====== */
-  .app{
-    height:100vh;
-    width:100vw;
-    display:grid;
-    grid-template-columns: 220px 420px 1fr 260px;
-    grid-template-rows: 1fr 80px;
-    gap:0;
-  }
-
-  /* ====== LEFT CONTROL PANEL ====== */
-  .left{
-    grid-column:1;
-    grid-row:1 / span 2;
-    background:var(--panel);
-    border-right:2px solid var(--border2);
-    overflow:hidden;
-    display:flex;
-    flex-direction:column;
-  }
-
-  .left-top{
-    padding:10px;
-    border-bottom:1px solid #2b2b2b;
-    display:flex;
-    align-items:center;
-    gap:10px;
-  }
-
-  .toggle-btn{
-    background:#000;
-    color:#fff;
-    border:1px solid var(--border2);
-    cursor:pointer;
-    padding:4px 8px;
-    font-size:14px;
-    border-radius:4px;
-  }
-
-  .logo{
-    font-weight:bold;
-    font-size:14px;
-    letter-spacing:0.5px;
-  }
-
-  .left-nav{
-    padding:10px;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-    overflow:auto;
-  }
-
-  .left-item{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    padding:10px 10px;
-    border:1px solid transparent;
-    border-radius:6px;
-    cursor:pointer;
-    user-select:none;
-  }
-
-  .left-item:hover{
-    background:#202020;
-    border-color:#2f2f2f;
-  }
-
-  .left-item.active{
-    background:#242424;
-    border-color:var(--border);
-  }
-
-  .left-item .icon{
-    width:20px;
-    text-align:center;
-    opacity:0.9;
-  }
-
-  .left-item .label{
-    white-space:nowrap;
-    font-size:14px;
-  }
-
-  /* collapsed left */
-  .app.left-collapsed{
-    grid-template-columns: 44px 420px 1fr 260px;
-  }
-  .app.left-collapsed .left-item .label,
-  .app.left-collapsed .logo{
-    display:none;
-  }
-  .app.left-collapsed .left-top{
-    justify-content:center;
-  }
-  .app.left-collapsed .left-nav{
-    padding:10px 6px;
-  }
-  .app.left-collapsed .left-item{
-    justify-content:center;
-    padding:10px 0;
-  }
-
-  /* ====== CREATE PANEL (COLUMN 2) ====== */
-  .create{
-    grid-column:2;
-    grid-row:1;
-    background:var(--panel2);
-    border-right:2px solid var(--border2);
-    overflow:auto;
-    padding:12px;
-  }
-
-  .create-header{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    margin-bottom:10px;
-  }
-
-  .panel-title{
-    font-size:14px;
-    font-weight:bold;
-    opacity:0.95;
-  }
-
-  .pill{
-    font-size:12px;
-    color:var(--muted);
-    background:#1a1a1a;
-    border:1px solid #2f2f2f;
-    padding:4px 8px;
-    border-radius:999px;
-  }
-
-  .btn{
-    width:100%;
-    background:#121212;
-    color:#fff;
-    border:1px solid var(--border2);
-    padding:10px 10px;
-    border-radius:6px;
-    cursor:pointer;
-    font-size:14px;
-  }
-
-  .btn:hover{ border-color:#777; }
-
-  .row{
-    display:flex;
-    gap:10px;
-    width:100%;
-  }
-
-  .row .btn{
-    width:50%;
-  }
-
-  .section{
-    border:1px solid var(--border);
-    background:#1a1a1a;
-    border-radius:8px;
-    padding:10px;
-    margin-top:10px;
-  }
-
-  .section-label{
-    font-size:12px;
-    color:var(--muted);
-    margin-bottom:6px;
-  }
-
-  .cadence-row{
-    display:flex;
-    gap:10px;
-    align-items:center;
-  }
-
-  .cadence-chip{
-    flex:1;
-    background:var(--chip);
-    border:1px solid var(--border);
-    padding:8px 10px;
-    border-radius:6px;
-    font-size:13px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-  }
-
-  .mini-btn{
-    background:#101010;
-    color:#fff;
-    border:1px solid var(--border2);
-    padding:8px 10px;
-    border-radius:6px;
-    cursor:pointer;
-    font-size:13px;
-    white-space:nowrap;
-  }
-
-  .mini-btn:hover{ border-color:#777; }
-
-  textarea, input{
-    width:100%;
-    box-sizing:border-box;
-    background:#111;
-    color:#fff;
-    border:1px solid var(--border2);
-    border-radius:6px;
-    padding:10px;
-    font-size:13px;
-    outline:none;
-  }
-
-  textarea{ resize:none; }
-
-  .field{
-    margin-top:10px;
-  }
-
-  .field input{
-    height:40px;
-  }
-
-  .styles-grid{
-    display:grid;
-    grid-template-columns: 1fr;
-    gap:8px;
-    margin-top:8px;
-  }
-
-  .styles-list{
-    background:#111;
-    border:1px solid var(--border2);
-    border-radius:6px;
-    padding:8px;
-    max-height:130px;
-    overflow:auto;
-  }
-
-  .style-item{
-    padding:6px 8px;
-    border-radius:6px;
-    cursor:pointer;
-    font-size:13px;
-    color:#eaeaea;
-  }
-
-  .style-item:hover{
-    background:#1c1c1c;
-  }
-
-  .style-item.active{
-    background:#232323;
-    border:1px solid #333;
-  }
-
-  .create-actions{
-    display:flex;
-    gap:10px;
-    margin-top:10px;
-  }
-
-  .create-actions .btn{
-    width:50%;
-  }
-
-  /* ====== WORKSPACE / LIBRARY (COLUMN 3) ====== */
-  .workspace{
-    grid-column:3;
-    grid-row:1;
-    background:var(--panel3);
-    overflow:auto;
-    padding:12px;
-  }
-
-  .workspace-header{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    margin-bottom:10px;
-  }
-
-  .workspace-sub{
-    font-size:12px;
-    color:var(--muted);
-  }
-
-  .song-card{
-    border:1px solid var(--border);
-    background:#202020;
-    border-radius:10px;
-    padding:10px;
-    margin-bottom:10px;
-    cursor:pointer;
-  }
-
-  .song-card:hover{ border-color:#777; }
-
-  .song-card.active{
-    outline:2px solid #777;
-  }
-
-  .song-top{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:10px;
-  }
-
-  .song-name{
-    font-weight:bold;
-    font-size:13px;
-  }
-
-  .song-meta{
-    font-size:12px;
-    color:var(--muted);
-    margin-top:6px;
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-  }
-
-  .meta-chip{
-    background:#161616;
-    border:1px solid #2c2c2c;
-    padding:3px 8px;
-    border-radius:999px;
-  }
-
-  /* ====== SONG PANEL (COLUMN 4) ====== */
-  .song-panel{
-    grid-column:4;
-    grid-row:1 / span 2;
-    background:var(--panel);
-    border-left:2px solid var(--border2);
-    display:flex;
-    flex-direction:column;
-    overflow:hidden;
-  }
-
-  .song-panel-header{
-    padding:12px;
-    border-bottom:1px solid #2b2b2b;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-  }
-
-  .song-panel-title{
-    font-weight:bold;
-    font-size:14px;
-  }
-
-  .song-panel-body{
-    padding:12px;
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-    overflow:auto;
-    height:100%;
-  }
-
-  .right-image{
-    height:160px;
-    background:#2a2a2a;
-    border:1px solid var(--border);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:#888;
-    font-size:12px;
-    border-radius:8px;
-  }
-
-  .right-user{
-    font-size:12px;
-    color:var(--muted);
-    border-bottom:1px solid #333;
-    padding-bottom:8px;
-  }
-
-  .right-song-info{
-    font-size:13px;
-    font-weight:bold;
-  }
-
-  .right-lyrics{
-    flex:1;
-    overflow:auto;
-    background:#181818;
-    border:1px solid #333;
-    border-radius:8px;
-    padding:10px;
-    font-size:13px;
-    line-height:1.5;
-    color:#e6e6e6;
-    white-space:pre-wrap;
-    min-height:140px;
-  }
-
-  .right-date{
-    font-size:11px;
-    color:#777;
-    text-align:right;
-  }
-
-  /* ====== PLAYER BAR (BOTTOM, SPANS COL 2-3) ====== */
-  .player{
-    grid-column:2 / span 2;
-    grid-row:2;
-    background:#0d0d0d;
-    border-top:2px solid var(--border2);
-    display:flex;
-    align-items:center;
-    gap:12px;
-    padding:0 12px;
-  }
-
-  .player-controls{
-    display:flex;
-    align-items:center;
-    gap:10px;
-  }
-
-  .player-btn{
-    cursor:pointer;
-    opacity:0.9;
-    border:1px solid #333;
-    background:#111;
-    padding:6px 10px;
-    border-radius:8px;
-    user-select:none;
-  }
-
-  .player-btn:hover{ opacity:1; border-color:#666; }
-
-  .player-timeline{
-    flex:1;
-    display:flex;
-    align-items:center;
-    gap:10px;
-  }
-
-  .player-time{
-    font-size:12px;
-    color:#aaa;
-    min-width:44px;
-    text-align:center;
-  }
-
-  .player-bar{
-    flex:1;
-    height:6px;
-    background:#2a2a2a;
-    border-radius:999px;
-    position:relative;
-    overflow:hidden;
-    border:1px solid #333;
-  }
-
-  .player-bar-fill{
-    width:0%;
-    height:100%;
-    background:#e6e6e6;
-  }
-
-  .player-now{
-    font-size:12px;
-    color:#aaa;
-    min-width:180px;
-    text-align:right;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #111;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+}
+
+/* ===== GRID LAYOUT (LOCKED) ===== */
+.app {
+  display: grid;
+  grid-template-columns: 220px 1fr 1fr 260px;
+  grid-template-rows: 1fr 80px;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* ===== LEFT CONTROL PANEL ===== */
+.left {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  background: #1e1e1e;
+  border-right: 2px solid #444;
+  padding: 12px;
+}
+
+.left .item {
+  margin: 12px 0;
+  cursor: pointer;
+  opacity: 0.85;
+}
+.left .item:hover { opacity: 1; }
+
+/* ===== CREATE PANEL ===== */
+.create {
+  grid-column: 2;
+  grid-row: 1;
+  background: #222;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.create h3 {
+  margin: 10px 0 6px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.create button {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px;
+  background: #111;
+  color: #fff;
+  border: 1px solid #444;
+  cursor: pointer;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.row button {
+  flex: 1;
+}
+
+textarea,
+input {
+  width: 100%;
+  padding: 8px;
+  background: #111;
+  color: #fff;
+  border: 1px solid #444;
+  margin-bottom: 10px;
+}
+
+.styles {
+  border: 1px solid #444;
+  background: #111;
+  padding: 6px;
+  height: 100px;
+  overflow-y: auto;
+  margin-bottom: 12px;
+}
+
+.styles div {
+  padding: 4px;
+  font-size: 13px;
+}
+
+/* ===== ADVANCED OPTIONS ===== */
+.advanced {
+  border-top: 1px solid #333;
+  padding-top: 10px;
+}
+
+.slider-row {
+  display: grid;
+  grid-template-columns: 1fr 60px;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.slider-row label {
+  grid-column: 1 / span 2;
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+.slider-row input[type=range] {
+  width: 100%;
+}
+
+.slider-row input[type=text] {
+  text-align: center;
+  background: #222;
+}
+
+/* ===== WORKSPACE / LIBRARY ===== */
+.workspace {
+  grid-column: 3;
+  grid-row: 1;
+  background: #1b1b1b;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.song-card {
+  background: #222;
+  border: 1px solid #444;
+  padding: 10px;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+
+/* ===== SONG PANEL ===== */
+.song-panel {
+  grid-column: 4;
+  grid-row: 1 / span 2;
+  background: #1e1e1e;
+  border-left: 2px solid #444;
+  padding: 12px;
+  font-size: 13px;
+}
+
+.image-box {
+  height: 150px;
+  background: #333;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+}
+
+/* ===== PLAYER ===== */
+.player {
+  grid-column: 2 / span 2;
+  grid-row: 2;
+  background: #0d0d0d;
+  border-top: 2px solid #444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  font-size: 18px;
+}
 </style>
 </head>
 
 <body>
-<div class="app" id="app">
+<div class="app">
 
-  <!-- LEFT CONTROL PANEL -->
+  <!-- LEFT -->
   <div class="left">
-    <div class="left-top">
-      <button class="toggle-btn" id="toggleBtn" onclick="toggleLeft()">❮</button>
-      <div class="logo">SML</div>
-    </div>
-
-    <div class="left-nav" id="leftNav">
-      <div class="left-item"><span class="icon">👤</span><span class="label">User</span></div>
-      <div class="left-item"><span class="icon">🏠</span><span class="label">Home</span></div>
-      <div class="left-item active"><span class="icon">*</span><span class="label">Create</span></div>
-      <div class="left-item"><span class="icon">📁</span><span class="label">Library</span></div>
-      <div class="left-item"><span class="icon">🔍</span><span class="label">Search</span></div>
-      <div class="left-item"><span class="icon">🗑</span><span class="label">Trash</span></div>
-      <div class="left-item"><span class="icon">💳</span><span class="label">Credits</span></div>
-    </div>
+    <div class="item">User</div>
+    <div class="item">Home</div>
+    <div class="item">Create</div>
+    <div class="item">Library</div>
+    <div class="item">Search</div>
+    <div class="item">Trash</div>
+    <div class="item">Credits</div>
   </div>
 
-  <!-- CREATE PANEL (THIS IS THE "CREATE" YOU WANTED) -->
+  <!-- CREATE -->
   <div class="create">
-    <div class="create-header">
-      <div class="panel-title">Create</div>
-      <div class="pill" id="statusPill">Viewing: Draft</div>
-    </div>
+    <button>Create Song</button>
+    <button>Record Audio</button>
 
     <div class="row">
-      <button class="btn" id="btnCreateSong">Create Song</button>
-      <button class="btn" id="btnRecordAudio">Record Audio</button>
+      <button>Cadence: Original</button>
+      <button>Reset Cadence</button>
     </div>
 
-    <div class="section">
-      <div class="section-label">Cadence</div>
-      <div class="cadence-row">
-        <div class="cadence-chip">
-          <span id="cadenceLabel">Cadence: Original</span>
-          <span style="color:#9a9a9a;font-size:12px;">(locked)</span>
-        </div>
-        <button class="mini-btn" id="btnResetCadence">Reset Cadence</button>
-      </div>
+    <h3>Lyrics</h3>
+    <textarea rows="5" placeholder="Enter lyrics here..."></textarea>
+
+    <input placeholder="Add Song Title" />
+
+    <h3>Styles</h3>
+    <input placeholder="Type custom styles..." />
+
+    <div class="styles">
+      <div>Hardcore Punk</div>
+      <div>Industrial</div>
+      <div>Lo-Fi</div>
+      <div>Hip-Hop</div>
     </div>
 
-    <div class="section">
-      <div class="section-label">Lyrics</div>
-      <textarea id="lyricsBox" rows="7" placeholder="Enter lyrics here..."></textarea>
+    <div class="advanced">
+      <h3>Advanced Options</h3>
 
-      <div class="field">
-        <div class="section-label" style="margin:8px 0 6px;">Song Title</div>
-        <input id="titleBox" placeholder="Add Song Title" />
+      <div class="slider-row">
+        <label>Craziness</label>
+        <input type="range" value="50">
+        <input type="text" value="50%">
       </div>
 
-      <div class="field">
-        <div class="section-label" style="margin:8px 0 6px;">Styles</div>
-        <input id="styleInput" placeholder="Type custom styles..." />
-
-        <div class="styles-grid">
-          <div class="styles-list" id="stylesList">
-            <div class="style-item">Hardcore Punk</div>
-            <div class="style-item">Industrial</div>
-            <div class="style-item">Lo-Fi</div>
-            <div class="style-item">Hip-Hop</div>
-            <div class="style-item">Synthwave</div>
-            <div class="style-item">Cinematic</div>
-            <div class="style-item">Dark Pop</div>
-            <div class="style-item">Acoustic</div>
-          </div>
-        </div>
+      <div class="slider-row">
+        <label>Style Influence</label>
+        <input type="range" value="50">
+        <input type="text" value="50%">
       </div>
 
-      <div class="create-actions">
-        <button class="btn" id="btnRunDraft">Run Draft</button>
-        <button class="btn" id="btnClear">Clear</button>
+      <div class="slider-row">
+        <label>Audio Influence</label>
+        <input type="range" value="50">
+        <input type="text" value="50%">
       </div>
     </div>
   </div>
 
-  <!-- WORKSPACE / LIBRARY -->
+  <!-- WORKSPACE -->
   <div class="workspace">
-    <div class="workspace-header">
-      <div class="panel-title">Workspace / Library</div>
-      <div class="workspace-sub">Your songs (3)</div>
-    </div>
-
-    <div class="song-card active" data-id="1">
-      <div class="song-top">
-        <div class="song-name">Untitled Song #1</div>
-        <div class="workspace-sub">Draft</div>
-      </div>
-      <div class="song-meta">
-        <span class="meta-chip">Draft • just now</span>
-        <span class="meta-chip">Cadence: Original</span>
-        <span class="meta-chip">Hardcore Punk</span>
-      </div>
-    </div>
-
-    <div class="song-card" data-id="2">
-      <div class="song-top">
-        <div class="song-name">Untitled Song #2</div>
-        <div class="workspace-sub">Draft</div>
-      </div>
-      <div class="song-meta">
-        <span class="meta-chip">Draft • today</span>
-        <span class="meta-chip">Cadence: Original</span>
-        <span class="meta-chip">Industrial</span>
-      </div>
-    </div>
-
-    <div class="song-card" data-id="3">
-      <div class="song-top">
-        <div class="song-name">Untitled Song #3</div>
-        <div class="workspace-sub">Draft</div>
-      </div>
-      <div class="song-meta">
-        <span class="meta-chip">Draft • today</span>
-        <span class="meta-chip">Cadence: Original</span>
-        <span class="meta-chip">Lo-Fi</span>
-      </div>
-    </div>
-
-    <div class="workspace-sub" style="margin-top:10px;opacity:0.9;">
-      (This list is placeholder — later it becomes your real saved songs.)
-    </div>
+    <div class="song-card">Untitled Song #1<br>Draft · Just now</div>
+    <div class="song-card">Untitled Song #2<br>Draft · Today</div>
+    <div class="song-card">Untitled Song #3<br>Draft · Today</div>
   </div>
 
   <!-- SONG PANEL -->
   <div class="song-panel">
-    <div class="song-panel-header">
-      <div class="song-panel-title">Song Panel</div>
-      <div class="workspace-sub" id="songStatus">Draft</div>
-    </div>
-
-    <div class="song-panel-body">
-      <div class="right-image">Draft image (stub)</div>
-      <div class="right-user" id="userLine">User: You</div>
-      <div class="right-song-info" id="songInfo">Song: Untitled Song #1</div>
-      <div class="right-lyrics" id="lyricsPreview">(Select a song card to preview lyrics here — then later this becomes your real lyrics.)</div>
-      <div class="right-date" id="dateLine">—</div>
-    </div>
+    <div class="image-box">Generated Image</div>
+    <div>User: You</div>
+    <div style="margin-top:10px;">Select a song to preview lyrics</div>
   </div>
 
-  <!-- PLAYER BAR -->
-  <div class="player">
-    <div class="player-controls">
-      <div class="player-btn" id="btnPrev">⏮</div>
-      <div class="player-btn" id="btnPlay">▶</div>
-      <div class="player-btn" id="btnNext">⏭</div>
-    </div>
-
-    <div class="player-timeline">
-      <div class="player-time" id="tCur">0:00</div>
-      <div class="player-bar" id="bar">
-        <div class="player-bar-fill" id="barFill"></div>
-      </div>
-      <div class="player-time" id="tTot">3:30</div>
-    </div>
-
-    <div class="player-now" id="nowPlaying">Now Playing: —</div>
-  </div>
+  <!-- PLAYER -->
+  <div class="player">⏮ ▶ ⏭</div>
 
 </div>
-
-<script>
-  // ===== LEFT COLLAPSE =====
-  function toggleLeft(){
-    const app = document.getElementById("app");
-    const btn = document.getElementById("toggleBtn");
-    app.classList.toggle("left-collapsed");
-    btn.textContent = app.classList.contains("left-collapsed") ? "❯" : "❮";
-  }
-
-  // ===== STYLE PICKER (adds to style input) =====
-  const stylesList = document.getElementById("stylesList");
-  const styleInput = document.getElementById("styleInput");
-
-  stylesList.addEventListener("click", (e) => {
-    const item = e.target.closest(".style-item");
-    if(!item) return;
-
-    // toggle highlight
-    const all = stylesList.querySelectorAll(".style-item");
-    all.forEach(x => x.classList.remove("active"));
-    item.classList.add("active");
-
-    // set style input
-    styleInput.value = item.textContent.trim();
-  });
-
-  // ===== MOCK SONG DATA =====
-  const songs = {
-    1: {
-      title: "Untitled Song #1",
-      status: "Draft",
-      date: "Today",
-      lyrics: "yyyyy\nyyyy\nyyyy\nyyyy\nyy",
-    },
-    2: {
-      title: "Untitled Song #2",
-      status: "Draft",
-      date: "Today",
-      lyrics: "Put your lyrics here...\nThis is a placeholder preview.\nSong #2.",
-    },
-    3: {
-      title: "Untitled Song #3",
-      status: "Draft",
-      date: "Today",
-      lyrics: "Put your lyrics here...\nThis is a placeholder preview.\nSong #3.",
-    },
-  };
-
-  // ===== WORKSPACE SELECT =====
-  const cards = document.querySelectorAll(".song-card");
-  const lyricsPreview = document.getElementById("lyricsPreview");
-  const songInfo = document.getElementById("songInfo");
-  const songStatus = document.getElementById("songStatus");
-  const dateLine = document.getElementById("dateLine");
-  const nowPlaying = document.getElementById("nowPlaying");
-  const statusPill = document.getElementById("statusPill");
-
-  let currentSongId = 1;
-
-  function selectSong(id){
-    currentSongId = id;
-    cards.forEach(c => c.classList.toggle("active", c.dataset.id == id));
-
-    const s = songs[id];
-    songInfo.textContent = "Song: " + s.title;
-    songStatus.textContent = s.status;
-    dateLine.textContent = s.date;
-    lyricsPreview.textContent = s.lyrics;
-
-    // keep Create panel in sync (non-destructive)
-    const titleBox = document.getElementById("titleBox");
-    if(!titleBox.value || titleBox.value.startsWith("Untitled Song")){
-      titleBox.value = s.title;
-    }
-
-    statusPill.textContent = "Viewing: " + s.status;
-  }
-
-  cards.forEach(c => c.addEventListener("click", () => selectSong(Number(c.dataset.id))));
-
-  // initialize
-  selectSong(1);
-
-  // ===== CREATE BUTTONS (stubbed actions, layout stays) =====
-  document.getElementById("btnClear").addEventListener("click", () => {
-    document.getElementById("lyricsBox").value = "";
-    document.getElementById("titleBox").value = "";
-    document.getElementById("styleInput").value = "";
-    stylesList.querySelectorAll(".style-item").forEach(x => x.classList.remove("active"));
-  });
-
-  document.getElementById("btnRunDraft").addEventListener("click", () => {
-    // update preview using current inputs (still stubbed)
-    const lyr = document.getElementById("lyricsBox").value.trim();
-    const ttl = document.getElementById("titleBox").value.trim() || "Untitled Song #" + currentSongId;
-    const sty = document.getElementById("styleInput").value.trim();
-
-    songs[currentSongId].title = ttl;
-    songs[currentSongId].lyrics = lyr || "(No lyrics yet.)";
-
-    // update card title text
-    const card = document.querySelector('.song-card[data-id="'+currentSongId+'"]');
-    if(card){
-      card.querySelector(".song-name").textContent = ttl;
-      // update style chip if present
-      const chips = card.querySelectorAll(".meta-chip");
-      if(chips.length >= 3 && sty){
-        chips[2].textContent = sty;
-      }
-    }
-
-    selectSong(currentSongId);
-    nowPlaying.textContent = "Now Playing: " + ttl;
-  });
-
-  document.getElementById("btnCreateSong").addEventListener("click", () => {
-    nowPlaying.textContent = "Now Playing: (creating...)";
-  });
-
-  document.getElementById("btnRecordAudio").addEventListener("click", () => {
-    nowPlaying.textContent = "Now Playing: (recording stub)";
-  });
-
-  document.getElementById("btnResetCadence").addEventListener("click", () => {
-    // cadence is locked in this stub; keep label stable
-    document.getElementById("cadenceLabel").textContent = "Cadence: Original";
-  });
-
-  // ===== PLAYER (simple fake progress) =====
-  const btnPlay = document.getElementById("btnPlay");
-  const barFill = document.getElementById("barFill");
-  const tCur = document.getElementById("tCur");
-  const tTot = document.getElementById("tTot");
-
-  let playing = false;
-  let pct = 0;
-  const totalSeconds = 210; // 3:30
-  tTot.textContent = "3:30";
-
-  function fmt(sec){
-    const m = Math.floor(sec/60);
-    const s = sec%60;
-    return m + ":" + String(s).padStart(2,"0");
-  }
-
-  function tick(){
-    if(!playing) return;
-    pct += 0.35; // speed
-    if(pct >= 100){
-      pct = 100;
-      playing = false;
-      btnPlay.textContent = "▶";
-    }
-    barFill.style.width = pct + "%";
-    const curSec = Math.min(totalSeconds, Math.floor((pct/100) * totalSeconds));
-    tCur.textContent = fmt(curSec);
-    requestAnimationFrame(tick);
-  }
-
-  btnPlay.addEventListener("click", () => {
-    playing = !playing;
-    btnPlay.textContent = playing ? "⏸" : "▶";
-    if(playing) tick();
-  });
-
-  document.getElementById("btnPrev").addEventListener("click", () => {
-    const id = currentSongId === 1 ? 3 : currentSongId - 1;
-    selectSong(id);
-    nowPlaying.textContent = "Now Playing: " + songs[id].title;
-    pct = 0; barFill.style.width = "0%"; tCur.textContent = "0:00";
-  });
-
-  document.getElementById("btnNext").addEventListener("click", () => {
-    const id = currentSongId === 3 ? 1 : currentSongId + 1;
-    selectSong(id);
-    nowPlaying.textContent = "Now Playing: " + songs[id].title;
-    pct = 0; barFill.style.width = "0%"; tCur.textContent = "0:00";
-  });
-</script>
 </body>
 </html>
-Sent
-Write to
