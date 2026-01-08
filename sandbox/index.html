@@ -703,8 +703,21 @@ function renderLeft(){
   $("btnCreateTop").onclick = ()=> $("btnGenerate").click();
   $("btnRecordTop").onclick = ()=> alert("Record Audio is a placeholder in SML Lite (front-end only).");
 
-  $("btnCadence").onclick = ()=> alert("Cadence control is a placeholder in SML Lite.");
-  $("btnResetCadence").onclick = ()=> alert("Reset Cadence is a placeholder in SML Lite.");
+$("btnCadence").onclick = () => {
+  if (!originalLyrics) originalLyrics = $("lyrics").value;
+
+  const idx = cadences.indexOf(cadenceMode);
+  cadenceMode = cadences[(idx + 1) % cadences.length];
+
+  $("lyrics").value = applyCadence(originalLyrics, cadenceMode);
+  $("btnCadence").textContent = "Cadence: " + cadenceMode;
+};
+ $("btnResetCadence").onclick = () => {
+  if (!originalLyrics) return;
+  cadenceMode = "original";
+  $("lyrics").value = originalLyrics;
+  $("btnCadence").textContent = "Cadence: original";
+};
 
   $("btnExportTxt").onclick = ()=>{
     const txt = ($("lyrics").value || "").trim();
@@ -719,13 +732,13 @@ function renderLeft(){
     const track = {
       id: uid(),
       title: ($("title").value || "").trim() || "Untitled Song",
-      lyrics: lyr,
+     lyrics: applyCadence(lyr, cadenceMode),
       styles: ($("styleText").value || "").trim(),
       exclude: ($("excludeStyles").value || "").trim(),
       crazy: Number($("sCrazy").value),
       styleInf: Number($("sStyle").value),
       audioInf: Number($("sAudio").value),
-      cadence: "Original",
+     cadence: cadenceMode,
       createdAt: Date.now(),
       updatedAt: Date.now()
     };
