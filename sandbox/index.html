@@ -19,7 +19,7 @@
     --danger:#ff5b5b;
     --ok:#2bd46a;
   }
- 
+
   *{ box-sizing:border-box; }
   html,body{ height:100%; margin:0; background:var(--bg); color:var(--text); font-family:Arial, sans-serif; overflow:hidden; }
 
@@ -493,7 +493,7 @@ let tracks = loadJSON(LS_TRACKS, []);
 let trash  = loadJSON(LS_TRASH, []);
 let credits= loadJSON(LS_CREDITS, 0);
 let displayName = localStorage.getItem(LS_NAME) || "YOU";
-let cadenceMode = "original";
+
 let view = "profile";              // left column view
 let listMode = "library";          // middle column list: library|trash
 let selectedId = null;
@@ -703,21 +703,8 @@ function renderLeft(){
   $("btnCreateTop").onclick = ()=> $("btnGenerate").click();
   $("btnRecordTop").onclick = ()=> alert("Record Audio is a placeholder in SML Lite (front-end only).");
 
-$("btnCadence").onclick = () => {
-  if (!originalLyrics) originalLyrics = $("lyrics").value;
-
-  const idx = cadences.indexOf(cadenceMode);
-  cadenceMode = cadences[(idx + 1) % cadences.length];
-
-  $("lyrics").value = applyCadence(originalLyrics, cadenceMode);
-  $("btnCadence").textContent = "Cadence: " + cadenceMode;
-};
- $("btnResetCadence").onclick = () => {
-  if (!originalLyrics) return;
-  cadenceMode = "original";
-  $("lyrics").value = originalLyrics;
-  $("btnCadence").textContent = "Cadence: original";
-};
+  $("btnCadence").onclick = ()=> alert("Cadence control is a placeholder in SML Lite.");
+  $("btnResetCadence").onclick = ()=> alert("Reset Cadence is a placeholder in SML Lite.");
 
   $("btnExportTxt").onclick = ()=>{
     const txt = ($("lyrics").value || "").trim();
@@ -732,13 +719,13 @@ $("btnCadence").onclick = () => {
     const track = {
       id: uid(),
       title: ($("title").value || "").trim() || "Untitled Song",
-     lyrics: applyCadence(lyr, cadenceMode),
+      lyrics: lyr,
       styles: ($("styleText").value || "").trim(),
       exclude: ($("excludeStyles").value || "").trim(),
       crazy: Number($("sCrazy").value),
       styleInf: Number($("sStyle").value),
       audioInf: Number($("sAudio").value),
-     cadence: cadenceMode,
+      cadence: "Original",
       createdAt: Date.now(),
       updatedAt: Date.now()
     };
@@ -825,7 +812,7 @@ function renderSongPanel(){
 
   const t = sel.item;
   name.textContent = t.title;
-  preview.textContent = applyCadence(t.lyrics || "", cadenceMode);
+  preview.textContent = t.lyrics || "";
   status.textContent = (sel.where==="trash") ? "Trash" : "Draft";
 
   if(sel.where==="trash"){
@@ -1010,4 +997,3 @@ boot();
 </script>
 </body>
 </html>
-
