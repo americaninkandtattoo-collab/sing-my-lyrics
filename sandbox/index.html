@@ -825,7 +825,7 @@ function renderSongPanel(){
 
   const t = sel.item;
   name.textContent = t.title;
-  preview.textContent = t.lyrics || "";
+  preview.textContent = applyCadence(t.lyrics || "", cadenceMode);
   status.textContent = (sel.where==="trash") ? "Trash" : "Draft";
 
   if(sel.where==="trash"){
