@@ -493,7 +493,7 @@ let tracks = loadJSON(LS_TRACKS, []);
 let trash  = loadJSON(LS_TRASH, []);
 let credits= loadJSON(LS_CREDITS, 0);
 let displayName = localStorage.getItem(LS_NAME) || "YOU";
-
+let cadenceMode = "original";
 let view = "profile";              // left column view
 let listMode = "library";          // middle column list: library|trash
 let selectedId = null;
