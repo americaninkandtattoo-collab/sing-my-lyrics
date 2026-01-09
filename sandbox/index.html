@@ -1,1115 +1,1091 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>SML Lite</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SML Lite — Front-End Only</title>
+  <style>
+    :root{
+      --bg:#0f1116;
+      --panel:#151a22;
+      --panel2:#10141b;
+      --line:#2a3546;
+      --text:#e8eefc;
+      --muted:#a8b3c7;
+      --accent:#2aa8ff;
+      --accent2:#1f7fe0;
+      --danger:#ff5b5b;
+      --ok:#2bd46a;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 18px;
+      --radius2: 14px;
+      --pad: 16px;
+      --pad2: 12px;
+      --max: 1080px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
 
-<style>
-  :root{
-    --bg:#0f1116;
-    --panel:#151a22;
-    --panel2:#11151c;
-    --line:#2a3546;
-    --line2:#3a4b66;
-    --text:#e8eefc;
-    --muted:#a8b3c7;
-    --accent:#2aa8ff;
-    --accent2:#1f7fe0;
-    --danger:#ff5b5b;
-    --ok:#2bd46a;
-  }
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: var(--sans);
+      background: radial-gradient(1200px 800px at 20% -10%, rgba(42,168,255,.18), transparent 60%),
+                  radial-gradient(900px 700px at 110% 10%, rgba(43,212,106,.10), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+    }
 
-  *{ box-sizing:border-box; }
-  html,body{ height:100%; margin:0; background:var(--bg); color:var(--text); font-family:Arial, sans-serif; overflow:hidden; }
+    a{ color:inherit; text-decoration:none; }
 
-  /* ====== APP GRID ====== */
-  .app{
-    height:100vh; width:100vw;
-    display:grid;
-    grid-template-columns: 220px 1fr 1fr 300px; /* left | home/create/profile | library/trash | song panel */
-    grid-template-rows: 1fr 80px;              /* content | player */
-    gap:0;
-  }
+    .app{
+      min-height:100vh;
+      display:grid;
+      grid-template-columns: 260px 1fr;
+    }
 
-  /* ====== LEFT SIDEBAR ====== */
-  .left{
-    grid-column:1; grid-row:1 / span 2;
-    background:var(--panel);
-    border-right:1px solid var(--line);
-    padding:12px 10px;
-    overflow:auto;
-  }
-  .brand{
-    display:flex; align-items:center; gap:10px;
-    font-weight:800; letter-spacing:0.5px;
-    margin-bottom:10px;
-  }
-  .brand .dot{
-    width:10px; height:10px; border-radius:50%;
-    background:var(--accent);
-    box-shadow:0 0 18px rgba(42,168,255,.45);
-  }
-  .nav{
-    display:flex; flex-direction:column; gap:8px;
-    margin-top:8px;
-  }
-  .nav a{
-    display:flex; align-items:center; gap:10px;
-    text-decoration:none; color:var(--text);
-    padding:10px 10px;
-    border:1px solid transparent;
-    border-radius:10px;
-    cursor:pointer;
-    user-select:none;
-  }
-  .nav a:hover{ border-color:var(--line); background:rgba(255,255,255,.03); }
-  .nav a.active{ border-color:var(--line2); background:rgba(42,168,255,.08); }
-  .ico{ width:22px; text-align:center; opacity:.95; }
-  .spacer{ height:10px; }
+    /* Sidebar */
+    .sidebar{
+      border-right:1px solid rgba(255,255,255,.06);
+      background: linear-gradient(180deg, rgba(21,26,34,.92), rgba(16,20,27,.92));
+      backdrop-filter: blur(10px);
+      padding: 18px 14px;
+      position: sticky;
+      top:0;
+      height:100vh;
+      overflow:auto;
+    }
 
-  /* ====== MAIN PANELS ====== */
-  .panel{
-    border-left:1px solid var(--line);
-    background:var(--panel2);
-    overflow:hidden;
-    display:flex;
-    flex-direction:column;
-    min-width:0;
-  }
-  .createCol{ grid-column:2; grid-row:1; border-left:none; background:var(--panel2); }
-  .workspace{ grid-column:3; grid-row:1; background:var(--panel2); }
-  .songpanel{ grid-column:4; grid-row:1 / span 2; background:var(--panel); border-left:1px solid var(--line); }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 10px 14px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      margin-bottom:12px;
+    }
+    .logo{
+      width:38px; height:38px;
+      border-radius:12px;
+      display:grid; place-items:center;
+      background: linear-gradient(135deg, rgba(42,168,255,.95), rgba(31,127,224,.95));
+      box-shadow: var(--shadow);
+      font-weight: 800;
+      letter-spacing:.5px;
+    }
+    .brand h1{
+      font-size: 15px;
+      margin:0;
+      line-height:1.1;
+    }
+    .brand small{
+      display:block;
+      color:var(--muted);
+      font-size: 12px;
+      margin-top:2px;
+    }
 
-  .panelHeader{
-    padding:10px 12px;
-    border-bottom:1px solid var(--line);
-    display:flex; align-items:center; justify-content:space-between;
-    background:linear-gradient(to bottom, rgba(255,255,255,.03), transparent);
-  }
-  .panelHeader .title{
-    font-weight:700;
-    font-size:13px;
-    color:var(--muted);
-    text-transform:uppercase;
-    letter-spacing:.6px;
-  }
-  .badge{
-    font-size:12px;
-    padding:6px 10px;
-    border:1px solid var(--line);
-    border-radius:999px;
-    color:var(--muted);
-    background:rgba(255,255,255,.02);
-    white-space:nowrap;
-  }
-  .panelBody{
-    padding:12px;
-    overflow:auto;
-    flex:1;
-  }
+    .nav{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      padding: 8px 6px;
+    }
+    .nav a{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 10px 10px;
+      border-radius: 12px;
+      border:1px solid transparent;
+      color: var(--text);
+      transition: .15s ease;
+      user-select:none;
+    }
+    .nav a:hover{
+      background: rgba(255,255,255,.04);
+      border-color: rgba(255,255,255,.06);
+    }
+    .nav a.active{
+      background: rgba(42,168,255,.12);
+      border-color: rgba(42,168,255,.25);
+    }
+    .nav .left{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width: 0;
+    }
+    .badge{
+      font-size:12px;
+      color: var(--muted);
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.06);
+      padding: 2px 8px;
+      border-radius:999px;
+    }
+    .icon{
+      width:28px;height:28px;
+      border-radius:10px;
+      display:grid;
+      place-items:center;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.06);
+      flex: 0 0 auto;
+      font-size: 14px;
+    }
+    .nav .label{
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      font-size: 14px;
+    }
 
-  /* ====== BUTTONS / INPUTS ====== */
-  .btn{
-    border:1px solid var(--line2);
-    background:rgba(255,255,255,.02);
-    color:var(--text);
-    padding:10px 12px;
-    border-radius:10px;
-    cursor:pointer;
-    font-weight:700;
-    font-size:13px;
-  }
-  .btn:hover{ border-color:var(--accent2); }
-  .btn.primary{
-    background:rgba(42,168,255,.14);
-    border-color:rgba(42,168,255,.55);
-  }
-  .btn.primary:hover{ background:rgba(42,168,255,.20); }
-  .btn.danger{
-    background:rgba(255,91,91,.10);
-    border-color:rgba(255,91,91,.55);
-  }
-  .btn.danger:hover{ background:rgba(255,91,91,.16); }
-  .btn.small{ padding:8px 10px; font-size:12px; border-radius:9px; }
-  .btn:disabled{
-    opacity:.55;
-    cursor:not-allowed;
-    border-color:var(--line);
-  }
+    .sidebar .foot{
+      margin-top:16px;
+      padding: 12px 10px;
+      border-top:1px solid rgba(255,255,255,.06);
+      color: var(--muted);
+      font-size: 12px;
+      line-height:1.4;
+    }
 
-  .row{ display:flex; gap:10px; }
-  .row > *{ flex:1; }
+    /* Main */
+    .main{
+      padding: 22px 18px 40px;
+      overflow:auto;
+    }
+    .wrap{
+      max-width: var(--max);
+      margin: 0 auto;
+    }
 
-  label{
-    display:block;
-    font-size:12px;
-    color:var(--muted);
-    margin:10px 0 6px;
-    font-weight:700;
-    letter-spacing:.2px;
-  }
-  input[type="text"], textarea{
-    width:100%;
-    border:1px solid var(--line);
-    background:rgba(0,0,0,.18);
-    color:var(--text);
-    padding:10px 10px;
-    border-radius:10px;
-    outline:none;
-    font-size:13px;
-  }
-  textarea{ min-height:160px; resize:vertical; }
-  input[type="text"]:focus, textarea:focus{ border-color:rgba(42,168,255,.55); }
+    .topbar{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom: 16px;
+    }
+    .topbar .title{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .topbar h2{
+      margin:0;
+      font-size: 18px;
+      letter-spacing:.2px;
+    }
+    .topbar p{
+      margin:0;
+      color:var(--muted);
+      font-size: 13px;
+    }
 
-  .divider{ height:1px; background:var(--line); margin:12px 0; }
+    .card{
+      background: linear-gradient(180deg, rgba(21,26,34,.92), rgba(16,20,27,.92));
+      border:1px solid rgba(255,255,255,.07);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .card .inner{
+      padding: var(--pad);
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:14px;
+    }
+    @media (max-width: 920px){
+      .app{ grid-template-columns: 1fr; }
+      .sidebar{ position: relative; height:auto; }
+      .grid{ grid-template-columns: 1fr; }
+    }
 
-  /* sliders */
-  .advBox{
-    border:1px solid var(--line);
-    border-radius:12px;
-    padding:12px;
-    background:rgba(255,255,255,.02);
-  }
-  .sectionTitle{
-    margin-top:0;
-    font-weight:900;
-    font-size:14px;
-    letter-spacing:.3px;
-  }
-  .sliderRow{
-    display:grid;
-    grid-template-columns: 1fr 1fr 70px;
-    gap:10px;
-    align-items:center;
-    margin-top:12px;
-  }
-  .sliderRow .name{ font-weight:800; color:var(--muted); font-size:13px; }
-  input[type="range"]{ width:100%; accent-color: var(--accent); }
-  .pct{
-    border:1px solid var(--line);
-    background:rgba(0,0,0,.20);
-    border-radius:10px;
-    text-align:center;
-    padding:10px 8px;
-    font-weight:900;
-    color:var(--text);
-    font-size:13px;
-  }
-  .hint{
-    color:var(--muted);
-    font-size:12px;
-    line-height:1.35;
-    margin-top:8px;
-  }
+    label{
+      display:block;
+      color: var(--muted);
+      font-size: 12px;
+      margin: 10px 0 6px;
+    }
+    input[type="text"], textarea{
+      width:100%;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      padding: 12px 12px;
+      outline:none;
+      transition: .15s ease;
+      font-size: 14px;
+    }
+    input[type="text"]:focus, textarea:focus{
+      border-color: rgba(42,168,255,.45);
+      box-shadow: 0 0 0 3px rgba(42,168,255,.12);
+    }
+    textarea{
+      min-height: 240px;
+      resize: vertical;
+      font-family: var(--sans);
+      line-height: 1.45;
+    }
 
-  /* ====== WORKSPACE / LIST ====== */
-  .tabs{ display:flex; gap:8px; align-items:center; }
-  .tabBtn{
-    border:1px solid var(--line);
-    background:rgba(255,255,255,.02);
-    color:var(--muted);
-    padding:7px 10px;
-    border-radius:999px;
-    cursor:pointer;
-    font-size:12px;
-    font-weight:800;
-  }
-  .tabBtn.active{ border-color:rgba(42,168,255,.55); color:var(--text); background:rgba(42,168,255,.10); }
+    .row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      margin-top: 12px;
+    }
 
-  .list{ display:flex; flex-direction:column; gap:10px; }
-  .card{
-    border:1px solid var(--line);
-    background:rgba(255,255,255,.02);
-    border-radius:12px;
-    padding:10px 10px;
-    cursor:pointer;
-  }
-  .card:hover{ border-color:var(--line2); }
-  .card.active{ border-color:rgba(42,168,255,.55); background:rgba(42,168,255,.08); }
-  .cardTop{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
-  .cardTitle{ font-weight:900; font-size:13px; }
-  .cardMeta{ color:var(--muted); font-size:12px; white-space:nowrap; }
-  .cardSub{ margin-top:6px; color:var(--muted); font-size:12px; display:flex; gap:10px; flex-wrap:wrap; }
+    .btn{
+      appearance:none;
+      border:none;
+      cursor:pointer;
+      border-radius: 14px;
+      padding: 11px 14px;
+      font-weight: 700;
+      color: var(--text);
+      background: rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.10);
+      transition:.15s ease;
+      user-select:none;
+    }
+    .btn:hover{ transform: translateY(-1px); }
+    .btn:active{ transform: translateY(0px); }
+    .btn.primary{
+      background: linear-gradient(135deg, rgba(42,168,255,.95), rgba(31,127,224,.95));
+      border-color: rgba(42,168,255,.45);
+    }
+    .btn.danger{
+      background: rgba(255,91,91,.12);
+      border-color: rgba(255,91,91,.25);
+    }
+    .btn.ok{
+      background: rgba(43,212,106,.12);
+      border-color: rgba(43,212,106,.25);
+    }
+    .btn.small{
+      padding: 8px 10px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 13px;
+    }
 
-  /* ====== SONG PANEL ====== */
-  .imgBox{
-    height:160px;
-    border:1px solid var(--line);
-    border-radius:14px;
-    background:linear-gradient(135deg, rgba(42,168,255,.10), rgba(0,0,0,.2));
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:rgba(232,238,252,.75);
-    font-weight:900;
-    letter-spacing:.4px;
-    margin-bottom:12px;
-  }
-  .songPanelLine{ border-top:1px solid var(--line); margin:12px 0; }
-  .songLabel{ color:var(--muted); font-size:12px; font-weight:900; margin-bottom:6px; }
-  .songValue{ font-size:13px; font-weight:900; }
-  .songBtns{ display:flex; gap:10px; margin-top:12px; flex-wrap:wrap; }
-  .lyricsBox{
-    border:1px solid var(--line);
-    border-radius:12px;
-    background:rgba(0,0,0,.18);
-    padding:10px;
-    min-height:180px;
-    color:var(--muted);
-    font-size:13px;
-    line-height:1.45;
-    overflow:auto;
-    white-space:pre-wrap;
-  }
-  .ethics{
-    border:1px solid rgba(42,168,255,.35);
-    background:rgba(42,168,255,.08);
-    color:rgba(232,238,252,.95);
-    border-radius:12px;
-    padding:10px;
-    font-size:12px;
-    line-height:1.35;
-    margin-top:12px;
-  }
-  .note{
-    border:1px solid var(--line);
-    background:rgba(255,255,255,.02);
-    border-radius:12px;
-    padding:10px;
-    font-size:12px;
-    color:var(--muted);
-    line-height:1.35;
-    margin-top:10px;
-  }
+    .muted{
+      color: var(--muted);
+      font-size: 13px;
+      line-height:1.45;
+    }
+    .divider{
+      height:1px;
+      background: rgba(255,255,255,.07);
+      margin: 14px 0;
+    }
 
-  /* ====== PLAYER BAR ====== */
-  .player{
-    grid-column:2 / span 2;
-    grid-row:2;
-    border-top:1px solid var(--line);
-    background:rgba(0,0,0,.25);
-    display:flex;
-    align-items:center;
-    gap:12px;
-    padding:10px 12px;
-    overflow:hidden;
-  }
-  .playerLeft{ min-width:120px; color:var(--muted); font-size:12px; font-weight:900; }
-  .playerCtrls{ display:flex; gap:10px; align-items:center; }
-  .circleBtn{
-    width:36px; height:36px;
-    border-radius:999px;
-    border:1px solid var(--line2);
-    background:rgba(255,255,255,.02);
-    display:flex; align-items:center; justify-content:center;
-    cursor:pointer;
-    font-weight:900;
-    user-select:none;
-  }
-  .circleBtn:hover{ border-color:rgba(42,168,255,.55); }
+    .list{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
 
-  .timeline{
-    flex:1;
-    display:flex;
-    align-items:center;
-    gap:10px;
-    min-width:0;
-  }
-  .time{ width:44px; text-align:center; color:var(--muted); font-size:12px; font-weight:900; }
-  .bar{
-    flex:1;
-    height:6px;
-    border-radius:999px;
-    border:1px solid var(--line);
-    background:rgba(255,255,255,.04);
-    overflow:hidden;
-    position:relative;
-    min-width:120px;
-  }
-  .fill{
-    height:100%;
-    width:0%;
-    background:var(--accent);
-  }
-  .nowPlaying{
-    min-width:160px;
-    color:var(--muted);
-    font-size:12px;
-    font-weight:900;
-    text-align:right;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
+    .song{
+      border-radius: var(--radius2);
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.16);
+      overflow:hidden;
+    }
+    .song .head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      padding: 12px 12px;
+    }
+    .song .meta{
+      min-width:0;
+    }
+    .song .title{
+      font-size: 14px;
+      font-weight: 800;
+      margin:0;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .song .sub{
+      margin-top:4px;
+      color: var(--muted);
+      font-size: 12px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+    .pill{
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.06);
+      color: var(--muted);
+      max-width: 100%;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .song .actions{
+      display:flex;
+      gap:8px;
+      flex: 0 0 auto;
+    }
 
-  /* simple page blocks */
-  .pageBlock{
-    border:1px solid var(--line);
-    background:rgba(255,255,255,.02);
-    border-radius:14px;
-    padding:14px;
-  }
-  .bigTitle{ font-size:18px; font-weight:900; margin:0 0 8px; }
-  .para{ color:var(--muted); font-size:13px; line-height:1.5; margin:0 0 10px; }
-</style>
+    .song .body{
+      padding: 0 12px 12px;
+      display:none;
+    }
+    .song.open .body{ display:block; }
+    .song pre{
+      margin: 10px 0 0;
+      background: rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.08);
+      padding: 12px;
+      border-radius: 14px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: var(--mono);
+      font-size: 12.5px;
+      line-height: 1.45;
+    }
+
+    .empty{
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px dashed rgba(255,255,255,.14);
+      color: var(--muted);
+      background: rgba(0,0,0,.10);
+      font-size: 13px;
+      line-height:1.4;
+    }
+
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      background: rgba(21,26,34,.96);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius: 999px;
+      padding: 10px 14px;
+      color: var(--text);
+      box-shadow: var(--shadow);
+      font-size: 13px;
+      display:none;
+      max-width: min(92vw, 720px);
+    }
+    .toast.show{ display:block; }
+    .toast span{ color: var(--muted); }
+
+    .kpi{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-end;
+    }
+    .kpi .box{
+      padding: 8px 10px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.16);
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .kpi b{ color: var(--text); }
+  </style>
 </head>
 
 <body>
-<div class="app">
-  <!-- LEFT SIDEBAR -->
-  <aside class="left">
-    <div class="brand">
-      <span class="dot"></span><span>SML</span>
-    </div>
-
-    <!-- Profile MUST be directly under logo -->
-    <nav class="nav" id="nav">
-      <a data-view="profile" class="active"><span class="ico">👤</span><span>Profile</span></a>
-      <div class="spacer"></div>
-      <a data-view="home"><span class="ico">🏠</span><span>Home</span></a>
-      <a data-view="create"><span class="ico">✍️</span><span>Create</span></a>
-      <a data-view="library"><span class="ico">📁</span><span>Library</span></a>
-      <a data-view="trash"><span class="ico">🗑</span><span>Trash</span></a>
-    </nav>
-  </aside>
-
-  <!-- COLUMN 2: Home/Create/Profile -->
-  <section class="panel createCol">
-    <div class="panelHeader">
-      <div class="title" id="leftTitle">Create</div>
-      <div class="badge" id="ethicsBadge">Human lyrics only</div>
-    </div>
-    <div class="panelBody" id="leftBody"></div>
-  </section>
-
-  <!-- COLUMN 3: Library/Trash list -->
-  <section class="panel workspace">
-    <div class="panelHeader">
-      <div class="title" id="midTitle">Library</div>
-      <div class="tabs">
-        <button class="tabBtn active" id="tabLibrary">Library</button>
-        <button class="tabBtn" id="tabTrash">Trash</button>
-      </div>
-    </div>
-    <div class="panelBody">
-      <div class="list" id="list"></div>
-      <div class="hint" id="listHint" style="margin-top:10px;">(Your saved tracks will appear here.)</div>
-      <div class="note" id="trashNote" style="display:none;">
-        Trash auto-delete after 30 days (display only). We simulate this by comparing dates when the app loads.
-      </div>
-    </div>
-  </section>
-
-  <!-- SONG PANEL -->
-  <aside class="panel songpanel">
-    <div class="panelHeader">
-      <div class="title">Song Panel</div>
-      <div class="badge" id="songStatus">Draft</div>
-    </div>
-    <div class="panelBody">
-      <div class="imgBox">Generated Image</div>
-
-      <div class="songLabel">User</div>
-      <div class="songValue" id="songUser">YOU</div>
-
-      <div class="songPanelLine"></div>
-
-      <div class="songLabel">Song</div>
-      <div class="songValue" id="songName">No song selected</div>
-
-      <div class="songBtns">
-        <button class="btn small" id="btnPlay">Play</button>
-        <button class="btn small" id="btnDL">Download Lyrics</button>
-        <button class="btn small danger" id="btnToTrash">Move to Trash</button>
-        <button class="btn small danger" id="btnDeleteForever" style="display:none;">Delete Permanently</button>
-      </div>
-
-      <div class="songPanelLine"></div>
-
-      <div class="songLabel">Lyrics Preview</div>
-      <div class="lyricsBox" id="lyricsPreview">Select a track to preview lyrics here.</div>
-
-      <div class="ethics">
-        <b>Ethics locked:</b> SML Lite never generates lyrics. It only stores what you paste.
-      </div>
-    </div>
-  </aside>
-
-  <!-- PLAYER BAR -->
-  <footer class="player">
-    <div class="playerLeft" id="audioStatus">No audio yet</div>
-
-    <div class="playerCtrls">
-      <div class="circleBtn" id="btnPrev">⏮</div>
-      <div class="circleBtn" id="btnPlayBig">▶</div>
-      <div class="circleBtn" id="btnStop">⏹</div>
-      <div class="circleBtn" id="btnNext">⏭</div>
-    </div>
-
-    <div class="timeline">
-      <div class="time" id="tCur">0:00</div>
-      <div class="bar"><div class="fill" id="fill"></div></div>
-      <div class="time" id="tDur">0:30</div>
-    </div>
-
-    <div class="nowPlaying" id="nowPlaying">Now Playing: —</div>
-  </footer>
-</div>
-
-<script>
-/* =========================
-   SML LITE — GitHub Pages Static
-   localStorage only
-   human lyrics only
-========================= */
-
-/* ---------- storage keys ---------- */
-const LS_TRACKS  = "sml_tracks";
-const LS_TRASH   = "sml_trash";
-const LS_CREDITS = "sml_credits";
-const LS_NAME    = "sml_name";
-
-/* ---------- state ---------- */
-let tracks = loadJSON(LS_TRACKS, []);
-let trash  = loadJSON(LS_TRASH, []);
-let credits = loadJSON(LS_CREDITS, 0);
-let displayName = localStorage.getItem(LS_NAME) || "YOU";
-
-let view = "profile";      // home | create | library | trash | profile
-let listMode = "library";  // library | trash
-let selectedId = null;
-
-let cadenceMode = "Original"; // Original | Tight
-
-let isPlaying = false;
-let playPos = 0;
-let playDur = 30;
-let timer = null;
-
-/* ---------- helpers ---------- */
-function $(id){ return document.getElementById(id); }
-
-function save(){
-  localStorage.setItem(LS_TRACKS, JSON.stringify(tracks));
-  localStorage.setItem(LS_TRASH, JSON.stringify(trash));
-  localStorage.setItem(LS_CREDITS, JSON.stringify(credits));
-  localStorage.setItem(LS_NAME, displayName);
-}
-
-function loadJSON(key, fallback){
-  try{
-    const v = localStorage.getItem(key);
-    if(!v) return fallback;
-    const parsed = JSON.parse(v);
-    return (parsed === null || parsed === undefined) ? fallback : parsed;
-  }catch(e){
-    return fallback;
-  }
-}
-
-function uid(){
-  return Math.random().toString(36).slice(2) + Date.now().toString(36);
-}
-
-function fmtDate(ts){
-  const d = new Date(ts);
-  return d.toLocaleDateString() + " " + d.toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
-}
-
-function clamp(n,min,max){ return Math.max(min, Math.min(max,n)); }
-
-function fmtTime(sec){
-  sec = Math.max(0, Math.floor(sec));
-  const m = Math.floor(sec/60);
-  const s = String(sec%60).padStart(2,"0");
-  return m + ":" + s;
-}
-
-function escapeHtml(s){
-  return String(s||"")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
-
-/* ---------- cadence (format-only, never generates words) ---------- */
-function applyCadence(raw, mode){
-  const text = String(raw || "");
-  if(mode === "Tight"){
-    return text
-      .replace(/\r\n/g, "\n")
-      .replace(/[ \t]+$/gm, "")      // trim end-of-line whitespace
-      .replace(/\n{3,}/g, "\n\n")    // collapse huge blank gaps
-      .replace(/[ \t]{2,}/g, " ")    // collapse repeated spaces
-      .trim();
-  }
-  // Original: keep structure, only trim outer edges so storage is clean
-  return text.replace(/\r\n/g, "\n").trim();
-}
-
-/* ---------- Trash 30-day simulation ---------- */
-function applyTrashAutoDelete(){
-  const now = Date.now();
-  const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
-  const before = trash.length;
-
-  trash = trash.filter(t=>{
-    const ts = Number(t.trashedAt || 0);
-    if(!ts) return true;
-    return (now - ts) <= THIRTY_DAYS;
-  });
-
-  if(trash.length !== before) save();
-}
-
-/* ---------- selection ---------- */
-function getSelected(){
-  if(!selectedId) return null;
-  let t = tracks.find(x=>x.id === selectedId);
-  if(t) return { where:"tracks", item:t };
-  t = trash.find(x=>x.id === selectedId);
-  if(t) return { where:"trash", item:t };
-  return null;
-}
-
-/* ---------- nav ---------- */
-function setActiveNav(){
-  document.querySelectorAll("#nav a").forEach(a=>{
-    a.classList.toggle("active", a.dataset.view === view);
-  });
-}
-
-/* ---------- LEFT COLUMN RENDER ---------- */
-function renderLeft(){
-  setActiveNav();
-  $("songUser").textContent = displayName || "YOU";
-
-  const titleEl = $("leftTitle");
-  const body = $("leftBody");
-
-  if(view === "home"){
-    titleEl.textContent = "Home";
-    body.innerHTML = `
-      <div class="pageBlock">
-        <h2 class="bigTitle">SML Lite</h2>
-        <p class="para"><b>Making rock stars — one human at a time.</b></p>
-        <p class="para">You own your lyrics 100%. SML Lite never generates lyrics — it only stores what you paste.</p>
-
-        <div class="row">
-          <button class="btn primary" id="goCreate">Go to Create</button>
-          <button class="btn" id="goLibrary">Open Library</button>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">SML</div>
+        <div>
+          <h1>SingMyLyrics <small>Lite — front-end only</small></h1>
         </div>
+      </div>
 
-        <div style="height:10px"></div>
-        <button class="btn" id="goTrash" style="width:100%">Open Trash</button>
+      <nav class="nav" id="nav">
+        <!-- Directly under logo: Profile (link) -->
+        <a href="#profile" data-route="profile">
+          <div class="left">
+            <div class="icon">👤</div>
+            <div class="label">Profile</div>
+          </div>
+        </a>
 
         <div class="divider"></div>
-        <p class="para"><b>Note:</b> “SML Lite — front-end only.” Runs 100% in your browser (GitHub Pages). No server, no logins, no keys.</p>
+
+        <!-- Locked order -->
+        <a href="#home" data-route="home" class="active">
+          <div class="left">
+            <div class="icon">🏠</div>
+            <div class="label">Home</div>
+          </div>
+        </a>
+        <a href="#create" data-route="create">
+          <div class="left">
+            <div class="icon">✍️</div>
+            <div class="label">Create</div>
+          </div>
+        </a>
+        <a href="#library" data-route="library">
+          <div class="left">
+            <div class="icon">📚</div>
+            <div class="label">Library</div>
+          </div>
+          <span class="badge" id="countLibrary">0</span>
+        </a>
+        <a href="#trash" data-route="trash">
+          <div class="left">
+            <div class="icon">🗑️</div>
+            <div class="label">Trash</div>
+          </div>
+          <span class="badge" id="countTrash">0</span>
+        </a>
+      </nav>
+
+      <div class="foot">
+        <b>Mission:</b> You own your lyrics 100%. This app never generates lyrics — it only stores what you paste.
+        <br/><br/>
+        <span>Note:</span> SML Lite runs entirely in your browser using localStorage.
       </div>
-    `;
+    </aside>
 
-    $("goCreate").onclick = ()=>{ view="create"; renderLeft(); };
-    $("goLibrary").onclick = ()=>{
-      view="library";
-      listMode="library";
-      setListTabs();
-      renderList();
-      renderSongPanel();
-      renderLeft();
-    };
-    $("goTrash").onclick = ()=>{
-      view="trash";
-      listMode="trash";
-      setListTabs();
-      renderList();
-      renderSongPanel();
-      renderLeft();
-    };
-    return;
-  }
+    <main class="main">
+      <div class="wrap">
 
-  if(view === "profile"){
-    titleEl.textContent = "Profile";
-    body.innerHTML = `
-      <div class="pageBlock">
-        <h2 class="bigTitle">Profile</h2>
+        <!-- HOME -->
+        <section id="page-home" class="page">
+          <div class="topbar">
+            <div class="title">
+              <h2>Making rock stars — one human at a time.</h2>
+              <p>Human words, finally heard. (Front-end only)</p>
+            </div>
+            <div class="kpi">
+              <div class="box">Library: <b id="kpiLibrary">0</b></div>
+              <div class="box">Trash: <b id="kpiTrash">0</b></div>
+            </div>
+          </div>
 
-        <label>Display Name</label>
-        <input type="text" id="nameInput" value="${escapeHtml(displayName)}" />
+          <div class="card">
+            <div class="inner">
+              <p class="muted" style="margin:0 0 10px;">
+                <b>What this is:</b> A simple, honest, working SML Lite. Paste lyrics, save “songs,” and manage them in Library/Trash.
+              </p>
+              <p class="muted" style="margin:0;">
+                <b>What this is not:</b> No audio generation, no playback, no cadence, no API calls, no logins, no server.
+              </p>
 
-        <label>Credits (front-end only)</label>
-        <input type="text" value="${escapeHtml(String(credits))}" disabled />
+              <div class="divider"></div>
 
-        <div class="divider"></div>
-        <p class="para"><b>Ownership:</b> You own your lyrics 100%.</p>
+              <div class="row">
+                <button class="btn primary" id="goCreate">Go to Create</button>
+                <button class="btn" id="goLibrary">Open Library</button>
+                <button class="btn danger" id="goTrash">Open Trash</button>
+              </div>
 
-        <div class="row">
-          <button class="btn" disabled>Buy Credits (Coming Soon)</button>
-          <button class="btn" disabled>Subscribe (Coming Soon)</button>
-        </div>
+              <div class="divider"></div>
+
+              <div class="muted">
+                <b>SML Light — front-end only:</b> Your songs are saved in your browser (localStorage). Clearing browser storage clears them.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- CREATE -->
+        <section id="page-create" class="page" style="display:none;">
+          <div class="topbar">
+            <div class="title">
+              <h2>Create</h2>
+              <p>Paste lyrics. Optional title and style. Click Generate to save a new song card.</p>
+            </div>
+            <div class="kpi">
+              <div class="box">Saved today: <b id="kpiToday">0</b></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="inner">
+              <div class="grid">
+                <div>
+                  <label for="title">Song Title (optional)</label>
+                  <input id="title" type="text" placeholder="e.g., Demon Day" />
+
+                  <label for="lyrics">Lyrics (required — we never generate lyrics)</label>
+                  <textarea id="lyrics" placeholder="Paste your lyrics here..."></textarea>
+
+                  <div class="row">
+                    <button class="btn primary" id="btnGenerate">Generate Song (Save)</button>
+                    <button class="btn" id="btnClear">Clear Fields</button>
+                  </div>
+
+                  <p class="muted" style="margin: 10px 0 0;">
+                    Tip: This app stores exactly what you paste — no rewriting, no formatting changes.
+                  </p>
+                </div>
+
+                <div>
+                  <label for="style">Style / Vibe (optional)</label>
+                  <textarea id="style" style="min-height: 140px;" placeholder="e.g., Industrial, cold space intro, spoken-word bridge..."></textarea>
+
+                  <div class="divider"></div>
+
+                  <div class="muted">
+                    <b>Ownership note:</b> Your lyrics remain yours. This app does not create lyrics — it only stores your text locally.
+                    <br/><br/>
+                    <b>Storage note:</b> Songs are stored in localStorage on this device/browser.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- LIBRARY -->
+        <section id="page-library" class="page" style="display:none;">
+          <div class="topbar">
+            <div class="title">
+              <h2>Library</h2>
+              <p>Your saved songs. Expand to view lyrics and style. Delete moves to Trash.</p>
+            </div>
+            <div class="kpi">
+              <div class="box">Total: <b id="libTotal">0</b></div>
+              <button class="btn small" id="btnExport">Export (JSON)</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="inner">
+              <div id="libraryList" class="list"></div>
+              <div id="libraryEmpty" class="empty" style="display:none;">
+                No songs yet. Go to <b>Create</b>, paste lyrics, and click <b>Generate Song</b>.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TRASH -->
+        <section id="page-trash" class="page" style="display:none;">
+          <div class="topbar">
+            <div class="title">
+              <h2>Trash</h2>
+              <p>Deleted songs live here until you restore or permanently delete them.</p>
+            </div>
+            <div class="kpi">
+              <div class="box">Trash: <b id="trashTotal">0</b></div>
+              <button class="btn small danger" id="btnEmptyTrash">Empty Trash</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="inner">
+              <div id="trashList" class="list"></div>
+              <div id="trashEmpty" class="empty" style="display:none;">
+                Trash is empty.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PROFILE -->
+        <section id="page-profile" class="page" style="display:none;">
+          <div class="topbar">
+            <div class="title">
+              <h2>Profile</h2>
+              <p>Simple local settings (no accounts, no logins).</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="inner">
+              <label for="profileName">Display Name (optional)</label>
+              <input id="profileName" type="text" placeholder="e.g., John" />
+
+              <div class="row">
+                <button class="btn ok" id="btnSaveProfile">Save Profile</button>
+                <button class="btn danger" id="btnResetAll">Reset ALL Data</button>
+              </div>
+
+              <div class="divider"></div>
+
+              <div class="muted">
+                <b>Reset ALL Data</b> clears Library, Trash, and Profile from this browser.
+                <br/><br/>
+                This page exists so the “Profile” link is real and functional.
+              </div>
+            </div>
+          </div>
+        </section>
+
       </div>
-    `;
-
-    $("nameInput").oninput = (e)=>{
-      displayName = (e.target.value || "YOU").trim() || "YOU";
-      save();
-      $("songUser").textContent = displayName;
-    };
-    return;
-  }
-
-  // CREATE
-  titleEl.textContent = "Create";
-  body.innerHTML = `
-    <div class="row">
-      <button class="btn primary" id="btnCreateTop">Generate (Create Track)</button>
-      <button class="btn" id="btnRecordTop">Record Audio</button>
-    </div>
-
-    <div style="height:10px"></div>
-
-    <div class="row">
-      <button class="btn small" id="btnCadence">Cadence: ${escapeHtml(cadenceMode)}</button>
-      <button class="btn small" id="btnResetCadence">Reset Cadence</button>
-    </div>
-
-    <label>Song Title (optional)</label>
-    <input type="text" id="title" placeholder="Add Song Title" />
-
-    <label>Lyrics (required — human only)</label>
-    <textarea id="lyrics" placeholder="Paste lyrics here..."></textarea>
-
-    <label>Style / vibe (optional)</label>
-    <input type="text" id="styleText" placeholder="Type a style/vibe prompt..." />
-
-    <div class="divider"></div>
-
-    <div class="advBox">
-      <div class="sectionTitle">Front-end Controls (stored with track)</div>
-
-      <div class="sliderRow">
-        <div class="name">Audio Influence</div>
-        <input type="range" id="sAudio" min="0" max="100" value="50" />
-        <div class="pct" id="pAudio">50%</div>
-      </div>
-
-      <div class="sliderRow">
-        <div class="name">Art Seed / Variation</div>
-        <input type="range" id="sArt" min="0" max="100" value="50" />
-        <div class="pct" id="pArt">50%</div>
-      </div>
-
-      <div class="hint">These controls are UI-only in SML Lite (GitHub Pages). We save them with the track so the UI feels real.</div>
-    </div>
-
-    <div style="height:12px"></div>
-
-    <button class="btn primary" id="btnGenerateBottom" style="width:100%">Generate (Create Track)</button>
-
-    <div style="height:10px"></div>
-
-    <div class="row">
-      <button class="btn" id="btnExportTxt">Export Lyrics (.txt)</button>
-      <button class="btn" id="btnExportPdf" disabled title="Coming soon">Export Sheet Music (Coming Soon)</button>
-    </div>
-
-    <div class="hint" style="margin-top:10px">
-      Ethics: lyrics must be human. We never generate lyrics — only save what you paste.
-    </div>
-  `;
-
-  // slider % sync
-  function linkSlider(sid, pid){
-    const s = $(sid), p = $(pid);
-    const sync = ()=>{ p.textContent = s.value + "%"; };
-    s.oninput = sync; sync();
-  }
-  linkSlider("sAudio","pAudio");
-  linkSlider("sArt","pArt");
-
-  // cadence buttons
-  $("btnCadence").onclick = ()=>{
-    cadenceMode = (cadenceMode === "Original") ? "Tight" : "Original";
-    $("btnCadence").textContent = "Cadence: " + cadenceMode;
-  };
-  $("btnResetCadence").onclick = ()=>{
-    cadenceMode = "Original";
-    $("btnCadence").textContent = "Cadence: Original";
-  };
-
-  // placeholder record
-  $("btnRecordTop").onclick = ()=> alert("Record Audio is a placeholder in SML Lite (front-end only).");
-
-  // export raw field (what user typed) or processed? Spec says cadence-processed for storage; export should match what will be stored/used.
-  $("btnExportTxt").onclick = ()=>{
-    const raw = ($("lyrics").value || "");
-    if(!raw.trim()){ alert("Paste lyrics first (required)."); return; }
-    const processed = applyCadence(raw, cadenceMode);
-    downloadText("lyrics.txt", processed);
-  };
-
-  const doGenerate = ()=>{
-    const raw = ($("lyrics").value || "");
-    if(!raw.trim()){
-      alert("Lyrics are required (human lyrics only). Paste your lyrics first.");
-      return;
-    }
-
-    const processed = applyCadence(raw, cadenceMode);
-
-    const track = {
-      id: uid(),
-      title: ($("title").value || "").trim() || "Untitled Song",
-      rawLyrics: raw.replace(/\r\n/g, "\n").trim(),
-      lyrics: processed,
-      cadence: cadenceMode,
-      style: ($("styleText").value || "").trim(),
-      audioInfluence: Number($("sAudio").value),
-      artSeed: Number($("sArt").value),
-      createdAt: Date.now(),
-      updatedAt: Date.now()
-    };
-
-    tracks.unshift(track);
-    save();
-
-    // switch to Library and select new track
-    view = "library";
-    listMode = "library";
-    setListTabs();
-    selectedId = track.id;
-
-    // stop simulated playback on new selection
-    stopTimer(true);
-
-    renderLeft();
-    renderList();
-    renderSongPanel();
-  };
-
-  $("btnCreateTop").onclick = doGenerate;
-  $("btnGenerateBottom").onclick = doGenerate;
-}
-
-/* ---------- LIST / WORKSPACE ---------- */
-function setListTabs(){
-  $("tabLibrary").classList.toggle("active", listMode === "library");
-  $("tabTrash").classList.toggle("active", listMode === "trash");
-
-  $("midTitle").textContent = (listMode === "library") ? "Library" : "Trash";
-  $("trashNote").style.display = (listMode === "trash") ? "block" : "none";
-}
-
-function renderList(){
-  const listEl = $("list");
-  const hint = $("listHint");
-  const items = (listMode === "library") ? tracks : trash;
-
-  if(items.length === 0){
-    listEl.innerHTML = "";
-    hint.textContent = (listMode === "library")
-      ? "(No tracks yet. Go to Create → Generate.)"
-      : "(Trash is empty.)";
-    return;
-  }
-
-  hint.textContent = (listMode === "library")
-    ? "(Click a track to load it into the Song Panel.)"
-    : "(Click a track to load it. Restore or delete permanently.)";
-
-  listEl.innerHTML = items.map(t=>{
-    const active = (t.id === selectedId) ? "active" : "";
-    const meta = (listMode === "library") ? "Saved · " : "Trashed · ";
-    const date = fmtDate(t.updatedAt || t.createdAt);
-
-    const chips = [
-      t.cadence ? ("Cadence: " + t.cadence) : "",
-      t.style ? ("Style: " + t.style) : "",
-      (typeof t.audioInfluence === "number") ? ("Audio: " + t.audioInfluence + "%") : "",
-      (typeof t.artSeed === "number") ? ("Art: " + t.artSeed + "%") : ""
-    ].filter(Boolean).slice(0,2).join(" · ");
-
-    return `
-      <div class="card ${active}" data-id="${escapeHtml(t.id)}">
-        <div class="cardTop">
-          <div class="cardTitle">${escapeHtml(t.title)}</div>
-          <div class="cardMeta">${escapeHtml(meta + date)}</div>
-        </div>
-        <div class="cardSub">${escapeHtml(chips || "—")}</div>
-      </div>
-    `;
-  }).join("");
-
-  listEl.querySelectorAll(".card").forEach(c=>{
-    c.onclick = ()=>{
-      selectedId = c.dataset.id;
-      stopTimer(true); // stop simulated audio when switching selection
-      renderList();
-      renderSongPanel();
-    };
-  });
-}
-
-/* ---------- SONG PANEL ---------- */
-function renderSongPanel(){
-  const sel = getSelected();
-  const name = $("songName");
-  const preview = $("lyricsPreview");
-  const status = $("songStatus");
-
-  const btnTrash = $("btnToTrash");
-  const btnDelete = $("btnDeleteForever");
-
-  if(!sel){
-    name.textContent = "No song selected";
-    preview.textContent = "Select a track to preview lyrics here.";
-    status.textContent = "Draft";
-    btnTrash.textContent = "Move to Trash";
-    btnTrash.classList.add("danger");
-    btnDelete.style.display = "none";
-    return;
-  }
-
-  const t = sel.item;
-  name.textContent = t.title || "Untitled Song";
-  preview.textContent = t.lyrics || "";
-  status.textContent = (sel.where === "trash") ? "Trash" : "Draft";
-
-  if(sel.where === "trash"){
-    btnTrash.textContent = "Restore";
-    btnTrash.classList.remove("danger");
-    btnDelete.style.display = "inline-block";
-  }else{
-    btnTrash.textContent = "Move to Trash";
-    btnTrash.classList.add("danger");
-    btnDelete.style.display = "none";
-  }
-}
-
-/* ---------- ACTIONS (Song Panel Buttons) ---------- */
-$("btnDL").onclick = ()=>{
-  const sel = getSelected();
-  if(!sel){ alert("Select a song first."); return; }
-  const t = sel.item;
-  const safeName = (t.title || "lyrics").replace(/[^\w\- ]+/g,"").trim().slice(0,40) || "lyrics";
-  downloadText(safeName + ".txt", t.lyrics || "");
-};
-
-$("btnToTrash").onclick = ()=>{
-  const sel = getSelected();
-  if(!sel){ alert("Select a song first."); return; }
-
-  stopTimer(true);
-
-  if(sel.where === "tracks"){
-    const t = sel.item;
-    tracks = tracks.filter(x=>x.id !== t.id);
-    t.trashedAt = Date.now();
-    t.updatedAt = Date.now();
-    trash.unshift(t);
-    save();
-
-    listMode = "trash";
-    view = "trash";
-    setListTabs();
-    renderLeft();
-    renderList();
-    renderSongPanel();
-    return;
-  }
-
-  if(sel.where === "trash"){
-    const t = sel.item;
-    trash = trash.filter(x=>x.id !== t.id);
-    delete t.trashedAt;
-    t.updatedAt = Date.now();
-    tracks.unshift(t);
-    save();
-
-    listMode = "library";
-    view = "library";
-    setListTabs();
-    renderLeft();
-    renderList();
-    renderSongPanel();
-    return;
-  }
-};
-
-$("btnDeleteForever").onclick = ()=>{
-  const sel = getSelected();
-  if(!sel || sel.where !== "trash"){ return; }
-
-  stopTimer(true);
-
-  const t = sel.item;
-  if(!confirm("Delete permanently? This cannot be undone.")) return;
-
-  trash = trash.filter(x=>x.id !== t.id);
-  save();
-
-  selectedId = null;
-  renderList();
-  renderSongPanel();
-};
-
-/* ---------- PLAYER (SIMULATED PREVIEW) ---------- */
-$("btnPlay").onclick = () => togglePlay();
-$("btnPlayBig").onclick = () => togglePlay();
-$("btnStop").onclick = () => stopTimer(false);
-$("btnPrev").onclick = () => selectNeighbor(-1);
-$("btnNext").onclick = () => selectNeighbor(+1);
-
-function selectNeighbor(dir){
-  const items = (listMode === "library") ? tracks : trash;
-  if(items.length === 0) return;
-
-  if(!selectedId){
-    selectedId = items[0].id;
-  }else{
-    const idx = items.findIndex(t=>t.id === selectedId);
-    const next = clamp(idx + dir, 0, items.length - 1);
-    selectedId = items[next].id;
-  }
-
-  stopTimer(true);
-  renderList();
-  renderSongPanel();
-}
-
-function togglePlay(){
-  const sel = getSelected();
-  if(!sel){
-    alert("Select a song first.");
-    return;
-  }
-
-  // SML Lite: no real audio generation. Simulated timeline only.
-  if(!isPlaying){
-    isPlaying = true;
-    $("audioStatus").textContent = "Preview audio (simulated)";
-    $("btnPlay").textContent = "Stop";
-    $("btnPlayBig").textContent = "⏸";
-    $("nowPlaying").textContent = "Now Playing: " + (sel.item.title || "Untitled Song");
-    startTimer();
-  }else{
-    stopTimer(false);
-  }
-}
-
-function startTimer(){
-  stopTimer(true);
-  isPlaying = true;
-
-  timer = setInterval(()=>{
-    playPos += 0.2;
-    if(playPos >= playDur){
-      playPos = playDur;
-      syncTimeline();
-      stopTimer(false);
-      return;
-    }
-    syncTimeline();
-  }, 200);
-
-  syncTimeline();
-}
-
-function stopTimer(silent){
-  clearInterval(timer);
-  timer = null;
-
-  isPlaying = false;
-  playPos = 0;
-  syncTimeline();
-
-  if(!silent){
-    // when user stops playback, reset UI to idle
-  }
-  $("audioStatus").textContent = "No audio yet";
-  $("btnPlay").textContent = "Play";
-  $("btnPlayBig").textContent = "▶";
-  $("nowPlaying").textContent = "Now Playing: —";
-}
-
-function syncTimeline(){
-  $("tCur").textContent = fmtTime(playPos);
-  $("tDur").textContent = fmtTime(playDur);
-  $("fill").style.width = ((playPos / playDur) * 100).toFixed(1) + "%";
-}
-
-/* ---------- NAV EVENTS ---------- */
-document.querySelectorAll("#nav a").forEach(a=>{
-  a.onclick = ()=>{
-    view = a.dataset.view;
-
-    if(view === "library"){
-      listMode = "library";
-      setListTabs();
-      renderList();
-      renderSongPanel();
-    }
-    if(view === "trash"){
-      listMode = "trash";
-      setListTabs();
-      renderList();
-      renderSongPanel();
-    }
-
-    // Home/Create/Profile render in column 2
-    renderLeft();
-  };
-});
-
-$("tabLibrary").onclick = ()=>{
-  listMode = "library";
-  view = "library";
-  setListTabs();
-  renderLeft();
-  renderList();
-  renderSongPanel();
-};
-
-$("tabTrash").onclick = ()=>{
-  listMode = "trash";
-  view = "trash";
-  setListTabs();
-  renderLeft();
-  renderList();
-  renderSongPanel();
-};
-
-/* ---------- DOWNLOADS ---------- */
-function downloadText(filename, text){
-  const blob = new Blob([text], {type:"text/plain;charset=utf-8"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-}
-
-/* ---------- BOOT ---------- */
-function boot(){
-  applyTrashAutoDelete();
-
-  // default view per prototype: Create + Library list
-  view = "create";
-  listMode = "library";
-
-  setListTabs();
-  renderLeft();
-  renderList();
-  renderSongPanel();
-  syncTimeline();
-}
-boot();
-</script>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    (function(){
+      "use strict";
+
+      // ----------------------------
+      // Storage keys
+      // ----------------------------
+      const KEY_LIBRARY = "sml_lite_library_v1";
+      const KEY_TRASH   = "sml_lite_trash_v1";
+      const KEY_PROFILE = "sml_lite_profile_v1";
+
+      // ----------------------------
+      // Helpers
+      // ----------------------------
+      const $ = (sel) => document.querySelector(sel);
+      const escapeHtml = (s) => (s || "").replace(/[&<>"']/g, (c)=>({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+      }[c]));
+      const nowISO = () => new Date().toISOString();
+      const niceTime = (iso) => {
+        try{
+          const d = new Date(iso);
+          return d.toLocaleString();
+        }catch{ return iso; }
+      };
+      const uid = () => "sml_" + Math.random().toString(36).slice(2, 10) + "_" + Date.now().toString(36);
+
+      function toast(msg){
+        const el = $("#toast");
+        el.textContent = msg;
+        el.classList.add("show");
+        clearTimeout(toast._t);
+        toast._t = setTimeout(()=> el.classList.remove("show"), 2200);
+      }
+
+      function loadArray(key){
+        try{
+          const raw = localStorage.getItem(key);
+          if(!raw) return [];
+          const parsed = JSON.parse(raw);
+          return Array.isArray(parsed) ? parsed : [];
+        }catch{
+          return [];
+        }
+      }
+      function saveArray(key, arr){
+        localStorage.setItem(key, JSON.stringify(arr));
+      }
+
+      function loadProfile(){
+        try{
+          const raw = localStorage.getItem(KEY_PROFILE);
+          if(!raw) return { name: "" };
+          const p = JSON.parse(raw);
+          return { name: (p && typeof p.name === "string") ? p.name : "" };
+        }catch{
+          return { name: "" };
+        }
+      }
+      function saveProfile(p){
+        localStorage.setItem(KEY_PROFILE, JSON.stringify({ name: p.name || "" }));
+      }
+
+      // ----------------------------
+      // App State (simple)
+      // ----------------------------
+      let library = loadArray(KEY_LIBRARY);
+      let trash   = loadArray(KEY_TRASH);
+      let profile = loadProfile();
+
+      // ----------------------------
+      // Routing (hash)
+      // ----------------------------
+      const routes = ["home","create","library","trash","profile"];
+      function currentRoute(){
+        const h = (location.hash || "#home").replace("#","").trim().toLowerCase();
+        return routes.includes(h) ? h : "home";
+      }
+
+      function setActiveNav(route){
+        document.querySelectorAll(".nav a[data-route]").forEach(a=>{
+          a.classList.toggle("active", a.dataset.route === route);
+        });
+      }
+      function showPage(route){
+        routes.forEach(r=>{
+          const el = $("#page-" + r);
+          if(el) el.style.display = (r === route) ? "" : "none";
+        });
+        setActiveNav(route);
+        if(route === "library") renderLibrary();
+        if(route === "trash") renderTrash();
+        if(route === "profile") renderProfile();
+        if(route === "home") renderHome();
+      }
+
+      window.addEventListener("hashchange", ()=> showPage(currentRoute()));
+
+      // ----------------------------
+      // Render counts / KPIs
+      // ----------------------------
+      function renderCounts(){
+        $("#countLibrary").textContent = String(library.length);
+        $("#countTrash").textContent = String(trash.length);
+        $("#kpiLibrary").textContent = String(library.length);
+        $("#kpiTrash").textContent = String(trash.length);
+      }
+
+      function countSavedToday(){
+        const today = new Date();
+        const y = today.getFullYear(), m = today.getMonth(), d = today.getDate();
+        return library.filter(s=>{
+          const dt = new Date(s.createdAt || s.updatedAt || 0);
+          return dt.getFullYear()===y && dt.getMonth()===m && dt.getDate()===d;
+        }).length;
+      }
+
+      function renderHome(){
+        renderCounts();
+      }
+
+      function renderCreate(){
+        renderCounts();
+        $("#kpiToday").textContent = String(countSavedToday());
+      }
+
+      // ----------------------------
+      // Create
+      // ----------------------------
+      function clearFields(){
+        $("#title").value = "";
+        $("#lyrics").value = "";
+        $("#style").value = "";
+      }
+
+      function createSong(){
+        const title = ($("#title").value || "").trim();
+        const lyrics = ($("#lyrics").value || "").trim();
+        const style = ($("#style").value || "").trim();
+
+        if(!lyrics){
+          toast("Lyrics are required.");
+          $("#lyrics").focus();
+          return;
+        }
+
+        const song = {
+          id: uid(),
+          title: title || "Untitled",
+          lyrics: lyrics,           // store exactly as pasted
+          style: style,
+          createdAt: nowISO(),
+          updatedAt: nowISO()
+        };
+
+        // newest first
+        library.unshift(song);
+        saveArray(KEY_LIBRARY, library);
+
+        renderCounts();
+        renderCreate();
+        toast("Saved to Library.");
+        clearFields();
+        location.hash = "#library";
+      }
+
+      // ----------------------------
+      // Library rendering
+      // ----------------------------
+      function songCard(song, mode){
+        // mode: "library" | "trash"
+        const el = document.createElement("div");
+        el.className = "song";
+        el.dataset.id = song.id;
+
+        const head = document.createElement("div");
+        head.className = "head";
+
+        const meta = document.createElement("div");
+        meta.className = "meta";
+
+        const title = document.createElement("p");
+        title.className = "title";
+        title.textContent = song.title || "Untitled";
+
+        const sub = document.createElement("div");
+        sub.className = "sub";
+
+        const pillTime = document.createElement("div");
+        pillTime.className = "pill";
+        pillTime.textContent = "Saved: " + niceTime(song.createdAt);
+
+        sub.appendChild(pillTime);
+
+        if(song.style){
+          const pillStyle = document.createElement("div");
+          pillStyle.className = "pill";
+          pillStyle.textContent = "Style: " + song.style;
+          sub.appendChild(pillStyle);
+        }
+
+        meta.appendChild(title);
+        meta.appendChild(sub);
+
+        const actions = document.createElement("div");
+        actions.className = "actions";
+
+        const btnView = document.createElement("button");
+        btnView.className = "btn small";
+        btnView.textContent = "View";
+        btnView.addEventListener("click", ()=>{
+          el.classList.toggle("open");
+          btnView.textContent = el.classList.contains("open") ? "Hide" : "View";
+        });
+
+        actions.appendChild(btnView);
+
+        if(mode === "library"){
+          const btnCopy = document.createElement("button");
+          btnCopy.className = "btn small";
+          btnCopy.textContent = "Copy Lyrics";
+          btnCopy.addEventListener("click", async ()=>{
+            try{
+              await navigator.clipboard.writeText(song.lyrics || "");
+              toast("Lyrics copied.");
+            }catch{
+              toast("Copy failed (browser permission).");
+            }
+          });
+          actions.appendChild(btnCopy);
+
+          const btnDelete = document.createElement("button");
+          btnDelete.className = "btn small danger";
+          btnDelete.textContent = "Delete";
+          btnDelete.addEventListener("click", ()=> moveToTrash(song.id));
+          actions.appendChild(btnDelete);
+        }
+
+        if(mode === "trash"){
+          const btnRestore = document.createElement("button");
+          btnRestore.className = "btn small ok";
+          btnRestore.textContent = "Restore";
+          btnRestore.addEventListener("click", ()=> restoreFromTrash(song.id));
+          actions.appendChild(btnRestore);
+
+          const btnPurge = document.createElement("button");
+          btnPurge.className = "btn small danger";
+          btnPurge.textContent = "Delete Forever";
+          btnPurge.addEventListener("click", ()=> deleteForever(song.id));
+          actions.appendChild(btnPurge);
+        }
+
+        head.appendChild(meta);
+        head.appendChild(actions);
+
+        const body = document.createElement("div");
+        body.className = "body";
+
+        const pre = document.createElement("pre");
+        pre.innerHTML = escapeHtml(song.lyrics || "");
+        body.appendChild(pre);
+
+        if(song.style){
+          const styleLabel = document.createElement("div");
+          styleLabel.className = "muted";
+          styleLabel.style.marginTop = "10px";
+          styleLabel.innerHTML = "<b>Style/Vibe:</b> " + escapeHtml(song.style);
+          body.appendChild(styleLabel);
+        }
+
+        el.appendChild(head);
+        el.appendChild(body);
+        return el;
+      }
+
+      function renderLibrary(){
+        renderCounts();
+        $("#libTotal").textContent = String(library.length);
+
+        const list = $("#libraryList");
+        list.innerHTML = "";
+
+        if(!library.length){
+          $("#libraryEmpty").style.display = "";
+          return;
+        }
+        $("#libraryEmpty").style.display = "none";
+
+        library.forEach(song => list.appendChild(songCard(song, "library")));
+      }
+
+      function renderTrash(){
+        renderCounts();
+        $("#trashTotal").textContent = String(trash.length);
+
+        const list = $("#trashList");
+        list.innerHTML = "";
+
+        if(!trash.length){
+          $("#trashEmpty").style.display = "";
+          return;
+        }
+        $("#trashEmpty").style.display = "none";
+
+        trash.forEach(song => list.appendChild(songCard(song, "trash")));
+      }
+
+      // ----------------------------
+      // Actions
+      // ----------------------------
+      function moveToTrash(id){
+        const idx = library.findIndex(s=> s.id === id);
+        if(idx === -1) return;
+        const [song] = library.splice(idx, 1);
+        song.deletedAt = nowISO();
+        trash.unshift(song);
+
+        saveArray(KEY_LIBRARY, library);
+        saveArray(KEY_TRASH, trash);
+
+        renderLibrary();
+        renderTrash();
+        toast("Moved to Trash.");
+      }
+
+      function restoreFromTrash(id){
+        const idx = trash.findIndex(s=> s.id === id);
+        if(idx === -1) return;
+        const [song] = trash.splice(idx, 1);
+        delete song.deletedAt;
+        song.updatedAt = nowISO();
+        library.unshift(song);
+
+        saveArray(KEY_LIBRARY, library);
+        saveArray(KEY_TRASH, trash);
+
+        renderTrash();
+        renderLibrary();
+        toast("Restored to Library.");
+      }
+
+      function deleteForever(id){
+        const idx = trash.findIndex(s=> s.id === id);
+        if(idx === -1) return;
+        trash.splice(idx, 1);
+
+        saveArray(KEY_TRASH, trash);
+
+        renderTrash();
+        renderCounts();
+        toast("Deleted forever.");
+      }
+
+      function emptyTrash(){
+        if(!trash.length){
+          toast("Trash already empty.");
+          return;
+        }
+        if(!confirm("Empty Trash? This permanently deletes everything in Trash.")) return;
+        trash = [];
+        saveArray(KEY_TRASH, trash);
+        renderTrash();
+        renderCounts();
+        toast("Trash emptied.");
+      }
+
+      function exportJSON(){
+        const payload = {
+          exportedAt: nowISO(),
+          profile,
+          library,
+          trash
+        };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "sml_lite_export.json";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        toast("Export downloaded.");
+      }
+
+      // ----------------------------
+      // Profile
+      // ----------------------------
+      function renderProfile(){
+        $("#profileName").value = profile.name || "";
+      }
+
+      function saveProfileFromUI(){
+        profile.name = ($("#profileName").value || "").trim();
+        saveProfile(profile);
+        toast("Profile saved.");
+      }
+
+      function resetAll(){
+        if(!confirm("Reset ALL data? This clears Library, Trash, and Profile on this browser.")) return;
+        localStorage.removeItem(KEY_LIBRARY);
+        localStorage.removeItem(KEY_TRASH);
+        localStorage.removeItem(KEY_PROFILE);
+        library = [];
+        trash = [];
+        profile = { name: "" };
+        clearFields();
+        renderCounts();
+        renderLibrary();
+        renderTrash();
+        renderProfile();
+        toast("All data reset.");
+        location.hash = "#home";
+      }
+
+      // ----------------------------
+      // Wire UI
+      // ----------------------------
+      $("#goCreate").addEventListener("click", ()=> location.hash="#create");
+      $("#goLibrary").addEventListener("click", ()=> location.hash="#library");
+      $("#goTrash").addEventListener("click", ()=> location.hash="#trash");
+
+      $("#btnGenerate").addEventListener("click", createSong);
+      $("#btnClear").addEventListener("click", ()=>{
+        clearFields();
+        toast("Cleared.");
+      });
+
+      $("#btnEmptyTrash").addEventListener("click", emptyTrash);
+      $("#btnExport").addEventListener("click", exportJSON);
+
+      $("#btnSaveProfile").addEventListener("click", saveProfileFromUI);
+      $("#btnResetAll").addEventListener("click", resetAll);
+
+      // enter key on title shouldn't submit anything weird
+      $("#title").addEventListener("keydown", (e)=>{
+        if(e.key === "Enter"){
+          e.preventDefault();
+          $("#lyrics").focus();
+        }
+      });
+
+      // Initial render
+      renderCounts();
+      renderHome();
+      renderCreate();
+      showPage(currentRoute());
+    })();
+  </script>
 </body>
 </html>
