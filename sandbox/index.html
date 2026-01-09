@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>SML Lite</title>
- 
+
 <style>
   :root{
     --bg:#0f1116;
@@ -719,15 +719,13 @@ function renderLeft(){
     const track = {
       id: uid(),
       title: ($("title").value || "").trim() || "Untitled Song",
-     
+      lyrics: lyr,
       styles: ($("styleText").value || "").trim(),
       exclude: ($("excludeStyles").value || "").trim(),
       crazy: Number($("sCrazy").value),
       styleInf: Number($("sStyle").value),
       audioInf: Number($("sAudio").value),
-      lyrics: cadenceMode !== "original"
-  ? applyCadence(lyr, cadenceMode)
-  : lyr,
+      cadence: "Original",
       createdAt: Date.now(),
       updatedAt: Date.now()
     };
@@ -814,10 +812,7 @@ function renderSongPanel(){
 
   const t = sel.item;
   name.textContent = t.title;
- preview.textContent =
-  cadenceMode !== "original"
-    ? applyCadence(t.lyrics || "", cadenceMode)
-    : (t.lyrics || "");
+  preview.textContent = t.lyrics || "";
   status.textContent = (sel.where==="trash") ? "Trash" : "Draft";
 
   if(sel.where==="trash"){
