@@ -159,7 +159,7 @@
     outline:none;
     font-size:13px;
   }
-  textarea{ min-height:170px; resize:vertical; }
+  textarea{ min-height:160px; resize:vertical; }
   input[type="text"]:focus, textarea:focus{ border-color:rgba(42,168,255,.55); }
 
   .divider{ height:1px; background:var(--line); margin:12px 0; }
@@ -357,7 +357,7 @@
 
 <body>
 <div class="app">
-  <!-- LEFT SIDEBAR (LOCKED ORDER) -->
+  <!-- LEFT SIDEBAR -->
   <aside class="left">
     <div class="brand">
       <span class="dot"></span><span>SML</span>
@@ -464,24 +464,24 @@
    human lyrics only
 ========================= */
 
+/* ---------- storage keys ---------- */
 const LS_TRACKS  = "sml_tracks";
 const LS_TRASH   = "sml_trash";
 const LS_CREDITS = "sml_credits";
 const LS_NAME    = "sml_name";
 
+/* ---------- state ---------- */
 let tracks = loadJSON(LS_TRACKS, []);
 let trash  = loadJSON(LS_TRASH, []);
 let credits = loadJSON(LS_CREDITS, 0);
 let displayName = localStorage.getItem(LS_NAME) || "YOU";
 
-let view = "home";         // home | create | library | trash | profile
+let view = "profile";      // home | create | library | trash | profile
 let listMode = "library";  // library | trash
 let selectedId = null;
 
-/* cadence */
 let cadenceMode = "Original"; // Original | Tight
 
-/* player sim */
 let isPlaying = false;
 let playPos = 0;
 let playDur = 30;
@@ -501,8 +501,11 @@ function loadJSON(key, fallback){
   try{
     const v = localStorage.getItem(key);
     if(!v) return fallback;
-    return JSON.parse(v);
-  }catch(e){ return fallback; }
+    const parsed = JSON.parse(v);
+    return (parsed === null || parsed === undefined) ? fallback : parsed;
+  }catch(e){
+    return fallback;
+  }
 }
 
 function uid(){
@@ -532,18 +535,19 @@ function escapeHtml(s){
     .replaceAll("'","&#039;");
 }
 
-/* ---------- CADENCE (FIX) ---------- */
-function applyCadence(text, mode){
-  const t = String(text || "");
+/* ---------- cadence (format-only, never generates words) ---------- */
+function applyCadence(raw, mode){
+  const text = String(raw || "");
   if(mode === "Tight"){
-    return t
+    return text
       .replace(/\r\n/g, "\n")
-      .replace(/[ \t]+$/gm, "")      // trim line-end whitespace
-      .replace(/\n{3,}/g, "\n\n")    // collapse 3+ newlines into 2
-      .replace(/[ \t]{2,}/g, " ")    // collapse multiple spaces/tabs
+      .replace(/[ \t]+$/gm, "")      // trim end-of-line whitespace
+      .replace(/\n{3,}/g, "\n\n")    // collapse huge blank gaps
+      .replace(/[ \t]{2,}/g, " ")    // collapse repeated spaces
       .trim();
   }
-  return t.replace(/\r\n/g, "\n").trim();
+  // Original: keep structure, only trim outer edges so storage is clean
+  return text.replace(/\r\n/g, "\n").trim();
 }
 
 /* ---------- Trash 30-day simulation ---------- */
@@ -553,7 +557,7 @@ function applyTrashAutoDelete(){
   const before = trash.length;
 
   trash = trash.filter(t=>{
-    const ts = t.trashedAt || 0;
+    const ts = Number(t.trashedAt || 0);
     if(!ts) return true;
     return (now - ts) <= THIRTY_DAYS;
   });
@@ -606,16 +610,23 @@ function renderLeft(){
         <p class="para"><b>Note:</b> “SML Lite — front-end only.” Runs 100% in your browser (GitHub Pages). No server, no logins, no keys.</p>
       </div>
     `;
+
     $("goCreate").onclick = ()=>{ view="create"; renderLeft(); };
     $("goLibrary").onclick = ()=>{
       view="library";
       listMode="library";
-      setListTabs(); renderList(); renderSongPanel(); renderLeft();
+      setListTabs();
+      renderList();
+      renderSongPanel();
+      renderLeft();
     };
     $("goTrash").onclick = ()=>{
       view="trash";
       listMode="trash";
-      setListTabs(); renderList(); renderSongPanel(); renderLeft();
+      setListTabs();
+      renderList();
+      renderSongPanel();
+      renderLeft();
     };
     return;
   }
@@ -654,7 +665,7 @@ function renderLeft(){
   titleEl.textContent = "Create";
   body.innerHTML = `
     <div class="row">
-      <button class="btn primary" id="btnGenerateTop">Generate (Create Track)</button>
+      <button class="btn primary" id="btnCreateTop">Generate (Create Track)</button>
       <button class="btn" id="btnRecordTop">Record Audio</button>
     </div>
 
@@ -691,12 +702,12 @@ function renderLeft(){
         <div class="pct" id="pArt">50%</div>
       </div>
 
-      <div class="hint">These sliders are UI-only in SML Lite (GitHub Pages). We save them with the track so the UI feels real.</div>
+      <div class="hint">These controls are UI-only in SML Lite (GitHub Pages). We save them with the track so the UI feels real.</div>
     </div>
 
     <div style="height:12px"></div>
 
-    <button class="btn primary" id="btnGenerate" style="width:100%">Generate (Create Track)</button>
+    <button class="btn primary" id="btnGenerateBottom" style="width:100%">Generate (Create Track)</button>
 
     <div style="height:10px"></div>
 
@@ -719,38 +730,40 @@ function renderLeft(){
   linkSlider("sAudio","pAudio");
   linkSlider("sArt","pArt");
 
-  $("btnRecordTop").onclick = ()=> alert("Record Audio is a placeholder in SML Lite (front-end only).");
-
+  // cadence buttons
   $("btnCadence").onclick = ()=>{
     cadenceMode = (cadenceMode === "Original") ? "Tight" : "Original";
     $("btnCadence").textContent = "Cadence: " + cadenceMode;
   };
-
   $("btnResetCadence").onclick = ()=>{
     cadenceMode = "Original";
     $("btnCadence").textContent = "Cadence: Original";
   };
 
+  // placeholder record
+  $("btnRecordTop").onclick = ()=> alert("Record Audio is a placeholder in SML Lite (front-end only).");
+
+  // export raw field (what user typed) or processed? Spec says cadence-processed for storage; export should match what will be stored/used.
   $("btnExportTxt").onclick = ()=>{
-    const txt = ($("lyrics").value || "").trim();
-    if(!txt){ alert("Paste lyrics first (required)."); return; }
-    const out = applyCadence(txt, cadenceMode);
-    downloadText("lyrics.txt", out);
+    const raw = ($("lyrics").value || "");
+    if(!raw.trim()){ alert("Paste lyrics first (required)."); return; }
+    const processed = applyCadence(raw, cadenceMode);
+    downloadText("lyrics.txt", processed);
   };
 
-  function doGenerate(){
-    const lyrRaw = ($("lyrics").value || "");
-    if(!lyrRaw.trim()){
+  const doGenerate = ()=>{
+    const raw = ($("lyrics").value || "");
+    if(!raw.trim()){
       alert("Lyrics are required (human lyrics only). Paste your lyrics first.");
       return;
     }
 
-    const processed = applyCadence(lyrRaw, cadenceMode);
+    const processed = applyCadence(raw, cadenceMode);
 
     const track = {
       id: uid(),
       title: ($("title").value || "").trim() || "Untitled Song",
-      rawLyrics: lyrRaw.replace(/\r\n/g, "\n"),
+      rawLyrics: raw.replace(/\r\n/g, "\n").trim(),
       lyrics: processed,
       cadence: cadenceMode,
       style: ($("styleText").value || "").trim(),
@@ -763,18 +776,22 @@ function renderLeft(){
     tracks.unshift(track);
     save();
 
+    // switch to Library and select new track
     view = "library";
     listMode = "library";
     setListTabs();
-
     selectedId = track.id;
+
+    // stop simulated playback on new selection
+    stopTimer(true);
+
     renderLeft();
     renderList();
     renderSongPanel();
-  }
+  };
 
-  $("btnGenerateTop").onclick = doGenerate;
-  $("btnGenerate").onclick = doGenerate;
+  $("btnCreateTop").onclick = doGenerate;
+  $("btnGenerateBottom").onclick = doGenerate;
 }
 
 /* ---------- LIST / WORKSPACE ---------- */
@@ -829,6 +846,7 @@ function renderList(){
   listEl.querySelectorAll(".card").forEach(c=>{
     c.onclick = ()=>{
       selectedId = c.dataset.id;
+      stopTimer(true); // stop simulated audio when switching selection
       renderList();
       renderSongPanel();
     };
@@ -836,13 +854,6 @@ function renderList(){
 }
 
 /* ---------- SONG PANEL ---------- */
-function setSongButtonsEnabled(enabled){
-  $("btnPlay").disabled = !enabled;
-  $("btnDL").disabled = !enabled;
-  $("btnToTrash").disabled = !enabled;
-  $("btnPlayBig").style.opacity = enabled ? "1" : ".45";
-}
-
 function renderSongPanel(){
   const sel = getSelected();
   const name = $("songName");
@@ -859,8 +870,6 @@ function renderSongPanel(){
     btnTrash.textContent = "Move to Trash";
     btnTrash.classList.add("danger");
     btnDelete.style.display = "none";
-    setSongButtonsEnabled(false);
-    stopTimer();
     return;
   }
 
@@ -878,8 +887,6 @@ function renderSongPanel(){
     btnTrash.classList.add("danger");
     btnDelete.style.display = "none";
   }
-
-  setSongButtonsEnabled(true);
 }
 
 /* ---------- ACTIONS (Song Panel Buttons) ---------- */
@@ -887,18 +894,15 @@ $("btnDL").onclick = ()=>{
   const sel = getSelected();
   if(!sel){ alert("Select a song first."); return; }
   const t = sel.item;
-
-  const safeName = (t.title || "lyrics")
-    .replace(/[^\w\- ]+/g,"")
-    .trim()
-    .slice(0,40) || "lyrics";
-
+  const safeName = (t.title || "lyrics").replace(/[^\w\- ]+/g,"").trim().slice(0,40) || "lyrics";
   downloadText(safeName + ".txt", t.lyrics || "");
 };
 
 $("btnToTrash").onclick = ()=>{
   const sel = getSelected();
   if(!sel){ alert("Select a song first."); return; }
+
+  stopTimer(true);
 
   if(sel.where === "tracks"){
     const t = sel.item;
@@ -938,8 +942,10 @@ $("btnToTrash").onclick = ()=>{
 $("btnDeleteForever").onclick = ()=>{
   const sel = getSelected();
   if(!sel || sel.where !== "trash"){ return; }
-  const t = sel.item;
 
+  stopTimer(true);
+
+  const t = sel.item;
   if(!confirm("Delete permanently? This cannot be undone.")) return;
 
   trash = trash.filter(x=>x.id !== t.id);
@@ -953,7 +959,7 @@ $("btnDeleteForever").onclick = ()=>{
 /* ---------- PLAYER (SIMULATED PREVIEW) ---------- */
 $("btnPlay").onclick = () => togglePlay();
 $("btnPlayBig").onclick = () => togglePlay();
-$("btnStop").onclick = () => stopTimer();
+$("btnStop").onclick = () => stopTimer(false);
 $("btnPrev").onclick = () => selectNeighbor(-1);
 $("btnNext").onclick = () => selectNeighbor(+1);
 
@@ -969,6 +975,7 @@ function selectNeighbor(dir){
     selectedId = items[next].id;
   }
 
+  stopTimer(true);
   renderList();
   renderSongPanel();
 }
@@ -980,6 +987,7 @@ function togglePlay(){
     return;
   }
 
+  // SML Lite: no real audio generation. Simulated timeline only.
   if(!isPlaying){
     isPlaying = true;
     $("audioStatus").textContent = "Preview audio (simulated)";
@@ -988,31 +996,39 @@ function togglePlay(){
     $("nowPlaying").textContent = "Now Playing: " + (sel.item.title || "Untitled Song");
     startTimer();
   }else{
-    stopTimer();
+    stopTimer(false);
   }
 }
 
 function startTimer(){
-  stopTimer();
+  stopTimer(true);
+  isPlaying = true;
+
   timer = setInterval(()=>{
     playPos += 0.2;
     if(playPos >= playDur){
       playPos = playDur;
       syncTimeline();
-      stopTimer();
+      stopTimer(false);
       return;
     }
     syncTimeline();
   }, 200);
+
   syncTimeline();
 }
 
-function stopTimer(){
-  isPlaying = false;
+function stopTimer(silent){
   clearInterval(timer);
   timer = null;
+
+  isPlaying = false;
   playPos = 0;
   syncTimeline();
+
+  if(!silent){
+    // when user stops playback, reset UI to idle
+  }
   $("audioStatus").textContent = "No audio yet";
   $("btnPlay").textContent = "Play";
   $("btnPlayBig").textContent = "▶";
@@ -1043,6 +1059,7 @@ document.querySelectorAll("#nav a").forEach(a=>{
       renderSongPanel();
     }
 
+    // Home/Create/Profile render in column 2
     renderLeft();
   };
 });
@@ -1082,8 +1099,8 @@ function downloadText(filename, text){
 function boot(){
   applyTrashAutoDelete();
 
-  // default view (landing)
-  view = "home";
+  // default view per prototype: Create + Library list
+  view = "create";
   listMode = "library";
 
   setListTabs();
