@@ -719,13 +719,15 @@ function renderLeft(){
     const track = {
       id: uid(),
       title: ($("title").value || "").trim() || "Untitled Song",
-      lyrics: lyr,
+     
       styles: ($("styleText").value || "").trim(),
       exclude: ($("excludeStyles").value || "").trim(),
       crazy: Number($("sCrazy").value),
       styleInf: Number($("sStyle").value),
       audioInf: Number($("sAudio").value),
-      cadence: "Original",
+      lyrics: cadenceMode !== "original"
+  ? applyCadence(lyr, cadenceMode)
+  : lyr,
       createdAt: Date.now(),
       updatedAt: Date.now()
     };
