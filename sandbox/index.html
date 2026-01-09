@@ -27,7 +27,7 @@
   .app{
     height:100vh; width:100vw;
     display:grid;
-    grid-template-columns: 220px 1fr 1fr 300px; /* left | create/home/profile | library | song panel */
+    grid-template-columns: 220px 1fr 1fr 300px; /* left | create/home/profile | library/trash | song panel */
     grid-template-rows: 1fr 80px;              /* content | player */
     gap:0;
   }
@@ -45,15 +45,8 @@
     font-weight:800; letter-spacing:0.5px;
     margin-bottom:10px;
   }
-  .brand .dot{
-    width:10px; height:10px; border-radius:50%;
-    background:var(--accent);
-    box-shadow:0 0 18px rgba(42,168,255,.45);
-  }
-  .nav{
-    display:flex; flex-direction:column; gap:8px;
-    margin-top:8px;
-  }
+  .brand .dot{ width:10px; height:10px; border-radius:50%; background:var(--accent); box-shadow:0 0 18px rgba(42,168,255,.45); }
+  .nav{ display:flex; flex-direction:column; gap:8px; margin-top:8px; }
   .nav a{
     display:flex; align-items:center; gap:10px;
     text-decoration:none; color:var(--text);
@@ -68,7 +61,7 @@
   .ico{ width:22px; text-align:center; opacity:.95; }
   .spacer{ height:10px; }
 
-  /* ====== MAIN PANELS ====== */
+  /* ====== PANELS ====== */
   .panel{
     border-left:1px solid var(--line);
     background:var(--panel2);
@@ -77,7 +70,7 @@
     flex-direction:column;
     min-width:0;
   }
-  .createCol{ grid-column:2; grid-row:1; border-left:none; background:var(--panel2); }
+  .create{ grid-column:2; grid-row:1; border-left:none; background:var(--panel2); }
   .workspace{ grid-column:3; grid-row:1; background:var(--panel2); }
   .songpanel{ grid-column:4; grid-row:1 / span 2; background:var(--panel); border-left:1px solid var(--line); }
 
@@ -103,11 +96,7 @@
     background:rgba(255,255,255,.02);
     white-space:nowrap;
   }
-  .panelBody{
-    padding:12px;
-    overflow:auto;
-    flex:1;
-  }
+  .panelBody{ padding:12px; overflow:auto; flex:1; }
 
   /* ====== BUTTONS / INPUTS ====== */
   .btn{
@@ -132,11 +121,7 @@
   }
   .btn.danger:hover{ background:rgba(255,91,91,.16); }
   .btn.small{ padding:8px 10px; font-size:12px; border-radius:9px; }
-  .btn:disabled{
-    opacity:.55;
-    cursor:not-allowed;
-    border-color:var(--line);
-  }
+  .btn:disabled{ opacity:.45; cursor:not-allowed; }
 
   .row{ display:flex; gap:10px; }
   .row > *{ flex:1; }
@@ -163,6 +148,12 @@
   input[type="text"]:focus, textarea:focus{ border-color:rgba(42,168,255,.55); }
 
   .divider{ height:1px; background:var(--line); margin:12px 0; }
+  .hint{
+    color:var(--muted);
+    font-size:12px;
+    line-height:1.35;
+    margin-top:8px;
+  }
 
   /* sliders */
   .advBox{
@@ -171,12 +162,7 @@
     padding:12px;
     background:rgba(255,255,255,.02);
   }
-  .sectionTitle{
-    margin-top:0;
-    font-weight:900;
-    font-size:14px;
-    letter-spacing:.3px;
-  }
+  .sectionTitle{ margin-top:2px; font-weight:900; font-size:14px; letter-spacing:.3px; }
   .sliderRow{
     display:grid;
     grid-template-columns: 1fr 1fr 70px;
@@ -196,14 +182,8 @@
     color:var(--text);
     font-size:13px;
   }
-  .hint{
-    color:var(--muted);
-    font-size:12px;
-    line-height:1.35;
-    margin-top:8px;
-  }
 
-  /* ====== WORKSPACE / LIST ====== */
+  /* ====== WORKSPACE LIST ====== */
   .tabs{ display:flex; gap:8px; align-items:center; }
   .tabBtn{
     border:1px solid var(--line);
@@ -272,16 +252,6 @@
     line-height:1.35;
     margin-top:12px;
   }
-  .note{
-    border:1px solid var(--line);
-    background:rgba(255,255,255,.02);
-    border-radius:12px;
-    padding:10px;
-    font-size:12px;
-    color:var(--muted);
-    line-height:1.35;
-    margin-top:10px;
-  }
 
   /* ====== PLAYER BAR ====== */
   .player{
@@ -308,7 +278,6 @@
     user-select:none;
   }
   .circleBtn:hover{ border-color:rgba(42,168,255,.55); }
-
   .timeline{
     flex:1;
     display:flex;
@@ -327,11 +296,7 @@
     position:relative;
     min-width:120px;
   }
-  .fill{
-    height:100%;
-    width:0%;
-    background:var(--accent);
-  }
+  .fill{ height:100%; width:0%; background:var(--accent); }
   .nowPlaying{
     min-width:160px;
     color:var(--muted);
@@ -343,7 +308,7 @@
     text-overflow:ellipsis;
   }
 
-  /* simple page blocks */
+  /* Pages */
   .pageBlock{
     border:1px solid var(--line);
     background:rgba(255,255,255,.02);
@@ -357,7 +322,8 @@
 
 <body>
 <div class="app">
-  <!-- LEFT SIDEBAR -->
+
+  <!-- LEFT (ORDER LOCKED) -->
   <aside class="left">
     <div class="brand">
       <span class="dot"></span><span>SML</span>
@@ -365,7 +331,7 @@
 
     <!-- Profile MUST be directly under logo -->
     <nav class="nav" id="nav">
-      <a data-view="profile" class="active"><span class="ico">👤</span><span>Profile</span></a>
+      <a data-view="profile"><span class="ico">👤</span><span>Profile</span></a>
       <div class="spacer"></div>
       <a data-view="home"><span class="ico">🏠</span><span>Home</span></a>
       <a data-view="create"><span class="ico">✍️</span><span>Create</span></a>
@@ -374,8 +340,8 @@
     </nav>
   </aside>
 
-  <!-- COLUMN 2: Home/Create/Profile -->
-  <section class="panel createCol">
+  <!-- LEFT CONTENT (HOME/CREATE/PROFILE) -->
+  <section class="panel create">
     <div class="panelHeader">
       <div class="title" id="leftTitle">Create</div>
       <div class="badge" id="ethicsBadge">Human lyrics only</div>
@@ -383,20 +349,20 @@
     <div class="panelBody" id="leftBody"></div>
   </section>
 
-  <!-- COLUMN 3: Library/Trash list -->
+  <!-- WORKSPACE (LIBRARY/TRASH LIST) -->
   <section class="panel workspace">
     <div class="panelHeader">
-      <div class="title" id="midTitle">Library</div>
+      <div class="title" id="midTitle">Workspace / Library</div>
       <div class="tabs">
-        <button class="tabBtn active" id="tabLibrary">Library</button>
+        <button class="tabBtn active" id="tabLibrary">Your songs</button>
         <button class="tabBtn" id="tabTrash">Trash</button>
       </div>
     </div>
     <div class="panelBody">
       <div class="list" id="list"></div>
-      <div class="hint" id="listHint" style="margin-top:10px;">(Your saved tracks will appear here.)</div>
-      <div class="note" id="trashNote" style="display:none;">
-        Trash auto-delete after 30 days (display only). We simulate this by comparing dates when the app loads.
+      <div class="hint" id="listHint" style="margin-top:10px;"></div>
+      <div class="hint" id="trashNote" style="margin-top:10px; display:none;">
+        Note: “Auto-delete after 30 days” is simulated on page load by comparing dates.
       </div>
     </div>
   </section>
@@ -439,29 +405,28 @@
   <!-- PLAYER BAR -->
   <footer class="player">
     <div class="playerLeft" id="audioStatus">No audio yet</div>
-
     <div class="playerCtrls">
       <div class="circleBtn" id="btnPrev">⏮</div>
       <div class="circleBtn" id="btnPlayBig">▶</div>
       <div class="circleBtn" id="btnStop">⏹</div>
       <div class="circleBtn" id="btnNext">⏭</div>
     </div>
-
     <div class="timeline">
       <div class="time" id="tCur">0:00</div>
       <div class="bar"><div class="fill" id="fill"></div></div>
       <div class="time" id="tDur">0:30</div>
     </div>
-
     <div class="nowPlaying" id="nowPlaying">Now Playing: —</div>
   </footer>
+
 </div>
 
 <script>
 /* =========================
-   SML LITE — GitHub Pages Static
-   localStorage only
-   human lyrics only
+   SML LITE — LOCKED SCOPE
+   - GitHub Pages static
+   - localStorage only
+   - human lyrics only
 ========================= */
 
 const LS_TRACKS  = "sml_tracks";
@@ -469,21 +434,21 @@ const LS_TRASH   = "sml_trash";
 const LS_CREDITS = "sml_credits";
 const LS_NAME    = "sml_name";
 
-let tracks = loadJSON(LS_TRACKS, []);
-let trash  = loadJSON(LS_TRASH, []);
-let credits = loadJSON(LS_CREDITS, 0);
+let tracks      = loadJSON(LS_TRACKS, []);
+let trash       = loadJSON(LS_TRASH, []);
+let credits     = loadJSON(LS_CREDITS, 0);
 let displayName = localStorage.getItem(LS_NAME) || "YOU";
 
-let view = "profile";      // home | create | library | trash | profile
-let listMode = "library";  // library | trash
+let view = "home";       // home|create|profile|library|trash
+let listMode = "library"; // library|trash
 let selectedId = null;
 
+/* player simulation */
 let isPlaying = false;
 let playPos = 0;
 let playDur = 30;
 let timer = null;
 
-/* ---------- helpers ---------- */
 function $(id){ return document.getElementById(id); }
 
 function save(){
@@ -498,7 +463,9 @@ function loadJSON(key, fallback){
     const v = localStorage.getItem(key);
     if(!v) return fallback;
     return JSON.parse(v);
-  }catch(e){ return fallback; }
+  }catch(e){
+    return fallback;
+  }
 }
 
 function uid(){
@@ -528,71 +495,67 @@ function escapeHtml(s){
     .replaceAll("'","&#039;");
 }
 
-/* ---------- Trash 30-day simulation ---------- */
-function applyTrashAutoDelete(){
+function getSelected(){
+  if(!selectedId) return null;
+  const inTracks = tracks.find(t=>t.id===selectedId);
+  if(inTracks) return { where:"tracks", item: inTracks };
+  const inTrash = trash.find(t=>t.id===selectedId);
+  if(inTrash) return { where:"trash", item: inTrash };
+  return null;
+}
+
+/* ===== Trash 30-day simulation on load (compare dates) ===== */
+function purgeOldTrash(){
   const now = Date.now();
-  const THIRTY_DAYS = 30 * 24 * 60 * 60 * 1000;
+  const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
   const before = trash.length;
   trash = trash.filter(t=>{
-    const ts = t.trashedAt || 0;
-    if(!ts) return true;
-    return (now - ts) <= THIRTY_DAYS;
+    const trashedAt = Number(t.trashedAt || 0);
+    if(!trashedAt) return true; // if missing, keep (display-only concept)
+    return (now - trashedAt) <= thirtyDaysMs;
   });
   if(trash.length !== before) save();
 }
 
-/* ---------- selection ---------- */
-function getSelected(){
-  if(!selectedId) return null;
-  let t = tracks.find(x=>x.id === selectedId);
-  if(t) return { where:"tracks", item:t };
-  t = trash.find(x=>x.id === selectedId);
-  if(t) return { where:"trash", item:t };
-  return null;
-}
-
-/* ---------- nav ---------- */
+/* ===== Nav ===== */
 function setActiveNav(){
   document.querySelectorAll("#nav a").forEach(a=>{
-    a.classList.toggle("active", a.dataset.view === view);
+    a.classList.toggle("active", a.dataset.view===view);
   });
 }
 
-/* ---------- LEFT COLUMN RENDER ---------- */
+/* ===== Left column pages ===== */
 function renderLeft(){
   setActiveNav();
-  $("songUser").textContent = displayName || "YOU";
+  $("songUser").textContent = displayName;
 
   const titleEl = $("leftTitle");
   const body = $("leftBody");
 
-  if(view === "home"){
+  if(view==="home"){
     titleEl.textContent = "Home";
     body.innerHTML = `
       <div class="pageBlock">
         <h2 class="bigTitle">SML Lite</h2>
         <p class="para"><b>Making rock stars — one human at a time.</b></p>
         <p class="para">You own your lyrics 100%. SML Lite never generates lyrics — it only stores what you paste.</p>
-
         <div class="row">
           <button class="btn primary" id="goCreate">Go to Create</button>
           <button class="btn" id="goLibrary">Open Library</button>
         </div>
-
         <div style="height:10px"></div>
         <button class="btn" id="goTrash" style="width:100%">Open Trash</button>
-
         <div class="divider"></div>
         <p class="para"><b>Note:</b> “SML Lite — front-end only.” Runs 100% in your browser (GitHub Pages). No server, no logins, no keys.</p>
       </div>
     `;
     $("goCreate").onclick = ()=>{ view="create"; renderLeft(); };
-    $("goLibrary").onclick = ()=>{ view="library"; listMode="library"; setListTabs(); renderList(); renderSongPanel(); renderLeft(); };
-    $("goTrash").onclick = ()=>{ view="trash"; listMode="trash"; setListTabs(); renderList(); renderSongPanel(); renderLeft(); };
+    $("goLibrary").onclick = ()=>{ listMode="library"; setListTabs(); renderList(); };
+    $("goTrash").onclick  = ()=>{ listMode="trash"; setListTabs(); renderList(); };
     return;
   }
 
-  if(view === "profile"){
+  if(view==="profile"){
     titleEl.textContent = "Profile";
     body.innerHTML = `
       <div class="pageBlock">
@@ -602,7 +565,7 @@ function renderLeft(){
         <input type="text" id="nameInput" value="${escapeHtml(displayName)}" />
 
         <label>Credits (front-end only)</label>
-        <input type="text" value="${escapeHtml(String(credits))}" disabled />
+        <input type="text" value="${credits}" disabled />
 
         <div class="divider"></div>
         <p class="para"><b>Ownership:</b> You own your lyrics 100%.</p>
@@ -621,21 +584,22 @@ function renderLeft(){
     return;
   }
 
-  // CREATE
+  /* CREATE */
   titleEl.textContent = "Create";
   body.innerHTML = `
     <div class="row">
-      <button class="btn primary" id="btnGenerate" style="width:100%">Generate (Create Track)</button>
+      <button class="btn primary" id="btnCreateTop">Create Song</button>
+      <button class="btn" id="btnRecordTop" title="Placeholder">Record Audio</button>
     </div>
 
     <label>Song Title (optional)</label>
     <input type="text" id="title" placeholder="Add Song Title" />
 
-    <label>Lyrics (required — human only)</label>
-    <textarea id="lyrics" placeholder="Paste lyrics here..."></textarea>
+    <label>Lyrics (required)</label>
+    <textarea id="lyrics" placeholder="Paste your human lyrics here..."></textarea>
 
     <label>Style / vibe (optional)</label>
-    <input type="text" id="styleText" placeholder="Type a style/vibe prompt..." />
+    <input type="text" id="styleText" placeholder="Type custom vibe / prompt..." />
 
     <div class="divider"></div>
 
@@ -654,10 +618,14 @@ function renderLeft(){
         <div class="pct" id="pArt">50%</div>
       </div>
 
-      <div class="hint">These sliders are UI-only in SML Lite (GitHub Pages). We save them with the track so the UI feels real.</div>
+      <div class="hint">These are UI-only in SML Lite (no backend). We save them so testing feels real.</div>
     </div>
 
     <div style="height:12px"></div>
+
+    <button class="btn primary" id="btnGenerate" style="width:100%">Create Song</button>
+
+    <div style="height:10px"></div>
 
     <div class="row">
       <button class="btn" id="btnExportTxt">Export Lyrics (.txt)</button>
@@ -669,14 +637,16 @@ function renderLeft(){
     </div>
   `;
 
-  // slider % sync
-  function linkSlider(sid, pid){
+  const linkSlider = (sid,pid)=>{
     const s = $(sid), p = $(pid);
     const sync = ()=>{ p.textContent = s.value + "%"; };
     s.oninput = sync; sync();
-  }
+  };
   linkSlider("sAudio","pAudio");
   linkSlider("sArt","pArt");
+
+  $("btnCreateTop").onclick = ()=> $("btnGenerate").click();
+  $("btnRecordTop").onclick = ()=> alert("Record Audio is a placeholder in SML Lite (front-end only).");
 
   $("btnExportTxt").onclick = ()=>{
     const txt = ($("lyrics").value || "").trim();
@@ -686,18 +656,15 @@ function renderLeft(){
 
   $("btnGenerate").onclick = ()=>{
     const lyr = ($("lyrics").value || "").trim();
-    if(!lyr){
-      alert("Lyrics are required (human lyrics only). Paste your lyrics first.");
-      return;
-    }
+    if(!lyr){ alert("Lyrics are required (human lyrics only). Paste your lyrics first."); return; }
 
     const track = {
       id: uid(),
       title: ($("title").value || "").trim() || "Untitled Song",
       lyrics: lyr,
       style: ($("styleText").value || "").trim(),
-      audioInfluence: Number($("sAudio").value),
-      artSeed: Number($("sArt").value),
+      audioInf: Number($("sAudio").value),
+      artVar: Number($("sArt").value),
       createdAt: Date.now(),
       updatedAt: Date.now()
     };
@@ -705,52 +672,49 @@ function renderLeft(){
     tracks.unshift(track);
     save();
 
-    view = "library";
     listMode = "library";
     setListTabs();
-
     selectedId = track.id;
-    renderLeft();
     renderList();
     renderSongPanel();
   };
 }
 
-/* ---------- LIST / WORKSPACE ---------- */
+/* ===== List tabs ===== */
 function setListTabs(){
-  $("tabLibrary").classList.toggle("active", listMode === "library");
-  $("tabTrash").classList.toggle("active", listMode === "trash");
-
-  $("midTitle").textContent = (listMode === "library") ? "Library" : "Trash";
-  $("trashNote").style.display = (listMode === "trash") ? "block" : "none";
+  $("tabLibrary").classList.toggle("active", listMode==="library");
+  $("tabTrash").classList.toggle("active", listMode==="trash");
+  $("trashNote").style.display = (listMode==="trash") ? "block" : "none";
 }
 
+/* ===== Middle list ===== */
 function renderList(){
   const listEl = $("list");
   const hint = $("listHint");
-  const items = (listMode === "library") ? tracks : trash;
 
-  if(items.length === 0){
+  const items = (listMode==="library") ? tracks : trash;
+
+  if(items.length===0){
     listEl.innerHTML = "";
-    hint.textContent = (listMode === "library")
-      ? "(No tracks yet. Go to Create → Generate.)"
+    hint.textContent = (listMode==="library")
+      ? "(No tracks yet. Go to Create → Create Song.)"
       : "(Trash is empty.)";
     return;
   }
 
-  hint.textContent = (listMode === "library")
+  hint.textContent = (listMode==="library")
     ? "(Click a track to load it into the Song Panel.)"
     : "(Click a track to load it. Restore or delete permanently.)";
 
   listEl.innerHTML = items.map(t=>{
-    const active = (t.id === selectedId) ? "active" : "";
-    const meta = (listMode === "library") ? "Saved · " : "Trashed · ";
+    const active = (t.id===selectedId) ? "active" : "";
+    const meta = (listMode==="library") ? "Saved · " : "Trashed · ";
     const date = fmtDate(t.updatedAt || t.createdAt);
-    const chips = [
+    const sub = [
       t.style ? ("Style: " + t.style) : "",
-      (typeof t.audioInfluence === "number") ? ("Audio: " + t.audioInfluence + "%") : "",
-      (typeof t.artSeed === "number") ? ("Art: " + t.artSeed + "%") : ""
-    ].filter(Boolean).slice(0,2).join(" · ");
+      ("Audio: " + (t.audioInf ?? 50) + "%"),
+      ("Art: " + (t.artVar ?? 50) + "%")
+    ].filter(Boolean).slice(0,2).join(" · ") || "—";
 
     return `
       <div class="card ${active}" data-id="${escapeHtml(t.id)}">
@@ -758,7 +722,7 @@ function renderList(){
           <div class="cardTitle">${escapeHtml(t.title)}</div>
           <div class="cardMeta">${escapeHtml(meta + date)}</div>
         </div>
-        <div class="cardSub">${escapeHtml(chips || "—")}</div>
+        <div class="cardSub">${escapeHtml(sub)}</div>
       </div>
     `;
   }).join("");
@@ -772,43 +736,43 @@ function renderList(){
   });
 }
 
-/* ---------- SONG PANEL ---------- */
+/* ===== Song panel ===== */
 function renderSongPanel(){
   const sel = getSelected();
   const name = $("songName");
   const preview = $("lyricsPreview");
   const status = $("songStatus");
 
-  const btnTrash = $("btnToTrash");
-  const btnDelete = $("btnDeleteForever");
+  const btnToTrash = $("btnToTrash");
+  const btnDeleteForever = $("btnDeleteForever");
 
   if(!sel){
     name.textContent = "No song selected";
     preview.textContent = "Select a track to preview lyrics here.";
     status.textContent = "Draft";
-    btnTrash.textContent = "Move to Trash";
-    btnTrash.classList.add("danger");
-    btnDelete.style.display = "none";
+    btnToTrash.textContent = "Move to Trash";
+    btnToTrash.classList.add("danger");
+    btnDeleteForever.style.display = "none";
     return;
   }
 
   const t = sel.item;
-  name.textContent = t.title || "Untitled Song";
+  name.textContent = t.title;
   preview.textContent = t.lyrics || "";
-  status.textContent = (sel.where === "trash") ? "Trash" : "Draft";
+  status.textContent = (sel.where==="trash") ? "Trash" : "Draft";
 
-  if(sel.where === "trash"){
-    btnTrash.textContent = "Restore";
-    btnTrash.classList.remove("danger");
-    btnDelete.style.display = "inline-block";
+  if(sel.where==="trash"){
+    btnToTrash.textContent = "Restore";
+    btnToTrash.classList.remove("danger");
+    btnDeleteForever.style.display = "inline-block";
   }else{
-    btnTrash.textContent = "Move to Trash";
-    btnTrash.classList.add("danger");
-    btnDelete.style.display = "none";
+    btnToTrash.textContent = "Move to Trash";
+    btnToTrash.classList.add("danger");
+    btnDeleteForever.style.display = "none";
   }
 }
 
-/* ---------- ACTIONS (Song Panel Buttons) ---------- */
+/* ===== Actions ===== */
 $("btnDL").onclick = ()=>{
   const sel = getSelected();
   if(!sel){ alert("Select a song first."); return; }
@@ -821,57 +785,57 @@ $("btnToTrash").onclick = ()=>{
   const sel = getSelected();
   if(!sel){ alert("Select a song first."); return; }
 
-  if(sel.where === "tracks"){
+  if(sel.where==="tracks"){
     const t = sel.item;
-    tracks = tracks.filter(x=>x.id !== t.id);
+    tracks = tracks.filter(x=>x.id!==t.id);
     t.trashedAt = Date.now();
-    t.updatedAt = Date.now();
     trash.unshift(t);
     save();
 
     listMode = "trash";
-    view = "trash";
     setListTabs();
-    renderLeft();
+    selectedId = t.id;
+
     renderList();
     renderSongPanel();
+    stopTimer(); // stop if playing
     return;
   }
 
-  if(sel.where === "trash"){
+  if(sel.where==="trash"){
     const t = sel.item;
-    trash = trash.filter(x=>x.id !== t.id);
+    trash = trash.filter(x=>x.id!==t.id);
     delete t.trashedAt;
     t.updatedAt = Date.now();
     tracks.unshift(t);
     save();
 
     listMode = "library";
-    view = "library";
     setListTabs();
-    renderLeft();
+    selectedId = t.id;
+
     renderList();
     renderSongPanel();
-    return;
+    alert("Restored to Library.");
   }
 };
 
 $("btnDeleteForever").onclick = ()=>{
   const sel = getSelected();
-  if(!sel || sel.where !== "trash"){ return; }
+  if(!sel || sel.where!=="trash"){ return; }
   const t = sel.item;
 
   if(!confirm("Delete permanently? This cannot be undone.")) return;
 
-  trash = trash.filter(x=>x.id !== t.id);
+  trash = trash.filter(x=>x.id!==t.id);
   save();
-
   selectedId = null;
   renderList();
   renderSongPanel();
+  stopTimer();
 };
 
-/* ---------- PLAYER (SIMULATED PREVIEW) ---------- */
+/* ===== Player simulation ===== */
 $("btnPlay").onclick = () => togglePlay();
 $("btnPlayBig").onclick = () => togglePlay();
 $("btnStop").onclick = () => stopTimer();
@@ -879,17 +843,16 @@ $("btnPrev").onclick = () => selectNeighbor(-1);
 $("btnNext").onclick = () => selectNeighbor(+1);
 
 function selectNeighbor(dir){
-  const items = (listMode === "library") ? tracks : trash;
-  if(items.length === 0) return;
+  const items = (listMode==="library") ? tracks : trash;
+  if(items.length===0) return;
 
   if(!selectedId){
     selectedId = items[0].id;
   }else{
-    const idx = items.findIndex(t=>t.id === selectedId);
-    const next = clamp(idx + dir, 0, items.length - 1);
+    const idx = items.findIndex(t=>t.id===selectedId);
+    const next = clamp(idx + dir, 0, items.length-1);
     selectedId = items[next].id;
   }
-
   renderList();
   renderSongPanel();
 }
@@ -943,50 +906,10 @@ function stopTimer(){
 function syncTimeline(){
   $("tCur").textContent = fmtTime(playPos);
   $("tDur").textContent = fmtTime(playDur);
-  $("fill").style.width = ((playPos / playDur) * 100).toFixed(1) + "%";
+  $("fill").style.width = ((playPos/playDur)*100).toFixed(1) + "%";
 }
 
-/* ---------- NAV EVENTS ---------- */
-document.querySelectorAll("#nav a").forEach(a=>{
-  a.onclick = ()=>{
-    view = a.dataset.view;
-
-    if(view === "library"){
-      listMode = "library";
-      setListTabs();
-      renderList();
-      renderSongPanel();
-    }
-    if(view === "trash"){
-      listMode = "trash";
-      setListTabs();
-      renderList();
-      renderSongPanel();
-    }
-
-    renderLeft();
-  };
-});
-
-$("tabLibrary").onclick = ()=>{
-  listMode = "library";
-  view = "library";
-  setListTabs();
-  renderLeft();
-  renderList();
-  renderSongPanel();
-};
-
-$("tabTrash").onclick = ()=>{
-  listMode = "trash";
-  view = "trash";
-  setListTabs();
-  renderLeft();
-  renderList();
-  renderSongPanel();
-};
-
-/* ---------- DOWNLOADS ---------- */
+/* ===== Downloads ===== */
 function downloadText(filename, text){
   const blob = new Blob([text], {type:"text/plain;charset=utf-8"});
   const url = URL.createObjectURL(blob);
@@ -999,14 +922,35 @@ function downloadText(filename, text){
   URL.revokeObjectURL(url);
 }
 
-/* ---------- BOOT ---------- */
+/* ===== Nav events (sidebar + tabs) ===== */
+document.querySelectorAll("#nav a").forEach(a=>{
+  a.onclick = ()=>{
+    view = a.dataset.view;
+    renderLeft();
+
+    // sidebar "Library/Trash" also flips list mode
+    if(view==="library"){ listMode="library"; setListTabs(); renderList(); }
+    if(view==="trash"){ listMode="trash"; setListTabs(); renderList(); }
+  };
+});
+
+$("tabLibrary").onclick = ()=>{
+  listMode="library";
+  setListTabs();
+  renderList();
+};
+
+$("tabTrash").onclick = ()=>{
+  listMode="trash";
+  setListTabs();
+  renderList();
+};
+
+/* ===== boot ===== */
 function boot(){
-  applyTrashAutoDelete();
-
-  // default view
-  view = "create";
-  listMode = "library";
-
+  purgeOldTrash();         // 30-day simulation
+  view = "home";           // start at Home (spec includes landing)
+  listMode = "library";    // default list
   setListTabs();
   renderLeft();
   renderList();
@@ -1015,6 +959,6 @@ function boot(){
 }
 boot();
 </script>
+
 </body>
 </html>
-
