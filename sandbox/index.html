@@ -1,288 +1,1091 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>SML Lite — One-Click Edition</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SML Lite — Front-End Only</title>
+  <style>
+    :root{
+      --bg:#0f1116;
+      --panel:#151a22;
+      --panel2:#10141b;
+      --line:#2a3546;
+      --text:#e8eefc;
+      --muted:#a8b3c7;
+      --accent:#2aa8ff;
+      --accent2:#1f7fe0;
+      --danger:#ff5b5b;
+      --ok:#2bd46a;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 18px;
+      --radius2: 14px;
+      --pad: 16px;
+      --pad2: 12px;
+      --max: 1080px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
 
-<style>
-:root{
-  --bg:#0f1116;
-  --panel:#151a22;
-  --panel2:#10141b;
-  --line:#2a3546;
-  --text:#e8eefc;
-  --muted:#a8b3c7;
-  --accent:#2aa8ff;
-  --danger:#ff5b5b;
-  --ok:#2bd46a;
-  --radius:16px;
-}
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: var(--sans);
+      background: radial-gradient(1200px 800px at 20% -10%, rgba(42,168,255,.18), transparent 60%),
+                  radial-gradient(900px 700px at 110% 10%, rgba(43,212,106,.10), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+    }
 
-*{box-sizing:border-box}
-body{
-  margin:0;
-  background:var(--bg);
-  color:var(--text);
-  font-family:system-ui, sans-serif;
-}
+    a{ color:inherit; text-decoration:none; }
 
-.app{
-  display:grid;
-  grid-template-columns:240px 1fr;
-  min-height:100vh;
-}
+    .app{
+      min-height:100vh;
+      display:grid;
+      grid-template-columns: 260px 1fr;
+    }
 
-/* SIDEBAR */
-.sidebar{
-  background:var(--panel);
-  border-right:1px solid var(--line);
-  padding:14px;
-}
+    /* Sidebar */
+    .sidebar{
+      border-right:1px solid rgba(255,255,255,.06);
+      background: linear-gradient(180deg, rgba(21,26,34,.92), rgba(16,20,27,.92));
+      backdrop-filter: blur(10px);
+      padding: 18px 14px;
+      position: sticky;
+      top:0;
+      height:100vh;
+      overflow:auto;
+    }
 
-.logo{
-  font-weight:800;
-  font-size:18px;
-  margin-bottom:12px;
-}
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 10px 14px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      margin-bottom:12px;
+    }
+    .logo{
+      width:38px; height:38px;
+      border-radius:12px;
+      display:grid; place-items:center;
+      background: linear-gradient(135deg, rgba(42,168,255,.95), rgba(31,127,224,.95));
+      box-shadow: var(--shadow);
+      font-weight: 800;
+      letter-spacing:.5px;
+    }
+    .brand h1{
+      font-size: 15px;
+      margin:0;
+      line-height:1.1;
+    }
+    .brand small{
+      display:block;
+      color:var(--muted);
+      font-size: 12px;
+      margin-top:2px;
+    }
 
-.nav a{
-  display:block;
-  padding:10px;
-  border-radius:10px;
-  color:var(--text);
-  text-decoration:none;
-  margin-bottom:6px;
-}
-.nav a:hover{background:rgba(255,255,255,.05)}
-.nav a.active{background:rgba(42,168,255,.15)}
+    .nav{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      padding: 8px 6px;
+    }
+    .nav a{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 10px 10px;
+      border-radius: 12px;
+      border:1px solid transparent;
+      color: var(--text);
+      transition: .15s ease;
+      user-select:none;
+    }
+    .nav a:hover{
+      background: rgba(255,255,255,.04);
+      border-color: rgba(255,255,255,.06);
+    }
+    .nav a.active{
+      background: rgba(42,168,255,.12);
+      border-color: rgba(42,168,255,.25);
+    }
+    .nav .left{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width: 0;
+    }
+    .badge{
+      font-size:12px;
+      color: var(--muted);
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.06);
+      padding: 2px 8px;
+      border-radius:999px;
+    }
+    .icon{
+      width:28px;height:28px;
+      border-radius:10px;
+      display:grid;
+      place-items:center;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.06);
+      flex: 0 0 auto;
+      font-size: 14px;
+    }
+    .nav .label{
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      font-size: 14px;
+    }
 
-.footer{
-  font-size:12px;
-  color:var(--muted);
-  margin-top:20px;
-}
+    .sidebar .foot{
+      margin-top:16px;
+      padding: 12px 10px;
+      border-top:1px solid rgba(255,255,255,.06);
+      color: var(--muted);
+      font-size: 12px;
+      line-height:1.4;
+    }
 
-/* MAIN */
-.main{
-  padding:20px;
-}
+    /* Main */
+    .main{
+      padding: 22px 18px 40px;
+      overflow:auto;
+    }
+    .wrap{
+      max-width: var(--max);
+      margin: 0 auto;
+    }
 
-.card{
-  background:var(--panel2);
-  border:1px solid var(--line);
-  border-radius:var(--radius);
-  padding:16px;
-}
+    .topbar{
+      display:flex;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom: 16px;
+    }
+    .topbar .title{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .topbar h2{
+      margin:0;
+      font-size: 18px;
+      letter-spacing:.2px;
+    }
+    .topbar p{
+      margin:0;
+      color:var(--muted);
+      font-size: 13px;
+    }
 
-h2{margin-top:0}
+    .card{
+      background: linear-gradient(180deg, rgba(21,26,34,.92), rgba(16,20,27,.92));
+      border:1px solid rgba(255,255,255,.07);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .card .inner{
+      padding: var(--pad);
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:14px;
+    }
+    @media (max-width: 920px){
+      .app{ grid-template-columns: 1fr; }
+      .sidebar{ position: relative; height:auto; }
+      .grid{ grid-template-columns: 1fr; }
+    }
 
-input,textarea{
-  width:100%;
-  padding:10px;
-  border-radius:10px;
-  border:1px solid var(--line);
-  background:#0003;
-  color:var(--text);
-}
+    label{
+      display:block;
+      color: var(--muted);
+      font-size: 12px;
+      margin: 10px 0 6px;
+    }
+    input[type="text"], textarea{
+      width:100%;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      padding: 12px 12px;
+      outline:none;
+      transition: .15s ease;
+      font-size: 14px;
+    }
+    input[type="text"]:focus, textarea:focus{
+      border-color: rgba(42,168,255,.45);
+      box-shadow: 0 0 0 3px rgba(42,168,255,.12);
+    }
+    textarea{
+      min-height: 240px;
+      resize: vertical;
+      font-family: var(--sans);
+      line-height: 1.45;
+    }
 
-textarea{min-height:160px}
+    .row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      margin-top: 12px;
+    }
 
-button{
-  padding:10px 14px;
-  border-radius:12px;
-  border:1px solid var(--line);
-  background:#0005;
-  color:var(--text);
-  cursor:pointer;
-  font-weight:600;
-}
-button:hover{background:#0008}
+    .btn{
+      appearance:none;
+      border:none;
+      cursor:pointer;
+      border-radius: 14px;
+      padding: 11px 14px;
+      font-weight: 700;
+      color: var(--text);
+      background: rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.10);
+      transition:.15s ease;
+      user-select:none;
+    }
+    .btn:hover{ transform: translateY(-1px); }
+    .btn:active{ transform: translateY(0px); }
+    .btn.primary{
+      background: linear-gradient(135deg, rgba(42,168,255,.95), rgba(31,127,224,.95));
+      border-color: rgba(42,168,255,.45);
+    }
+    .btn.danger{
+      background: rgba(255,91,91,.12);
+      border-color: rgba(255,91,91,.25);
+    }
+    .btn.ok{
+      background: rgba(43,212,106,.12);
+      border-color: rgba(43,212,106,.25);
+    }
+    .btn.small{
+      padding: 8px 10px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 13px;
+    }
 
-.primary{background:var(--accent);border:none}
-.danger{background:rgba(255,91,91,.2)}
-.ok{background:rgba(43,212,106,.2)}
+    .muted{
+      color: var(--muted);
+      font-size: 13px;
+      line-height:1.45;
+    }
+    .divider{
+      height:1px;
+      background: rgba(255,255,255,.07);
+      margin: 14px 0;
+    }
 
-.list{display:flex;flex-direction:column;gap:10px}
+    .list{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
 
-.song{
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:10px;
-  background:#0004;
-}
-.song small{color:var(--muted)}
+    .song{
+      border-radius: var(--radius2);
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.16);
+      overflow:hidden;
+    }
+    .song .head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      padding: 12px 12px;
+    }
+    .song .meta{
+      min-width:0;
+    }
+    .song .title{
+      font-size: 14px;
+      font-weight: 800;
+      margin:0;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .song .sub{
+      margin-top:4px;
+      color: var(--muted);
+      font-size: 12px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+    .pill{
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.06);
+      color: var(--muted);
+      max-width: 100%;
+      overflow:hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .song .actions{
+      display:flex;
+      gap:8px;
+      flex: 0 0 auto;
+    }
 
-.hidden{display:none}
-</style>
+    .song .body{
+      padding: 0 12px 12px;
+      display:none;
+    }
+    .song.open .body{ display:block; }
+    .song pre{
+      margin: 10px 0 0;
+      background: rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.08);
+      padding: 12px;
+      border-radius: 14px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: var(--mono);
+      font-size: 12.5px;
+      line-height: 1.45;
+    }
+
+    .empty{
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px dashed rgba(255,255,255,.14);
+      color: var(--muted);
+      background: rgba(0,0,0,.10);
+      font-size: 13px;
+      line-height:1.4;
+    }
+
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      background: rgba(21,26,34,.96);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius: 999px;
+      padding: 10px 14px;
+      color: var(--text);
+      box-shadow: var(--shadow);
+      font-size: 13px;
+      display:none;
+      max-width: min(92vw, 720px);
+    }
+    .toast.show{ display:block; }
+    .toast span{ color: var(--muted); }
+
+    .kpi{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-end;
+    }
+    .kpi .box{
+      padding: 8px 10px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.16);
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .kpi b{ color: var(--text); }
+  </style>
 </head>
 
 <body>
-<div class="app">
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="logo">SML</div>
+        <div>
+          <h1>SingMyLyrics <small>Lite — front-end only</small></h1>
+        </div>
+      </div>
 
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="logo">SML Lite</div>
+      <nav class="nav" id="nav">
+        <!-- Directly under logo: Profile (link) -->
+        <a href="#profile" data-route="profile">
+          <div class="left">
+            <div class="icon">👤</div>
+            <div class="label">Profile</div>
+          </div>
+        </a>
 
-    <nav class="nav">
-      <a href="#profile">Profile</a>
-      <a href="#home" class="active">Home</a>
-      <a href="#create">Create</a>
-      <a href="#library">Library</a>
-      <a href="#trash">Trash</a>
-    </nav>
+        <div class="divider"></div>
 
-    <div class="footer">
-      Front-end only<br>
-      You own your lyrics
-    </div>
-  </aside>
+        <!-- Locked order -->
+        <a href="#home" data-route="home" class="active">
+          <div class="left">
+            <div class="icon">🏠</div>
+            <div class="label">Home</div>
+          </div>
+        </a>
+        <a href="#create" data-route="create">
+          <div class="left">
+            <div class="icon">✍️</div>
+            <div class="label">Create</div>
+          </div>
+        </a>
+        <a href="#library" data-route="library">
+          <div class="left">
+            <div class="icon">📚</div>
+            <div class="label">Library</div>
+          </div>
+          <span class="badge" id="countLibrary">0</span>
+        </a>
+        <a href="#trash" data-route="trash">
+          <div class="left">
+            <div class="icon">🗑️</div>
+            <div class="label">Trash</div>
+          </div>
+          <span class="badge" id="countTrash">0</span>
+        </a>
+      </nav>
 
-  <!-- MAIN -->
-  <main class="main">
+      <div class="foot">
+        <b>Mission:</b> You own your lyrics 100%. This app never generates lyrics — it only stores what you paste.
+        <br/><br/>
+        <span>Note:</span> SML Lite runs entirely in your browser using localStorage.
+      </div>
+    </aside>
 
-    <!-- HOME -->
-    <section id="home" class="card">
-      <h2>Making rock stars — one human at a time.</h2>
-      <p class="muted">
-        This is a one-click, honest SML Lite.<br>
-        Nothing runs unless you click it.
-      </p>
-      <button onclick="go('create')" class="primary">Go to Create</button>
-    </section>
+    <main class="main">
+      <div class="wrap">
 
-    <!-- CREATE -->
-    <section id="create" class="card hidden">
-      <h2>Create</h2>
+        <!-- HOME -->
+        <section id="page-home" class="page">
+          <div class="topbar">
+            <div class="title">
+              <h2>Making rock stars — one human at a time.</h2>
+              <p>Human words, finally heard. (Front-end only)</p>
+            </div>
+            <div class="kpi">
+              <div class="box">Library: <b id="kpiLibrary">0</b></div>
+              <div class="box">Trash: <b id="kpiTrash">0</b></div>
+            </div>
+          </div>
 
-      <input id="title" placeholder="Song title (optional)">
-      <br><br>
+          <div class="card">
+            <div class="inner">
+              <p class="muted" style="margin:0 0 10px;">
+                <b>What this is:</b> A simple, honest, working SML Lite. Paste lyrics, save “songs,” and manage them in Library/Trash.
+              </p>
+              <p class="muted" style="margin:0;">
+                <b>What this is not:</b> No audio generation, no playback, no cadence, no API calls, no logins, no server.
+              </p>
 
-      <textarea id="lyrics" placeholder="Paste lyrics here (required)"></textarea>
-      <br><br>
+              <div class="divider"></div>
 
-      <textarea id="style" placeholder="Style / vibe (optional)"></textarea>
-      <br><br>
+              <div class="row">
+                <button class="btn primary" id="goCreate">Go to Create</button>
+                <button class="btn" id="goLibrary">Open Library</button>
+                <button class="btn danger" id="goTrash">Open Trash</button>
+              </div>
 
-      <button class="primary" onclick="saveSong()">One-Click Save</button>
-      <button onclick="clearFields()">Clear</button>
-    </section>
+              <div class="divider"></div>
 
-    <!-- LIBRARY -->
-    <section id="library" class="card hidden">
-      <h2>Library</h2>
-      <div id="libraryList" class="list"></div>
-    </section>
+              <div class="muted">
+                <b>SML Light — front-end only:</b> Your songs are saved in your browser (localStorage). Clearing browser storage clears them.
+              </div>
+            </div>
+          </div>
+        </section>
 
-    <!-- TRASH -->
-    <section id="trash" class="card hidden">
-      <h2>Trash</h2>
-      <div id="trashList" class="list"></div>
-    </section>
+        <!-- CREATE -->
+        <section id="page-create" class="page" style="display:none;">
+          <div class="topbar">
+            <div class="title">
+              <h2>Create</h2>
+              <p>Paste lyrics. Optional title and style. Click Generate to save a new song card.</p>
+            </div>
+            <div class="kpi">
+              <div class="box">Saved today: <b id="kpiToday">0</b></div>
+            </div>
+          </div>
 
-    <!-- PROFILE -->
-    <section id="profile" class="card hidden">
-      <h2>Profile</h2>
-      <input id="profileName" placeholder="Display name">
-      <br><br>
-      <button class="ok" onclick="saveProfile()">Save</button>
-    </section>
+          <div class="card">
+            <div class="inner">
+              <div class="grid">
+                <div>
+                  <label for="title">Song Title (optional)</label>
+                  <input id="title" type="text" placeholder="e.g., Demon Day" />
 
-  </main>
-</div>
+                  <label for="lyrics">Lyrics (required — we never generate lyrics)</label>
+                  <textarea id="lyrics" placeholder="Paste your lyrics here..."></textarea>
 
-<script>
-const LIB='sml_lib';
-const TRASH='sml_trash';
-const PROFILE='sml_profile';
+                  <div class="row">
+                    <button class="btn primary" id="btnGenerate">Generate Song (Save)</button>
+                    <button class="btn" id="btnClear">Clear Fields</button>
+                  </div>
 
-let lib=JSON.parse(localStorage.getItem(LIB)||'[]');
-let trash=JSON.parse(localStorage.getItem(TRASH)||'[]');
+                  <p class="muted" style="margin: 10px 0 0;">
+                    Tip: This app stores exactly what you paste — no rewriting, no formatting changes.
+                  </p>
+                </div>
 
-function go(id){
-  document.querySelectorAll('main section').forEach(s=>s.classList.add('hidden'));
-  document.getElementById(id).classList.remove('hidden');
-  document.querySelectorAll('.nav a').forEach(a=>a.classList.remove('active'));
-  document.querySelector(.nav a[href="#${id}"]).classList.add('active');
-  if(id==='library') renderLibrary();
-  if(id==='trash') renderTrash();
-}
+                <div>
+                  <label for="style">Style / Vibe (optional)</label>
+                  <textarea id="style" style="min-height: 140px;" placeholder="e.g., Industrial, cold space intro, spoken-word bridge..."></textarea>
 
-function saveSong(){
-  if(!lyrics.value.trim()) return alert('Lyrics required');
-  lib.unshift({
-    id:Date.now(),
-    title:title.value||'Untitled',
-    lyrics:lyrics.value,
-    style:style.value
-  });
-  localStorage.setItem(LIB,JSON.stringify(lib));
-  clearFields();
-  go('library');
-}
+                  <div class="divider"></div>
 
-function clearFields(){
-  title.value='';
-  lyrics.value='';
-  style.value='';
-}
+                  <div class="muted">
+                    <b>Ownership note:</b> Your lyrics remain yours. This app does not create lyrics — it only stores your text locally.
+                    <br/><br/>
+                    <b>Storage note:</b> Songs are stored in localStorage on this device/browser.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
-function renderLibrary(){
-  libraryList.innerHTML='';
-  if(!lib.length){libraryList.innerHTML='<small>No songs yet</small>';return;}
-  lib.forEach(s=>{
-    const d=document.createElement('div');
-    d.className='song';
-    d.innerHTML=`
-      <b>${s.title}</b><br>
-      <small>${s.style||''}</small><br><br>
-      <button onclick="trashSong(${s.id})" class="danger">Delete</button>
-    `;
-    d.oncontextmenu=e=>{
-      e.preventDefault();
-      navigator.clipboard.writeText(s.lyrics);
-      alert('Lyrics copied (right-click)');
-    };
-    libraryList.appendChild(d);
-  });
-}
+        <!-- LIBRARY -->
+        <section id="page-library" class="page" style="display:none;">
+          <div class="topbar">
+            <div class="title">
+              <h2>Library</h2>
+              <p>Your saved songs. Expand to view lyrics and style. Delete moves to Trash.</p>
+            </div>
+            <div class="kpi">
+              <div class="box">Total: <b id="libTotal">0</b></div>
+              <button class="btn small" id="btnExport">Export (JSON)</button>
+            </div>
+          </div>
 
-function renderTrash(){
-  trashList.innerHTML='';
-  if(!trash.length){trashList.innerHTML='<small>Trash empty</small>';return;}
-  trash.forEach(s=>{
-    const d=document.createElement('div');
-    d.className='song';
-    d.innerHTML=`
-      <b>${s.title}</b><br><br>
-      <button onclick="restore(${s.id})" class="ok">Restore</button>
-    `;
-    trashList.appendChild(d);
-  });
-}
+          <div class="card">
+            <div class="inner">
+              <div id="libraryList" class="list"></div>
+              <div id="libraryEmpty" class="empty" style="display:none;">
+                No songs yet. Go to <b>Create</b>, paste lyrics, and click <b>Generate Song</b>.
+              </div>
+            </div>
+          </div>
+        </section>
 
-function trashSong(id){
-  const i=lib.findIndex(s=>s.id===id);
-  trash.unshift(lib.splice(i,1)[0]);
-  localStorage.setItem(LIB,JSON.stringify(lib));
-  localStorage.setItem(TRASH,JSON.stringify(trash));
-  renderLibrary();
-}
+        <!-- TRASH -->
+        <section id="page-trash" class="page" style="display:none;">
+          <div class="topbar">
+            <div class="title">
+              <h2>Trash</h2>
+              <p>Deleted songs live here until you restore or permanently delete them.</p>
+            </div>
+            <div class="kpi">
+              <div class="box">Trash: <b id="trashTotal">0</b></div>
+              <button class="btn small danger" id="btnEmptyTrash">Empty Trash</button>
+            </div>
+          </div>
 
-function restore(id){
-  const i=trash.findIndex(s=>s.id===id);
-  lib.unshift(trash.splice(i,1)[0]);
-  localStorage.setItem(LIB,JSON.stringify(lib));
-  localStorage.setItem(TRASH,JSON.stringify(trash));
-  renderTrash();
-}
+          <div class="card">
+            <div class="inner">
+              <div id="trashList" class="list"></div>
+              <div id="trashEmpty" class="empty" style="display:none;">
+                Trash is empty.
+              </div>
+            </div>
+          </div>
+        </section>
 
-function saveProfile(){
-  localStorage.setItem(PROFILE,profileName.value);
-  alert('Profile saved');
-}
+        <!-- PROFILE -->
+        <section id="page-profile" class="page" style="display:none;">
+          <div class="topbar">
+            <div class="title">
+              <h2>Profile</h2>
+              <p>Simple local settings (no accounts, no logins).</p>
+            </div>
+          </div>
 
-go('home');
-</script>
+          <div class="card">
+            <div class="inner">
+              <label for="profileName">Display Name (optional)</label>
+              <input id="profileName" type="text" placeholder="e.g., John" />
+
+              <div class="row">
+                <button class="btn ok" id="btnSaveProfile">Save Profile</button>
+                <button class="btn danger" id="btnResetAll">Reset ALL Data</button>
+              </div>
+
+              <div class="divider"></div>
+
+              <div class="muted">
+                <b>Reset ALL Data</b> clears Library, Trash, and Profile from this browser.
+                <br/><br/>
+                This page exists so the “Profile” link is real and functional.
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    (function(){
+      "use strict";
+
+      // ----------------------------
+      // Storage keys
+      // ----------------------------
+      const KEY_LIBRARY = "sml_lite_library_v1";
+      const KEY_TRASH   = "sml_lite_trash_v1";
+      const KEY_PROFILE = "sml_lite_profile_v1";
+
+      // ----------------------------
+      // Helpers
+      // ----------------------------
+      const $ = (sel) => document.querySelector(sel);
+      const escapeHtml = (s) => (s || "").replace(/[&<>"']/g, (c)=>({
+        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+      }[c]));
+      const nowISO = () => new Date().toISOString();
+      const niceTime = (iso) => {
+        try{
+          const d = new Date(iso);
+          return d.toLocaleString();
+        }catch{ return iso; }
+      };
+      const uid = () => "sml_" + Math.random().toString(36).slice(2, 10) + "_" + Date.now().toString(36);
+
+      function toast(msg){
+        const el = $("#toast");
+        el.textContent = msg;
+        el.classList.add("show");
+        clearTimeout(toast._t);
+        toast._t = setTimeout(()=> el.classList.remove("show"), 2200);
+      }
+
+      function loadArray(key){
+        try{
+          const raw = localStorage.getItem(key);
+          if(!raw) return [];
+          const parsed = JSON.parse(raw);
+          return Array.isArray(parsed) ? parsed : [];
+        }catch{
+          return [];
+        }
+      }
+      function saveArray(key, arr){
+        localStorage.setItem(key, JSON.stringify(arr));
+      }
+
+      function loadProfile(){
+        try{
+          const raw = localStorage.getItem(KEY_PROFILE);
+          if(!raw) return { name: "" };
+          const p = JSON.parse(raw);
+          return { name: (p && typeof p.name === "string") ? p.name : "" };
+        }catch{
+          return { name: "" };
+        }
+      }
+      function saveProfile(p){
+        localStorage.setItem(KEY_PROFILE, JSON.stringify({ name: p.name || "" }));
+      }
+
+      // ----------------------------
+      // App State (simple)
+      // ----------------------------
+      let library = loadArray(KEY_LIBRARY);
+      let trash   = loadArray(KEY_TRASH);
+      let profile = loadProfile();
+
+      // ----------------------------
+      // Routing (hash)
+      // ----------------------------
+      const routes = ["home","create","library","trash","profile"];
+      function currentRoute(){
+        const h = (location.hash || "#home").replace("#","").trim().toLowerCase();
+        return routes.includes(h) ? h : "home";
+      }
+
+      function setActiveNav(route){
+        document.querySelectorAll(".nav a[data-route]").forEach(a=>{
+          a.classList.toggle("active", a.dataset.route === route);
+        });
+      }
+      function showPage(route){
+        routes.forEach(r=>{
+          const el = $("#page-" + r);
+          if(el) el.style.display = (r === route) ? "" : "none";
+        });
+        setActiveNav(route);
+        if(route === "library") renderLibrary();
+        if(route === "trash") renderTrash();
+        if(route === "profile") renderProfile();
+        if(route === "home") renderHome();
+      }
+
+      window.addEventListener("hashchange", ()=> showPage(currentRoute()));
+
+      // ----------------------------
+      // Render counts / KPIs
+      // ----------------------------
+      function renderCounts(){
+        $("#countLibrary").textContent = String(library.length);
+        $("#countTrash").textContent = String(trash.length);
+        $("#kpiLibrary").textContent = String(library.length);
+        $("#kpiTrash").textContent = String(trash.length);
+      }
+
+      function countSavedToday(){
+        const today = new Date();
+        const y = today.getFullYear(), m = today.getMonth(), d = today.getDate();
+        return library.filter(s=>{
+          const dt = new Date(s.createdAt || s.updatedAt || 0);
+          return dt.getFullYear()===y && dt.getMonth()===m && dt.getDate()===d;
+        }).length;
+      }
+
+      function renderHome(){
+        renderCounts();
+      }
+
+      function renderCreate(){
+        renderCounts();
+        $("#kpiToday").textContent = String(countSavedToday());
+      }
+
+      // ----------------------------
+      // Create
+      // ----------------------------
+      function clearFields(){
+        $("#title").value = "";
+        $("#lyrics").value = "";
+        $("#style").value = "";
+      }
+
+      function createSong(){
+        const title = ($("#title").value || "").trim();
+        const lyrics = ($("#lyrics").value || "").trim();
+        const style = ($("#style").value || "").trim();
+
+        if(!lyrics){
+          toast("Lyrics are required.");
+          $("#lyrics").focus();
+          return;
+        }
+
+        const song = {
+          id: uid(),
+          title: title || "Untitled",
+          lyrics: lyrics,           // store exactly as pasted
+          style: style,
+          createdAt: nowISO(),
+          updatedAt: nowISO()
+        };
+
+        // newest first
+        library.unshift(song);
+        saveArray(KEY_LIBRARY, library);
+
+        renderCounts();
+        renderCreate();
+        toast("Saved to Library.");
+        clearFields();
+        location.hash = "#library";
+      }
+
+      // ----------------------------
+      // Library rendering
+      // ----------------------------
+      function songCard(song, mode){
+        // mode: "library" | "trash"
+        const el = document.createElement("div");
+        el.className = "song";
+        el.dataset.id = song.id;
+
+        const head = document.createElement("div");
+        head.className = "head";
+
+        const meta = document.createElement("div");
+        meta.className = "meta";
+
+        const title = document.createElement("p");
+        title.className = "title";
+        title.textContent = song.title || "Untitled";
+
+        const sub = document.createElement("div");
+        sub.className = "sub";
+
+        const pillTime = document.createElement("div");
+        pillTime.className = "pill";
+        pillTime.textContent = "Saved: " + niceTime(song.createdAt);
+
+        sub.appendChild(pillTime);
+
+        if(song.style){
+          const pillStyle = document.createElement("div");
+          pillStyle.className = "pill";
+          pillStyle.textContent = "Style: " + song.style;
+          sub.appendChild(pillStyle);
+        }
+
+        meta.appendChild(title);
+        meta.appendChild(sub);
+
+        const actions = document.createElement("div");
+        actions.className = "actions";
+
+        const btnView = document.createElement("button");
+        btnView.className = "btn small";
+        btnView.textContent = "View";
+        btnView.addEventListener("click", ()=>{
+          el.classList.toggle("open");
+          btnView.textContent = el.classList.contains("open") ? "Hide" : "View";
+        });
+
+        actions.appendChild(btnView);
+
+        if(mode === "library"){
+          const btnCopy = document.createElement("button");
+          btnCopy.className = "btn small";
+          btnCopy.textContent = "Copy Lyrics";
+          btnCopy.addEventListener("click", async ()=>{
+            try{
+              await navigator.clipboard.writeText(song.lyrics || "");
+              toast("Lyrics copied.");
+            }catch{
+              toast("Copy failed (browser permission).");
+            }
+          });
+          actions.appendChild(btnCopy);
+
+          const btnDelete = document.createElement("button");
+          btnDelete.className = "btn small danger";
+          btnDelete.textContent = "Delete";
+          btnDelete.addEventListener("click", ()=> moveToTrash(song.id));
+          actions.appendChild(btnDelete);
+        }
+
+        if(mode === "trash"){
+          const btnRestore = document.createElement("button");
+          btnRestore.className = "btn small ok";
+          btnRestore.textContent = "Restore";
+          btnRestore.addEventListener("click", ()=> restoreFromTrash(song.id));
+          actions.appendChild(btnRestore);
+
+          const btnPurge = document.createElement("button");
+          btnPurge.className = "btn small danger";
+          btnPurge.textContent = "Delete Forever";
+          btnPurge.addEventListener("click", ()=> deleteForever(song.id));
+          actions.appendChild(btnPurge);
+        }
+
+        head.appendChild(meta);
+        head.appendChild(actions);
+
+        const body = document.createElement("div");
+        body.className = "body";
+
+        const pre = document.createElement("pre");
+        pre.innerHTML = escapeHtml(song.lyrics || "");
+        body.appendChild(pre);
+
+        if(song.style){
+          const styleLabel = document.createElement("div");
+          styleLabel.className = "muted";
+          styleLabel.style.marginTop = "10px";
+          styleLabel.innerHTML = "<b>Style/Vibe:</b> " + escapeHtml(song.style);
+          body.appendChild(styleLabel);
+        }
+
+        el.appendChild(head);
+        el.appendChild(body);
+        return el;
+      }
+
+      function renderLibrary(){
+        renderCounts();
+        $("#libTotal").textContent = String(library.length);
+
+        const list = $("#libraryList");
+        list.innerHTML = "";
+
+        if(!library.length){
+          $("#libraryEmpty").style.display = "";
+          return;
+        }
+        $("#libraryEmpty").style.display = "none";
+
+        library.forEach(song => list.appendChild(songCard(song, "library")));
+      }
+
+      function renderTrash(){
+        renderCounts();
+        $("#trashTotal").textContent = String(trash.length);
+
+        const list = $("#trashList");
+        list.innerHTML = "";
+
+        if(!trash.length){
+          $("#trashEmpty").style.display = "";
+          return;
+        }
+        $("#trashEmpty").style.display = "none";
+
+        trash.forEach(song => list.appendChild(songCard(song, "trash")));
+      }
+
+      // ----------------------------
+      // Actions
+      // ----------------------------
+      function moveToTrash(id){
+        const idx = library.findIndex(s=> s.id === id);
+        if(idx === -1) return;
+        const [song] = library.splice(idx, 1);
+        song.deletedAt = nowISO();
+        trash.unshift(song);
+
+        saveArray(KEY_LIBRARY, library);
+        saveArray(KEY_TRASH, trash);
+
+        renderLibrary();
+        renderTrash();
+        toast("Moved to Trash.");
+      }
+
+      function restoreFromTrash(id){
+        const idx = trash.findIndex(s=> s.id === id);
+        if(idx === -1) return;
+        const [song] = trash.splice(idx, 1);
+        delete song.deletedAt;
+        song.updatedAt = nowISO();
+        library.unshift(song);
+
+        saveArray(KEY_LIBRARY, library);
+        saveArray(KEY_TRASH, trash);
+
+        renderTrash();
+        renderLibrary();
+        toast("Restored to Library.");
+      }
+
+      function deleteForever(id){
+        const idx = trash.findIndex(s=> s.id === id);
+        if(idx === -1) return;
+        trash.splice(idx, 1);
+
+        saveArray(KEY_TRASH, trash);
+
+        renderTrash();
+        renderCounts();
+        toast("Deleted forever.");
+      }
+
+      function emptyTrash(){
+        if(!trash.length){
+          toast("Trash already empty.");
+          return;
+        }
+        if(!confirm("Empty Trash? This permanently deletes everything in Trash.")) return;
+        trash = [];
+        saveArray(KEY_TRASH, trash);
+        renderTrash();
+        renderCounts();
+        toast("Trash emptied.");
+      }
+
+      function exportJSON(){
+        const payload = {
+          exportedAt: nowISO(),
+          profile,
+          library,
+          trash
+        };
+        const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "sml_lite_export.json";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        toast("Export downloaded.");
+      }
+
+      // ----------------------------
+      // Profile
+      // ----------------------------
+      function renderProfile(){
+        $("#profileName").value = profile.name || "";
+      }
+
+      function saveProfileFromUI(){
+        profile.name = ($("#profileName").value || "").trim();
+        saveProfile(profile);
+        toast("Profile saved.");
+      }
+
+      function resetAll(){
+        if(!confirm("Reset ALL data? This clears Library, Trash, and Profile on this browser.")) return;
+        localStorage.removeItem(KEY_LIBRARY);
+        localStorage.removeItem(KEY_TRASH);
+        localStorage.removeItem(KEY_PROFILE);
+        library = [];
+        trash = [];
+        profile = { name: "" };
+        clearFields();
+        renderCounts();
+        renderLibrary();
+        renderTrash();
+        renderProfile();
+        toast("All data reset.");
+        location.hash = "#home";
+      }
+
+      // ----------------------------
+      // Wire UI
+      // ----------------------------
+      $("#goCreate").addEventListener("click", ()=> location.hash="#create");
+      $("#goLibrary").addEventListener("click", ()=> location.hash="#library");
+      $("#goTrash").addEventListener("click", ()=> location.hash="#trash");
+
+      $("#btnGenerate").addEventListener("click", createSong);
+      $("#btnClear").addEventListener("click", ()=>{
+        clearFields();
+        toast("Cleared.");
+      });
+
+      $("#btnEmptyTrash").addEventListener("click", emptyTrash);
+      $("#btnExport").addEventListener("click", exportJSON);
+
+      $("#btnSaveProfile").addEventListener("click", saveProfileFromUI);
+      $("#btnResetAll").addEventListener("click", resetAll);
+
+      // enter key on title shouldn't submit anything weird
+      $("#title").addEventListener("keydown", (e)=>{
+        if(e.key === "Enter"){
+          e.preventDefault();
+          $("#lyrics").focus();
+        }
+      });
+
+      // Initial render
+      renderCounts();
+      renderHome();
+      renderCreate();
+      showPage(currentRoute());
+    })();
+  </script>
 </body>
 </html>
